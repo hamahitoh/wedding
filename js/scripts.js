@@ -134,6 +134,10 @@ $(document).ready(function () {
     $(function () {
 
         $('a[href*=#]:not([href=#])').click(function () {
+            if ($(this).data('toggle') === 'modal') {
+                return true;
+            }
+
             if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') && location.hostname === this.hostname) {
 
                 var target = $(this.hash);
@@ -239,7 +243,10 @@ $(document).ready(function () {
             $('#rsvp-submit-button').prop('disabled', false).text('Submit RSVP');
             $('#alert-wrapper').html('');
             $('#rsvp-form')[0].reset();
-            $('#rsvp-modal').modal('show');
+            $('#rsvp-form-modal').modal('hide');
+            window.setTimeout(function () {
+                $('#rsvp-modal').modal('show');
+            }, 350);
         }, 1200);
     });
 

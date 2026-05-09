@@ -83,7 +83,7 @@
                         </ul>
                         <ul class="member-actions">
                             <li><a href="#map" class="login">Venue</a></li>
-                            <li><a href="#rsvp" class="btn-white btn-small">RSVP</a></li>
+                            <li><a href="#rsvp-form-modal" class="btn-white btn-small" data-toggle="modal">RSVP</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -99,7 +99,8 @@
                 <div class="hero-content text-center">
                     <h1>Kate & Hamahito</h1>
                     <p class="intro">Saturday, October 17, 2026 | Temecula, California</p>
-                    <a href="#rsvp" class="btn btn-accent btn-large hero-primary-rsvp">RSVP</a>
+                    <a href="#rsvp-form-modal" class="btn btn-accent btn-large hero-primary-rsvp"
+                       data-toggle="modal">RSVP</a>
                     <!--<a href="#" class="btn btn-fill btn-large btn-margin-right">Scroll Down</a> -->
                 </div>
             </div>
@@ -280,7 +281,7 @@
                     </div>
                     <div class="row text-center">
                         <div class="col-md-6" style="padding: 5px;">
-                            <a class="btn btn-fill btn-small" href="#rsvp"><i
+                            <a class="btn btn-fill btn-small" href="#rsvp-form-modal" data-toggle="modal"><i
                                     class="fa fa-check"></i>&nbsp;&nbsp;RSVP</a>
                         </div>
                         <div class="col-md-6" style="padding: 5px;">
@@ -297,6 +298,73 @@
 </section>
 
 <section class="rsvp text-center" id="rsvp">
+    <div id="rsvp-form-modal" class="modal fade rsvp-form-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span>
+                    </button>
+                    <div class="rsvp-modal-header text-center">
+                        <h3>RSVP</h3>
+                        <p>Please let us know if you can celebrate with us.</p>
+                    </div>
+                    <form id="rsvp-form" class="rsvp-form" action="" method="POST">
+                        <div class="row">
+                            <div class="col-md-12" id="alert-wrapper"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="rsvp-name">Your full name</label>
+                                <input id="rsvp-name" name="fullName" type="text" required autocomplete="name">
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="rsvp-contact">Email</label>
+                                <input id="rsvp-contact" name="contact" type="email" required autocomplete="email">
+                            </div>
+                        </div>
+                        <fieldset class="rsvp-attendance">
+                            <legend>Will you attend?</legend>
+                            <label>
+                                <input type="radio" name="attendance" value="Yes, I will attend" required>
+                                <span>Yes, I will attend</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="attendance" value="No, I cannot attend">
+                                <span>No, I cannot attend</span>
+                            </label>
+                        </fieldset>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="rsvp-party-size">Guests in your party, including you</label>
+                                <select id="rsvp-party-size" name="partySize" required>
+                                    <option value="">Select one</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="rsvp-song">Song request</label>
+                                <input id="rsvp-song" name="song" type="text">
+                            </div>
+                        </div>
+                        <label for="rsvp-guests">Names of everyone attending, or write not attending</label>
+                        <textarea id="rsvp-guests" name="guestNames" rows="3" required></textarea>
+
+                        <label for="rsvp-dietary">Dietary restrictions or allergies</label>
+                        <textarea id="rsvp-dietary" name="dietary" rows="3"></textarea>
+
+                        <label for="rsvp-notes">Anything else we should know?</label>
+                        <textarea id="rsvp-notes" name="notes" rows="3"></textarea>
+
+                        <button class="btn-fill rsvp-btn" id="rsvp-submit-button" type="submit">
+                            Submit RSVP
+                        </button>
+                    </form>
+                    <iframe id="rsvp-submit-frame" name="rsvp-submit-frame" title="RSVP submission"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="rsvp-modal" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
@@ -316,63 +384,10 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-6 col-md-offset-3">
                 <h3>RSVP</h3>
-                <p>Please let us know if you can celebrate with us. Include everyone in your party so we can plan
-                    seating, food, and guest details.</p>
-                <form id="rsvp-form" class="rsvp-form" action="" method="POST">
-                    <div class="row">
-                        <div class="col-md-12" id="alert-wrapper"></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <label for="rsvp-name">Your full name</label>
-                            <input id="rsvp-name" name="fullName" type="text" required autocomplete="name">
-                        </div>
-                        <div class="col-sm-6">
-                            <label for="rsvp-contact">Email</label>
-                            <input id="rsvp-contact" name="contact" type="email" required autocomplete="email">
-                        </div>
-                    </div>
-                    <fieldset class="rsvp-attendance">
-                        <legend>Will you attend?</legend>
-                        <label>
-                            <input type="radio" name="attendance" value="Yes, I will attend" required>
-                            <span>Yes, I will attend</span>
-                        </label>
-                        <label>
-                            <input type="radio" name="attendance" value="No, I cannot attend">
-                            <span>No, I cannot attend</span>
-                        </label>
-                    </fieldset>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <label for="rsvp-party-size">Guests in your party, including you</label>
-                            <select id="rsvp-party-size" name="partySize" required>
-                                <option value="">Select one</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-6">
-                            <label for="rsvp-song">Song request</label>
-                            <input id="rsvp-song" name="song" type="text">
-                        </div>
-                    </div>
-                    <label for="rsvp-guests">Names of everyone attending, or write not attending</label>
-                    <textarea id="rsvp-guests" name="guestNames" rows="3" required></textarea>
-
-                    <label for="rsvp-dietary">Dietary restrictions or allergies</label>
-                    <textarea id="rsvp-dietary" name="dietary" rows="3"></textarea>
-
-                    <label for="rsvp-notes">Anything else we should know?</label>
-                    <textarea id="rsvp-notes" name="notes" rows="3"></textarea>
-
-                    <button class="btn-fill rsvp-btn" id="rsvp-submit-button" type="submit">
-                        Submit RSVP
-                    </button>
-                </form>
-                <iframe id="rsvp-submit-frame" name="rsvp-submit-frame" title="RSVP submission"></iframe>
+                <p>When you are ready, open the RSVP form and let us know who will be joining.</p>
+                <a href="#rsvp-form-modal" class="btn btn-fill btn-large" data-toggle="modal">Open RSVP</a>
             </div>
         </div>
     </div>

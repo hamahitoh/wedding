@@ -89,6 +89,48 @@
     padding-top: 80px;
 }
 
+.rsvp .btn-large {
+    margin-top: 10px;
+}
+
+.rsvp-form-modal .modal-dialog {
+    margin-top: 44px;
+}
+
+.rsvp-form-modal .modal-content {
+    border: 0;
+    border-radius: 4px;
+    box-shadow: 0 24px 80px rgba(31, 37, 50, 0.25);
+}
+
+.rsvp-form-modal .modal-body {
+    padding: 42px 48px 46px;
+}
+
+.rsvp-form-modal .close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 2;
+    color: #3d4351;
+    font-size: 28px;
+    opacity: 0.45;
+}
+
+.rsvp-modal-header {
+    margin-bottom: 24px;
+}
+
+.rsvp-modal-header h3 {
+    margin-top: 0;
+}
+
+.rsvp-modal-header p {
+    max-width: 520px;
+    margin: 0 auto;
+    padding-bottom: 0;
+}
+
 .rsvp .rsvp-form {
     max-width: 760px;
     margin: 18px auto 0;
@@ -212,5 +254,13 @@
     .rsvp .rsvp-attendance label {
         width: 100%;
         margin: 0 0 10px;
+    }
+
+    .rsvp-form-modal .modal-dialog {
+        margin: 12px;
+    }
+
+    .rsvp-form-modal .modal-body {
+        padding: 34px 22px 30px;
     }
 }
