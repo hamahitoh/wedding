@@ -316,20 +316,63 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class="col-md-8 col-md-offset-2">
                 <h3>RSVP</h3>
-                <p>We will connect this button to a Google Form for attendance, plus-one details, meal preferences,
-                    dietary notes, and any planning questions.</p>
-                <form id="rsvp-form" class="rsvp-form"
-                      action=""
-                      method="POST">
+                <p>Please let us know if you can celebrate with us. Include everyone in your party so we can plan
+                    seating, food, and guest details.</p>
+                <form id="rsvp-form" class="rsvp-form" action="" method="POST">
                     <div class="row">
                         <div class="col-md-12" id="alert-wrapper"></div>
                     </div>
-                    <button class="btn-fill rsvp-btn" id="google-rsvp-button">
-                        Open RSVP Form
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label for="rsvp-name">Your full name</label>
+                            <input id="rsvp-name" name="fullName" type="text" required autocomplete="name">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="rsvp-contact">Email</label>
+                            <input id="rsvp-contact" name="contact" type="email" required autocomplete="email">
+                        </div>
+                    </div>
+                    <fieldset class="rsvp-attendance">
+                        <legend>Will you attend?</legend>
+                        <label>
+                            <input type="radio" name="attendance" value="Yes, I will attend" required>
+                            <span>Yes, I will attend</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="attendance" value="No, I cannot attend">
+                            <span>No, I cannot attend</span>
+                        </label>
+                    </fieldset>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label for="rsvp-party-size">Guests in your party, including you</label>
+                            <select id="rsvp-party-size" name="partySize" required>
+                                <option value="">Select one</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="rsvp-song">Song request</label>
+                            <input id="rsvp-song" name="song" type="text">
+                        </div>
+                    </div>
+                    <label for="rsvp-guests">Names of everyone attending, or write not attending</label>
+                    <textarea id="rsvp-guests" name="guestNames" rows="3" required></textarea>
+
+                    <label for="rsvp-dietary">Dietary restrictions or allergies</label>
+                    <textarea id="rsvp-dietary" name="dietary" rows="3"></textarea>
+
+                    <label for="rsvp-notes">Anything else we should know?</label>
+                    <textarea id="rsvp-notes" name="notes" rows="3"></textarea>
+
+                    <button class="btn-fill rsvp-btn" id="rsvp-submit-button" type="submit">
+                        Submit RSVP
                     </button>
                 </form>
+                <iframe id="rsvp-submit-frame" name="rsvp-submit-frame" title="RSVP submission"></iframe>
             </div>
         </div>
     </div>

@@ -89,6 +89,89 @@
     padding-top: 80px;
 }
 
+.rsvp .rsvp-form {
+    max-width: 760px;
+    margin: 18px auto 0;
+    text-align: left;
+}
+
+.rsvp .rsvp-form label,
+.rsvp .rsvp-form legend {
+    display: block;
+    margin: 0 0 8px;
+    color: #3d4351;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.rsvp .rsvp-form input[type="text"],
+.rsvp .rsvp-form input[type="email"],
+.rsvp .rsvp-form select,
+.rsvp .rsvp-form textarea {
+    width: 100%;
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    border: 1px solid #dfe4e8;
+    border-radius: 4px;
+    background: #fff;
+    color: #3d4351;
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+.rsvp .rsvp-form textarea {
+    min-height: 112px;
+    resize: vertical;
+}
+
+.rsvp .rsvp-form input:focus,
+.rsvp .rsvp-form select:focus,
+.rsvp .rsvp-form textarea:focus {
+    border-color: #e8ca6f;
+    box-shadow: 0 0 0 3px rgba(232, 202, 111, 0.2);
+}
+
+.rsvp .rsvp-attendance {
+    margin: 0 0 18px;
+    padding: 0;
+    border: 0;
+}
+
+.rsvp .rsvp-attendance label {
+    display: inline-flex;
+    align-items: center;
+    width: calc(50% - 8px);
+    min-height: 54px;
+    margin: 0 12px 0 0;
+    padding: 12px 14px;
+    border: 1px solid #dfe4e8;
+    border-radius: 4px;
+    color: rgba(28, 54, 83, 0.7);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.rsvp .rsvp-attendance label:last-child {
+    margin-right: 0;
+}
+
+.rsvp .rsvp-attendance input {
+    margin: 0 10px 0 0;
+}
+
+.rsvp .rsvp-form .rsvp-btn {
+    margin-top: 6px;
+}
+
+#rsvp-submit-frame {
+    display: none;
+}
+
 @media screen and (max-width: 640px) {
     .hero {
         background:
@@ -116,7 +199,7 @@
         margin-bottom: 24px;
         font-size: 17px;
     }
-}
+
     .hero > .container {
         padding-left: 20px;
         padding-right: 20px;
@@ -125,3 +208,9 @@
     .hero > .container .col-md-10.col-md-offset-1 {
         width: 100%;
     }
+
+    .rsvp .rsvp-attendance label {
+        width: 100%;
+        margin: 0 0 10px;
+    }
+}

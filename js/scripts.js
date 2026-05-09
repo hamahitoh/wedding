@@ -1,5 +1,17 @@
 $(document).ready(function () {
-    var googleFormUrl = '';
+    var rsvpGoogleForm = {
+        formResponseUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeAc8AtLbRQH9iw3RLrk9bLJ_xtXkT7-vbwcxxDjc5zRKRHgw/formResponse',
+        fields: {
+            fullName: 'entry.851531526',
+            attendance: 'entry.67388496',
+            contact: 'entry.1373784535',
+            partySize: 'entry.791242374',
+            guestNames: 'entry.90835907',
+            dietary: 'entry.520093493',
+            song: 'entry.602395418',
+            notes: 'entry.1429695988'
+        }
+    };
 
     /***************** Waypoints ******************/
 
@@ -190,11 +202,45 @@ $(document).ready(function () {
     $('#rsvp-form').on('submit', function (e) {
         e.preventDefault();
 
-        if (!googleFormUrl) {
-            $('#alert-wrapper').html(alert_markup('info', '<strong>RSVP form not connected yet.</strong> Add your Google Form URL in js/scripts.js.'));
-        } else {
-            window.open(googleFormUrl, '_blank', 'noopener');
+        var missingBackend = !rsvpGoogleForm.formResponseUrl;
+        Object.keys(rsvpGoogleForm.fields).forEach(function (fieldName) {
+            if (!rsvpGoogleForm.fields[fieldName]) {
+                missingBackend = true;
+            }
+        });
+
+        if (missingBackend) {
+            $('#alert-wrapper').html(alert_markup('info', '<strong>RSVP form not connected yet.</strong> Send us the published Google Form link so we can finish the connection.'));
+            return;
         }
+
+        var formData = new FormData(this);
+        var googleForm = $('<form>', {
+            action: rsvpGoogleForm.formResponseUrl,
+            method: 'POST',
+            target: 'rsvp-submit-frame'
+        }).hide();
+
+        Object.keys(rsvpGoogleForm.fields).forEach(function (fieldName) {
+            $('<input>', {
+                type: 'hidden',
+                name: rsvpGoogleForm.fields[fieldName],
+                value: formData.get(fieldName) || ''
+            }).appendTo(googleForm);
+        });
+
+        $('body').append(googleForm);
+        $('#rsvp-submit-button').prop('disabled', true).text('Submitting...');
+        $('#alert-wrapper').html(alert_markup('info', '<strong>Submitting RSVP...</strong>'));
+        googleForm.submit();
+
+        window.setTimeout(function () {
+            googleForm.remove();
+            $('#rsvp-submit-button').prop('disabled', false).text('Submit RSVP');
+            $('#alert-wrapper').html('');
+            $('#rsvp-form')[0].reset();
+            $('#rsvp-modal').modal('show');
+        }, 1200);
     });
 
 });
