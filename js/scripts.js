@@ -166,17 +166,17 @@ $(document).ready(function () {
             title: "Kate and Hamahito's Wedding",
 
             // Event start date
-            start: new Date('Sep 12, 2026 16:30'),
+            start: new Date('Oct 17, 2026 16:00'),
 
             // Event duration (IN MINUTES)
             // duration: 120,
 
             // You can also choose to set an end time
             // If an end time is set, this will take precedence over duration
-            end: new Date('Sep 12, 2026 23:30'),
+            end: new Date('Oct 17, 2026 22:00'),
 
             // Event Address
-            address: 'Venue Name, City, State',
+            address: 'Danza Del Sol Winery by Wedgewood Weddings, 39050 De Portola Road, Temecula, CA 92592',
 
             // Event Description
             description: "We can't wait to see you on our big day."
