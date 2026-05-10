@@ -37,3 +37,7 @@ typings/
 .sass-cache/
 *.css.map
 *.pdf
+guest-list.csv
+guest-list-private*.csv
+*-guest-list.csv
+!guest-list-template.csv
