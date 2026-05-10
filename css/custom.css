@@ -137,6 +137,72 @@
     text-align: left;
 }
 
+.rsvp-lookup-panel,
+.rsvp-household-panel,
+.rsvp-existing-response,
+.rsvp-wedding-party-note {
+    max-width: 760px;
+    margin: 18px auto 0;
+    text-align: left;
+}
+
+.rsvp-lookup-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.rsvp-match-results {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.rsvp-match-card,
+.rsvp-household-panel,
+.rsvp-existing-response,
+.rsvp-wedding-party-note {
+    border: 1px solid #dfe4e8;
+    border-radius: 4px;
+    background: #fff;
+    padding: 14px 16px;
+}
+
+.rsvp-match-card strong,
+.rsvp-household-panel strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #3d4351;
+}
+
+.rsvp-match-card button {
+    margin-top: 10px;
+}
+
+.rsvp-help-text {
+    margin: -6px 0 16px;
+    color: rgba(28, 54, 83, 0.64);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.rsvp-existing-response {
+    border-color: rgba(162, 61, 61, 0.24);
+    background: #fff7f6;
+    color: #7a3434;
+}
+
+.rsvp-wedding-party-note {
+    border-color: rgba(232, 202, 111, 0.45);
+    background: #fffaf0;
+    color: #5f5030;
+}
+
+.rsvp-conditional-field {
+    display: none;
+}
+
 .rsvp .rsvp-form label,
 .rsvp .rsvp-form legend {
     display: block;
@@ -151,6 +217,7 @@
 
 .rsvp .rsvp-form input[type="text"],
 .rsvp .rsvp-form input[type="email"],
+.rsvp-lookup-panel input[type="text"],
 .rsvp .rsvp-form select,
 .rsvp .rsvp-form textarea {
     width: 100%;
@@ -262,5 +329,9 @@
 
     .rsvp-form-modal .modal-body {
         padding: 34px 22px 30px;
+    }
+
+    .rsvp-lookup-row {
+        grid-template-columns: 1fr;
     }
 }

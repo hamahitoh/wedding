@@ -12,6 +12,14 @@ $(document).ready(function () {
             notes: 'entry.1429695988'
         }
     };
+    var rsvpBackend = {
+        apiBaseUrl: (window.KH_RSVP_API_BASE_URL || '').replace(/\/$/, '')
+    };
+    var rsvpState = {
+        mode: rsvpBackend.apiBaseUrl ? 'api' : 'google',
+        rsvpToken: '',
+        household: null
+    };
 
     /***************** Waypoints ******************/
 
@@ -203,9 +211,95 @@ $(document).ready(function () {
 
 
     /********************** RSVP **********************/
-    $('#rsvp-form').on('submit', function (e) {
-        e.preventDefault();
+    function rsvpEscape(value) {
+        return String(value || '').replace(/[&<>"']/g, function (char) {
+            return ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            })[char];
+        });
+    }
 
+    function rsvpApi(path, payload) {
+        return $.ajax({
+            url: rsvpBackend.apiBaseUrl + path,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload || {})
+        });
+    }
+
+    function resetPersonalizedRsvp() {
+        rsvpState.rsvpToken = '';
+        rsvpState.household = null;
+        $('#rsvp-token').val('');
+        $('#rsvp-household-panel').hide().empty();
+        $('#rsvp-existing-response').hide().empty();
+        $('#rsvp-wedding-party-note').hide().empty();
+        $('#rsvp-party-note').text('');
+        $('#rsvp-plus-one-wrap').hide();
+        $('#rsvp-rehearsal-wrap').hide();
+        $('#rsvp-rehearsal-wrap input').prop('checked', false);
+        $('#rsvp-form')[0].reset();
+    }
+
+    function renderPartyOptions(maxPartySize) {
+        var options = '<option value="">Select one</option>';
+        for (var i = 1; i <= maxPartySize; i += 1) {
+            options += '<option value="' + i + '">' + i + '</option>';
+        }
+        $('#rsvp-party-size').html(options);
+    }
+
+    function renderHouseholdForm(data) {
+        var household = data.household || {};
+        rsvpState.rsvpToken = data.rsvp_token || '';
+        rsvpState.household = household;
+        $('#rsvp-token').val(rsvpState.rsvpToken);
+        $('#rsvp-lookup-panel').hide();
+        $('#rsvp-form').show();
+        $('#rsvp-name').val((household.members && household.members[0]) || household.display_name || '');
+        $('#rsvp-household-panel')
+            .html('<strong>Is this you?</strong><div>' + rsvpEscape(household.display_name || 'Your invitation') + '</div><div class="rsvp-help-text">' + rsvpEscape((household.members || []).join(', ')) + '</div>')
+            .show();
+        renderPartyOptions(household.max_party_size || 1);
+        $('#rsvp-party-note').text('This invitation allows up to ' + (household.max_party_size || 1) + ' guest(s).');
+        $('#rsvp-plus-one-wrap').toggle(!!household.plus_one_allowed);
+        $('#rsvp-rehearsal-wrap').toggle(!!household.invited_rehearsal_dinner);
+        if (household.wedding_party_notes) {
+            $('#rsvp-wedding-party-note')
+                .html('<strong>' + rsvpEscape(household.wedding_party_role || 'Wedding party') + '</strong><div>' + rsvpEscape(household.wedding_party_notes) + '</div>')
+                .show();
+        }
+        if (data.already_received) {
+            $('#rsvp-existing-response')
+                .html('<strong>We already received your RSVP.</strong><div>Contact Hamahito or Kate if you would like to make any changes.</div>')
+                .show();
+            $('#rsvp-form :input').not('button, [data-dismiss]').prop('disabled', true);
+            $('#rsvp-submit-button').prop('disabled', true);
+        } else {
+            $('#rsvp-form :input').prop('disabled', false);
+            $('#rsvp-submit-button').prop('disabled', false);
+        }
+    }
+
+    function renderMatches(matches) {
+        var markup = matches.map(function (match) {
+            var members = (match.members || []).join(', ');
+            return '<div class="rsvp-match-card">' +
+                '<strong>' + rsvpEscape(match.display_name) + '</strong>' +
+                '<div>' + rsvpEscape(members) + '</div>' +
+                '<div class="rsvp-help-text">' + rsvpEscape(match.party_summary) + '</div>' +
+                '<button class="btn-fill rsvp-confirm-match" type="button" data-token="' + rsvpEscape(match.match_token) + '">Yes, this is me</button>' +
+                '</div>';
+        }).join('');
+        $('#rsvp-match-results').html(markup || '<div class="rsvp-existing-response">We could not find a clear match. Please check the spelling or contact Kate or Hamahito.</div>');
+    }
+
+    function submitGoogleRsvp(form) {
         var missingBackend = !rsvpGoogleForm.formResponseUrl;
         Object.keys(rsvpGoogleForm.fields).forEach(function (fieldName) {
             if (!rsvpGoogleForm.fields[fieldName]) {
@@ -218,7 +312,7 @@ $(document).ready(function () {
             return;
         }
 
-        var formData = new FormData(this);
+        var formData = new FormData(form);
         var googleForm = $('<form>', {
             action: rsvpGoogleForm.formResponseUrl,
             method: 'POST',
@@ -248,6 +342,89 @@ $(document).ready(function () {
                 $('#rsvp-modal').modal('show');
             }, 350);
         }, 1200);
+    }
+
+    if (rsvpState.mode === 'api') {
+        $('#rsvp-form').hide();
+    } else {
+        $('#rsvp-lookup-panel').hide();
+    }
+
+    $('#rsvp-form-modal').on('show.bs.modal', function () {
+        if (rsvpState.mode === 'api') {
+            resetPersonalizedRsvp();
+            $('#rsvp-lookup-panel').show();
+            $('#rsvp-form').hide();
+            $('#rsvp-match-results').empty();
+            $('#rsvp-lookup-name').val('');
+        }
+    });
+
+    $('#rsvp-lookup-button').on('click', function () {
+        var name = $('#rsvp-lookup-name').val();
+        $('#rsvp-match-results').html('<div class="rsvp-help-text">Searching...</div>');
+        rsvpApi('/api/wedding/public/lookup', {name: name})
+            .done(function (data) {
+                renderMatches(data.matches || []);
+            })
+            .fail(function (xhr) {
+                var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Search failed. Please try again.';
+                $('#rsvp-match-results').html('<div class="rsvp-existing-response">' + rsvpEscape(detail) + '</div>');
+            });
+    });
+
+    $('#rsvp-lookup-name').on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            $('#rsvp-lookup-button').trigger('click');
+        }
+    });
+
+    $('#rsvp-match-results').on('click', '.rsvp-confirm-match', function () {
+        var token = $(this).data('token');
+        $('#rsvp-match-results').html('<div class="rsvp-help-text">Loading your invitation...</div>');
+        rsvpApi('/api/wedding/public/confirm', {match_token: token})
+            .done(renderHouseholdForm)
+            .fail(function (xhr) {
+                var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Confirmation failed. Please search again.';
+                $('#rsvp-match-results').html('<div class="rsvp-existing-response">' + rsvpEscape(detail) + '</div>');
+            });
+    });
+
+    $('#rsvp-form').on('submit', function (e) {
+        e.preventDefault();
+
+        if (rsvpState.mode !== 'api') {
+            submitGoogleRsvp(this);
+            return;
+        }
+
+        var formData = new FormData(this);
+        $('#rsvp-submit-button').prop('disabled', true).text('Submitting...');
+        $('#alert-wrapper').html(alert_markup('info', '<strong>Submitting RSVP...</strong>'));
+        rsvpApi('/api/wedding/public/submit', {
+            rsvp_token: rsvpState.rsvpToken,
+            attendance: formData.get('attendance'),
+            contact: formData.get('contact'),
+            party_size: formData.get('partySize'),
+            guest_names: formData.get('guestNames'),
+            plus_one_name: formData.get('plusOneName'),
+            rehearsal_attendance: formData.get('rehearsalAttendance'),
+            dietary: formData.get('dietary'),
+            song: formData.get('song'),
+            notes: formData.get('notes')
+        }).done(function () {
+            $('#rsvp-submit-button').prop('disabled', false).text('Submit RSVP');
+            $('#alert-wrapper').html('');
+            $('#rsvp-form-modal').modal('hide');
+            window.setTimeout(function () {
+                $('#rsvp-modal').modal('show');
+            }, 350);
+        }).fail(function (xhr) {
+            var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'RSVP failed. Please try again.';
+            $('#rsvp-submit-button').prop('disabled', false).text('Submit RSVP');
+            $('#alert-wrapper').html(alert_markup('danger', '<strong>' + rsvpEscape(detail) + '</strong>'));
+        });
     });
 
 });

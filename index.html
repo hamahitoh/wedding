@@ -310,7 +310,22 @@
                         <h3>RSVP</h3>
                         <p>Please let us know if you can celebrate with us.</p>
                     </div>
+                    <div id="rsvp-lookup-panel" class="rsvp-lookup-panel">
+                        <label for="rsvp-lookup-name">Find your invitation</label>
+                        <div class="rsvp-lookup-row">
+                            <input id="rsvp-lookup-name" type="text" autocomplete="name"
+                                   placeholder="Enter your full name">
+                            <button class="btn-fill rsvp-btn" id="rsvp-lookup-button" type="button">Search</button>
+                        </div>
+                        <div class="rsvp-help-text">Start with your name. If there is more than one close match, choose your invitation below.</div>
+                        <div id="rsvp-match-results" class="rsvp-match-results"></div>
+                    </div>
                     <form id="rsvp-form" class="rsvp-form" action="" method="POST">
+                        <input id="rsvp-token" name="rsvpToken" type="hidden">
+                        <div id="rsvp-household-panel" class="rsvp-household-panel"></div>
+                        <div id="rsvp-existing-response" class="rsvp-existing-response"></div>
+                        <div id="rsvp-party-note" class="rsvp-help-text"></div>
+                        <div id="rsvp-wedding-party-note" class="rsvp-wedding-party-note"></div>
                         <div class="row">
                             <div class="col-md-12" id="alert-wrapper"></div>
                         </div>
@@ -320,8 +335,8 @@
                                 <input id="rsvp-name" name="fullName" type="text" required autocomplete="name">
                             </div>
                             <div class="col-sm-6">
-                                <label for="rsvp-contact">Email</label>
-                                <input id="rsvp-contact" name="contact" type="email" required autocomplete="email">
+                                <label for="rsvp-contact">Email or phone</label>
+                                <input id="rsvp-contact" name="contact" type="text" required autocomplete="email">
                             </div>
                         </div>
                         <fieldset class="rsvp-attendance">
@@ -349,6 +364,21 @@
                                 <input id="rsvp-song" name="song" type="text">
                             </div>
                         </div>
+                        <div id="rsvp-plus-one-wrap" class="rsvp-conditional-field">
+                            <label for="rsvp-plus-one">Plus-one name</label>
+                            <input id="rsvp-plus-one" name="plusOneName" type="text" autocomplete="name">
+                        </div>
+                        <fieldset id="rsvp-rehearsal-wrap" class="rsvp-attendance rsvp-conditional-field">
+                            <legend>Will you attend the rehearsal dinner?</legend>
+                            <label>
+                                <input type="radio" name="rehearsalAttendance" value="Yes, I will attend">
+                                <span>Yes, I will attend</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="rehearsalAttendance" value="No, I cannot attend">
+                                <span>No, I cannot attend</span>
+                            </label>
+                        </fieldset>
                         <label for="rsvp-guests">Names of everyone attending, or write not attending</label>
                         <textarea id="rsvp-guests" name="guestNames" rows="3" required></textarea>
 
@@ -412,6 +442,9 @@
 <script src="js/jquery.flexslider-min.js"></script>
 <script src="js/jquery.mb.YTPlayer.min.js"></script>
 <script src="js/vendor/ouical.js"></script>
+<script>
+    window.KH_RSVP_API_BASE_URL = 'https://api.kateandhamahito.com';
+</script>
 <script src="js/scripts.js"></script>
 </body>
 </html>

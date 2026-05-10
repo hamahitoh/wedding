@@ -1,0 +1,4 @@
+household_id,household_name,primary_guest_name,additional_guest_names,search_names,contact_email,contact_phone,tier,max_party_size,plus_one_allowed,invited_rehearsal_dinner,wedding_party_role,wedding_party_notes,public_notes,private_notes
+sample-smith,Smith Household,Jordan Smith,Alex Smith; Taylor Smith,Jordy Smith,jordan@example.com,,family,3,no,yes,,,"Ceremony and reception invitation.","Internal planning notes stay in Pifredo."
+sample-lee,Lee Household,Casey Lee,,Case Lee,casey@example.com,,friends,2,yes,no,,,"Ceremony and reception invitation.",""
+sample-groomsman,Daniel Nguyen,Daniel Nguyen,,Danny Nguyen,daniel@example.com,,wedding-party,1,no,yes,groomsman,"Please arrive early for photos and wedding party timing.","Wedding party details will appear after confirmation.",""
