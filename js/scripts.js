@@ -315,6 +315,7 @@ $(document).ready(function () {
         $('#rsvp-wedding-party-note').hide().empty();
         $('#rsvp-party-note').text('');
         $('#rsvp-plus-one-wrap').hide();
+        $('#rsvp-plus-one').val('');
         $('#rsvp-rehearsal-wrap').hide();
         $('#rsvp-rehearsal-wrap input').prop('checked', false);
         $('#rsvp-form')[0].reset();
@@ -341,7 +342,11 @@ $(document).ready(function () {
             .show();
         renderPartyOptions(household.max_party_size || 1);
         $('#rsvp-party-note').text('This invitation allows up to ' + (household.max_party_size || 1) + ' guest(s).');
-        $('#rsvp-plus-one-wrap').toggle(!!household.plus_one_allowed);
+        var sponsoredSlots = Math.max((household.max_party_size || 1) - ((household.members || []).length), 0);
+        $('#rsvp-plus-one-wrap').toggle(!!household.plus_one_allowed && sponsoredSlots > 0);
+        if (household.plus_one_allowed && sponsoredSlots > 0) {
+            $('#rsvp-plus-one-wrap label').text(sponsoredSlots > 1 ? 'Additional guest name(s)' : 'Additional guest name');
+        }
         $('#rsvp-rehearsal-wrap').toggle(!!household.invited_rehearsal_dinner);
         if (household.wedding_party_notes) {
             $('#rsvp-wedding-party-note')
