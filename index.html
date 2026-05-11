@@ -99,7 +99,7 @@
             <div class="col-md-10 col-md-offset-1">
                 <div class="hero-content text-center">
                     <h1>Kate & Hamahito</h1>
-                    <p class="intro">Saturday, October 17, 2026 | Temecula, California</p>
+                    <p class="intro" id="site-event-summary">Saturday, October 17, 2026 | Temecula, California</p>
                     <a href="#" class="btn btn-accent btn-large hero-primary-rsvp"
                        data-toggle="modal" data-target="#rsvp-form-modal">RSVP</a>
                     <!--<a href="#" class="btn btn-fill btn-large btn-margin-right">Scroll Down</a> -->
@@ -115,7 +115,7 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <h3>We are getting married</h3>
-                <p>Join us on Saturday, October 17, 2026 at Danza Del Sol Winery in Temecula, California.</p>
+                <p id="site-invitation-summary">Join us on Saturday, October 17, 2026 at Danza Del Sol Winery in Temecula, California.</p>
             </div>
         </div>
     </div>
@@ -147,7 +147,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12 leftcol">
+            <div class="col-md-6 col-sm-12 col-xs-12 leftcol" id="site-schedule-left">
                 <div class="wp3">
                     <p><strong>Saturday, October 17, 2026</strong></p>
 
@@ -159,7 +159,7 @@
                     <p>Vineyard Ceremony at Danza Del Sol Winery.</p>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-12 col-xs-12 rightcol">
+            <div class="col-md-6 col-sm-12 col-xs-12 rightcol" id="site-schedule-right">
                 <div class="wp4">
                     <p><strong>Reception</strong></p>
 
@@ -192,8 +192,8 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span>
                     </button>
                     <h3 class="text-center section-padding">Dress code</h3>
-                    <h5>Wedding <span class="time">details TBD</span></h5>
-                    <p>
+                    <h5 id="site-dress-title">Wedding <span class="time">details TBD</span></h5>
+                    <p id="site-dress-body">
                         <strong>Add dress code here</strong>
                         <br>
                         Include formality, shoe advice, outdoor/indoor notes, and expected weather.
@@ -210,10 +210,10 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <h3>Hotels</h3>
-                <p>Add hotel blocks, booking deadlines, distance to the venue, and recommended neighborhoods here.</p>
+                <p id="site-hotels-intro">Add hotel blocks, booking deadlines, distance to the venue, and recommended neighborhoods here.</p>
             </div>
         </div>
-        <div class="row hotel-grid">
+        <div class="row hotel-grid" id="site-hotels-grid">
             <div class="col-md-4">
                 <h5>Hotel option one</h5>
                 <p>Closest to venue. Add booking link and room block details.</p>
@@ -235,9 +235,10 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <h3 class="header">Things to do</h3>
+                <p id="site-things-intro"></p>
             </div>
         </div>
-        <div class="row area-grid">
+        <div class="row area-grid" id="site-things-grid">
             <div class="col-md-4">
                 <h5>Coffee & brunch</h5>
                 <p>Add favorite cafes or easy brunch options near the hotel area.</p>
@@ -257,8 +258,8 @@
 <section id="map" class="section-padding">
     <div class="text-center">
         <h3>Venue</h3>
-        <p>Danza Del Sol Winery by Wedgewood Weddings<br>
-            39050 De Portola Road, Temecula, CA 92592</p>
+        <p><span id="site-venue-name">Danza Del Sol Winery by Wedgewood Weddings</span><br>
+            <span id="site-venue-address">39050 De Portola Road, Temecula, CA 92592</span></p>
     </div>
     <div id="map-canvas" class="map-placeholder"></div>
     <div id="map-content-wrapper" class="container pointer-events-none">
@@ -272,12 +273,12 @@
                 <div id="map-content" class="pointer-events-auto">
                     <div class="row">
                         <div class="col-md-6">
-                            <h5>Danza Del Sol Winery</h5>
-                            <p>39050 De Portola Road<br>Temecula, CA 92592</p>
+                            <h5 id="site-map-venue-name">Danza Del Sol Winery</h5>
+                            <p id="site-map-venue-address">39050 De Portola Road<br>Temecula, CA 92592</p>
                         </div>
                         <div class="col-md-6">
                             <h5>Travel notes</h5>
-                            <p>Parking, rideshare, shuttle, and accessibility notes will be added here once finalized.</p>
+                            <p id="site-travel-notes">Parking, rideshare, shuttle, and accessibility notes will be added here once finalized.</p>
                         </div>
                     </div>
                     <div class="row text-center">
@@ -287,7 +288,7 @@
                                     class="fa fa-check"></i>&nbsp;&nbsp;RSVP</a>
                         </div>
                         <div class="col-md-6" style="padding: 5px;">
-                            <a class="btn btn-accent btn-small"
+                            <a class="btn btn-accent btn-small" id="site-directions-link"
                                href="https://www.google.com/maps/search/?api=1&query=Danza%20Del%20Sol%20Winery%2039050%20De%20Portola%20Road%20Temecula%20CA%2092592"
                                target="_blank"
                                rel="noopener"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Directions</a>

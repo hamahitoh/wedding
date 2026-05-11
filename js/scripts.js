@@ -232,6 +232,80 @@ $(document).ready(function () {
         });
     }
 
+    function addressHtml(value) {
+        return rsvpEscape(value).replace(/,\s*/g, '<br>');
+    }
+
+    function paragraphHtml(value) {
+        return rsvpEscape(value).replace(/\n/g, '<br>');
+    }
+
+    function renderContentCards(rows) {
+        return (rows || []).map(function (item) {
+            var name = item.name || '';
+            var description = item.description || '';
+            var url = item.url || '';
+            var title = url
+                ? '<h5><a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(name) + '</a></h5>'
+                : '<h5>' + rsvpEscape(name) + '</h5>';
+            return '<div class="col-md-4">' + title + '<p>' + paragraphHtml(description) + '</p></div>';
+        }).join('');
+    }
+
+    function renderScheduleItems(rows, column, includeHeader, headerText) {
+        var items = (rows || []).filter(function (item) {
+            return (item.column || 'left') === column;
+        });
+        var html = includeHeader ? '<div><p><strong>' + rsvpEscape(headerText) + '</strong></p></div>' : '';
+        html += items.map(function (item, index) {
+            var waypoint = column === 'left' ? (index % 2 === 0 ? 'wp3' : 'wp5') : (index % 2 === 0 ? 'wp4' : 'wp6');
+            return '<div class="' + waypoint + '">' +
+                '<h5>' + rsvpEscape(item.title || '') + ' <span class="time">' + rsvpEscape(item.time || '') + '</span></h5>' +
+                '<p>' + paragraphHtml(item.description || '') + '</p>' +
+                '</div>';
+        }).join('');
+        return html;
+    }
+
+    function hydrateWebsiteContent(content) {
+        var event = (content && content.event_details) || {};
+        var travel = (content && content.travel) || {};
+        var date = event.date || 'Saturday, October 17, 2026';
+        var locationSummary = event.location_summary || 'Temecula, California';
+        var venueName = event.venue_name || 'Danza Del Sol Winery by Wedgewood Weddings';
+        var venueAddress = event.venue_address || '39050 De Portola Road, Temecula, CA 92592';
+        var summary = date + ' | ' + locationSummary;
+        $('#site-event-summary').text(summary);
+        $('#site-invitation-summary').text('Join us on ' + date + ' at ' + venueName + ' in ' + locationSummary + '.');
+        $('#site-schedule-left').html(renderScheduleItems(event.schedule || [], 'left', true, date));
+        $('#site-schedule-right').html(renderScheduleItems(event.schedule || [], 'right', true, 'Reception'));
+        $('#site-dress-title').html(rsvpEscape(event.dress_code_title || 'Wedding') + ' <span class="time">' + rsvpEscape(event.dress_code_time || '') + '</span>');
+        $('#site-dress-body').html(paragraphHtml(event.dress_code_body || 'Add dress code here. Include formality, shoe advice, outdoor/indoor notes, and expected weather.'));
+        $('#site-hotels-intro').text(travel.hotels_intro || '');
+        $('#site-hotels-grid').html(renderContentCards(travel.hotels || []));
+        $('#site-things-intro').text(travel.things_intro || '').toggle(!!travel.things_intro);
+        $('#site-things-grid').html(renderContentCards(travel.things_to_do || []));
+        $('#site-venue-name').text(venueName);
+        $('#site-venue-address').text(venueAddress);
+        $('#site-map-venue-name').text(venueName);
+        $('#site-map-venue-address').html(addressHtml(venueAddress));
+        $('#site-travel-notes').html(paragraphHtml(event.travel_notes || ''));
+        $('#site-directions-link').attr('href', 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venueName + ' ' + venueAddress));
+    }
+
+    function loadWebsiteContent() {
+        if (!rsvpBackend.apiBaseUrl) {
+            return;
+        }
+        $.ajax({
+            url: rsvpBackend.apiBaseUrl + '/api/wedding/public/content',
+            method: 'GET',
+            cache: false
+        }).done(function (data) {
+            hydrateWebsiteContent(data.content || {});
+        });
+    }
+
     function resetPersonalizedRsvp() {
         rsvpState.rsvpToken = '';
         rsvpState.household = null;
@@ -349,6 +423,8 @@ $(document).ready(function () {
     } else {
         $('#rsvp-lookup-panel').hide();
     }
+
+    loadWebsiteContent();
 
     $('#rsvp-form-modal').on('show.bs.modal', function () {
         if (rsvpState.mode === 'api') {
