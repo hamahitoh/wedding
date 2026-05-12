@@ -125,26 +125,24 @@
     color: #e8ca6f;
 }
 
-#invitation h3 {
+section#invitation .invitation-title {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 18px;
-    color: #433b33;
-    font-family: "Cormorant Garamond", Merriweather, Georgia, serif;
-    font-size: 34px;
+    color: #433b33 !important;
+    font-family: "Cormorant Garamond", Merriweather, Georgia, serif !important;
+    font-size: 38px;
     font-style: italic;
     font-weight: 600;
-    letter-spacing: 0;
+    letter-spacing: 0 !important;
     line-height: 1.2;
     max-width: 760px;
     margin: 0 auto 14px;
-    text-transform: none;
+    text-transform: none !important;
 }
 
-#invitation h3::before,
-#invitation h3::after {
-    content: "";
+section#invitation .invitation-title .title-rule {
     display: block;
     flex: 0 1 92px;
     height: 2px;
@@ -152,7 +150,7 @@
     box-shadow: 0 1px 8px rgba(184, 137, 47, 0.22);
 }
 
-#invitation h3::after {
+section#invitation .invitation-title .title-rule:last-child {
     background: linear-gradient(90deg, #fff0aa, #c99b3d, rgba(232, 202, 111, 0));
 }
 
@@ -165,21 +163,21 @@
     line-height: 1.5;
 }
 
-#intro .header {
-    color: #b8892f;
-    font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif;
-    font-size: 56px;
+section#intro .welcome-title {
+    color: #b8892f !important;
+    font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif !important;
+    font-size: 62px;
     font-weight: 400;
-    letter-spacing: 0;
+    letter-spacing: 0 !important;
     line-height: 1;
     padding-bottom: 18px;
     text-shadow:
         0 1px 0 rgba(255, 246, 194, 0.72),
         0 7px 18px rgba(184, 137, 47, 0.16);
-    text-transform: none;
+    text-transform: none !important;
 }
 
-#intro .header::after {
+section#intro .welcome-title::after {
     content: "";
     display: block;
     width: 112px;
@@ -450,13 +448,12 @@
         font-size: 23px;
     }
 
-    #invitation h3 {
+    section#invitation .invitation-title {
         font-size: 30px;
         gap: 10px;
     }
 
-    #invitation h3::before,
-    #invitation h3::after {
+    section#invitation .invitation-title .title-rule {
         flex-basis: 34px;
     }
 
@@ -464,7 +461,7 @@
         font-size: 18px;
     }
 
-    #intro .header {
+    section#intro .welcome-title {
         font-size: 48px;
     }
 
