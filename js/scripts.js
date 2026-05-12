@@ -274,8 +274,7 @@ $(document).ready(function () {
         var locationSummary = event.location_summary || 'Temecula, California';
         var venueName = event.venue_name || 'Danza Del Sol Winery by Wedgewood Weddings';
         var venueAddress = event.venue_address || '39050 De Portola Road, Temecula, CA 92592';
-        var summary = date + ' | ' + locationSummary;
-        $('#site-event-summary').text(summary);
+        $('#site-event-summary').html('<span>' + rsvpEscape(date) + '</span><span>' + rsvpEscape(locationSummary) + '</span>');
         $('#site-invitation-summary').text('Join us on ' + date + ' at ' + venueName + ' in ' + locationSummary + '.');
         $('#site-schedule-left').html(renderScheduleItems(event.schedule || [], 'left', true, date));
         $('#site-schedule-right').html(renderScheduleItems(event.schedule || [], 'right', true, 'Reception'));

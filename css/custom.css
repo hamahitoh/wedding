@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Great+Vibes&display=swap");
+
 .site-logo-text {
     display: inline-block;
     font-family: Merriweather, Georgia, serif;
@@ -36,19 +38,52 @@
 }
 
 .hero .hero-content h1 {
-    color: #fff;
-    font-family: Merriweather, Georgia, serif;
-    font-size: clamp(46px, 6vw, 78px);
-    font-weight: 300;
-    letter-spacing: 1px;
-    margin-bottom: 26px;
-    text-shadow: 0 3px 30px rgba(0, 0, 0, 0.35);
+    color: #f4d786;
+    background: linear-gradient(135deg, #fff7ca 0%, #f5d77d 27%, #b8892f 54%, #fff0a8 76%, #d5a846 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(76px, 8vw, 116px);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 0.82;
+    margin-bottom: 28px;
+    text-shadow:
+        0 1px 0 rgba(255, 250, 210, 0.95),
+        0 2px 1px rgba(89, 59, 18, 0.5),
+        0 7px 18px rgba(0, 0, 0, 0.52),
+        0 0 24px rgba(224, 177, 66, 0.28);
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+    .hero .hero-content h1 {
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+.hero .hero-content h1 span {
+    display: block;
 }
 
 .hero .hero-content p.intro {
+    color: #edcf78;
+    font-family: "Cormorant Garamond", Merriweather, Georgia, serif;
+    font-size: clamp(25px, 2.7vw, 34px);
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.12;
     max-width: 500px;
-    margin-bottom: 52px;
-    text-shadow: 0 3px 22px rgba(0, 0, 0, 0.35);
+    margin-bottom: 46px;
+    text-shadow:
+        0 1px 0 rgba(255, 246, 194, 0.82),
+        0 2px 1px rgba(90, 62, 20, 0.48),
+        0 7px 16px rgba(0, 0, 0, 0.48),
+        0 0 20px rgba(224, 177, 66, 0.22);
+}
+
+.hero .hero-content p.intro span {
+    display: block;
 }
 
 .hero .hero-primary-rsvp {
@@ -299,14 +334,14 @@
     }
 
     .hero .hero-content h1 {
-        font-size: 46px;
-        margin-bottom: 18px;
+        font-size: 62px;
+        margin-bottom: 14px;
     }
 
     .hero .hero-content p.intro {
         max-width: none;
         margin-bottom: 24px;
-        font-size: 17px;
+        font-size: 23px;
     }
 
     .hero > .container {
