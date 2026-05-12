@@ -10,7 +10,7 @@
 .hero {
     background:
         linear-gradient(90deg, rgba(24, 27, 25, 0.76) 0%, rgba(24, 27, 25, 0.54) 34%, rgba(24, 27, 25, 0.18) 72%),
-        url("../photos/hero-desktop.jpg") center center / cover;
+        url("../photos/hero-desktop.jpg") right center / cover;
 }
 
 .hero > .container {
