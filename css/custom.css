@@ -2,11 +2,45 @@
 
 .site-logo-text {
     display: inline-block;
-    font-family: Merriweather, Georgia, serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    color: #fff5d6;
+    font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif;
+    font-size: 34px;
+    font-weight: 400;
+    height: 30px;
+    letter-spacing: 0;
+    line-height: 0.82;
+    position: relative;
+    text-shadow:
+        0 1px 0 rgba(255, 248, 213, 0.7),
+        0 4px 12px rgba(0, 0, 0, 0.36),
+        0 0 16px rgba(232, 202, 111, 0.3);
     text-transform: none;
+    transform: translateY(1px);
+    white-space: nowrap;
+}
+
+.site-logo-text:hover,
+.site-logo-text:focus {
+    color: #f6d982;
+}
+
+.site-logo-initial,
+.site-logo-amp {
+    display: inline-block;
+}
+
+.site-logo-amp {
+    color: #e8ca6f;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 0.56em;
+    font-style: italic;
+    font-weight: 600;
+    margin: 0 -1px 0 -2px;
+    transform: translateY(-0.18em) rotate(-7deg);
+}
+
+.site-logo-h {
+    margin-left: -2px;
 }
 
 .hero {
