@@ -240,15 +240,30 @@ $(document).ready(function () {
         return rsvpEscape(value).replace(/\n/g, '<br>');
     }
 
+    function safeImageUrl(value) {
+        var url = $.trim(value || '');
+        if (!url || url.indexOf('//') === 0) {
+            return '';
+        }
+        if (url.indexOf(':') !== -1 && !/^https?:\/\//i.test(url)) {
+            return '';
+        }
+        return url;
+    }
+
     function renderContentCards(rows) {
         return (rows || []).map(function (item) {
             var name = item.name || '';
             var description = item.description || '';
             var url = item.url || '';
+            var imageUrl = safeImageUrl(item.image_url || '');
+            var image = imageUrl
+                ? '<img class="content-card-thumb" src="' + rsvpEscape(imageUrl) + '" alt="' + rsvpEscape(name) + ' thumbnail" loading="lazy">'
+                : '';
             var title = url
                 ? '<h5><a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(name) + '</a></h5>'
                 : '<h5>' + rsvpEscape(name) + '</h5>';
-            return '<div class="col-md-4">' + title + '<p>' + paragraphHtml(description) + '</p></div>';
+            return '<div class="col-md-4">' + image + title + '<p>' + paragraphHtml(description) + '</p></div>';
         }).join('');
     }
 

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+  <title id="title">Old Town Temecula storefronts</title>
+  <desc id="desc">Stylized western storefronts and warm evening sky.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8dfb1"/>
+      <stop offset="1" stop-color="#fff7e6"/>
+    </linearGradient>
+    <linearGradient id="street" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#c99b64"/>
+      <stop offset="1" stop-color="#8a6043"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="420" fill="url(#sky)"/>
+  <circle cx="584" cy="92" r="48" fill="#f5c66b" opacity=".9"/>
+  <path d="M0 282h720v138H0z" fill="url(#street)"/>
+  <path d="M0 293c112-18 216-26 316-24 141 3 253 31 404 10v141H0z" fill="#70533f" opacity=".22"/>
+  <g fill="#7b4d35">
+    <rect x="72" y="178" width="154" height="118"/>
+    <rect x="272" y="146" width="176" height="150"/>
+    <rect x="500" y="188" width="140" height="108"/>
+  </g>
+  <g fill="#4f3329">
+    <path d="M58 178h182l-26-42H84z"/>
+    <path d="M252 146h216l-31-50H283z"/>
+    <path d="M486 188h168l-25-40H510z"/>
+  </g>
+  <g fill="#f3d7a2">
+    <rect x="97" y="212" width="36" height="52" rx="2"/>
+    <rect x="164" y="212" width="36" height="52" rx="2"/>
+    <rect x="306" y="190" width="43" height="70" rx="2"/>
+    <rect x="372" y="190" width="43" height="70" rx="2"/>
+    <rect x="533" y="224" width="34" height="46" rx="2"/>
+    <rect x="588" y="224" width="34" height="46" rx="2"/>
+  </g>
+  <g fill="#e8ca6f">
+    <rect x="88" y="187" width="122" height="14" rx="7"/>
+    <rect x="294" y="160" width="132" height="16" rx="8"/>
+    <rect x="518" y="200" width="104" height="14" rx="7"/>
+  </g>
+  <g stroke="#fff4d3" stroke-width="5" stroke-linecap="round" opacity=".65">
+    <path d="M97 334h152"/>
+    <path d="M302 334h188"/>
+    <path d="M536 334h110"/>
+  </g>
+</svg>

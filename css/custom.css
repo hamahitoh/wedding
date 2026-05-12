@@ -210,6 +210,17 @@ section#intro .welcome-title::after {
     margin-bottom: 12px;
 }
 
+.content-card-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    margin: 0 0 18px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 16px 36px rgba(31, 37, 50, 0.12);
+}
+
 .map-placeholder {
     background:
         linear-gradient(rgba(55, 36, 40, 0.7), rgba(55, 36, 40, 0.7)),

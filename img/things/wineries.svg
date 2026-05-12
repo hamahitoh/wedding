@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+  <title id="title">Temecula wine country</title>
+  <desc id="desc">Vineyard rows, rolling hills, and wine glasses.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f7d99f"/>
+      <stop offset="1" stop-color="#fff5dd"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#6f8b54"/>
+      <stop offset="1" stop-color="#a0b86c"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="420" fill="url(#sky)"/>
+  <circle cx="103" cy="92" r="45" fill="#f4c36d"/>
+  <path d="M0 215c88-45 167-63 238-53 87 13 139 67 231 62 82-4 147-53 251-45v241H0z" fill="url(#hill)"/>
+  <path d="M0 255c100-26 206-33 318-19 132 17 256 8 402-28v212H0z" fill="#526f43" opacity=".62"/>
+  <g stroke="#2f4d33" stroke-width="5" opacity=".55">
+    <path d="M48 358c92-70 170-111 234-124"/>
+    <path d="M132 390c87-81 163-130 229-148"/>
+    <path d="M226 420c66-83 132-139 198-168"/>
+    <path d="M470 420c-42-81-89-137-142-168"/>
+    <path d="M570 407c-65-76-131-127-198-153"/>
+  </g>
+  <g fill="#27462f">
+    <circle cx="194" cy="310" r="12"/>
+    <circle cx="247" cy="290" r="12"/>
+    <circle cx="300" cy="272" r="12"/>
+    <circle cx="395" cy="278" r="12"/>
+    <circle cx="452" cy="299" r="12"/>
+    <circle cx="509" cy="325" r="12"/>
+  </g>
+  <g fill="none" stroke="#fff2cf" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity=".88">
+    <path d="M548 102c0 49-28 74-62 74s-62-25-62-74z"/>
+    <path d="M486 176v62"/>
+    <path d="M452 238h68"/>
+    <path d="M647 119c0 43-24 64-54 64s-54-21-54-64z"/>
+    <path d="M593 183v55"/>
+    <path d="M563 238h60"/>
+  </g>
+  <path d="M434 123h104c-8 24-28 36-52 36s-44-12-52-36z" fill="#9b3944" opacity=".82"/>
+  <path d="M548 138h90c-7 19-24 29-45 29s-38-10-45-29z" fill="#9b3944" opacity=".82"/>
+</svg>
