@@ -18,7 +18,8 @@ $(document).ready(function () {
     var rsvpState = {
         mode: rsvpBackend.apiBaseUrl ? 'api' : 'google',
         rsvpToken: '',
-        household: null
+        household: null,
+        publicContent: null
     };
 
     /***************** Waypoints ******************/
@@ -256,6 +257,14 @@ $(document).ready(function () {
         return url;
     }
 
+    function safeLinkUrl(value) {
+        var url = $.trim(value || '');
+        if (!/^https?:\/\//i.test(url)) {
+            return '';
+        }
+        return url;
+    }
+
     function renderContentCards(rows) {
         return (rows || []).map(function (item) {
             var name = item.name || '';
@@ -288,6 +297,7 @@ $(document).ready(function () {
     }
 
     function hydrateWebsiteContent(content) {
+        rsvpState.publicContent = content || {};
         var event = (content && content.event_details) || {};
         var travel = (content && content.travel) || {};
         var date = event.date || 'Saturday, October 17, 2026';
@@ -406,6 +416,27 @@ $(document).ready(function () {
         $('#rsvp-party-size').val(String(partySize));
     }
 
+    function rehearsalDinnerDetailMarkup() {
+        var content = rsvpState.publicContent || {};
+        var event = content.event_details || {};
+        var rehearsal = event.rehearsal_dinner || {};
+        var dateTime = [rehearsal.date, rehearsal.time].filter(Boolean).join(' at ');
+        var venue = rehearsal.venue_name || '';
+        var address = rehearsal.venue_address || '';
+        var url = safeLinkUrl(rehearsal.url || '');
+        if (!dateTime && !venue && !address) {
+            return '';
+        }
+        var venueMarkup = url
+            ? '<a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(venue || url) + '</a>'
+            : rsvpEscape(venue);
+        return '<div class="rsvp-event-detail">' +
+            (dateTime ? '<div>' + rsvpEscape(dateTime) + '</div>' : '') +
+            (venueMarkup ? '<div>' + venueMarkup + '</div>' : '') +
+            (address ? '<div>' + rsvpEscape(address) + '</div>' : '') +
+            '</div>';
+    }
+
     function eventOptionsMarkup(showRehearsal, visible, values) {
         values = values || {};
         return '<div class="rsvp-event-options' + (visible ? ' is-visible' : '') + '">' +
@@ -414,6 +445,7 @@ $(document).ready(function () {
             (showRehearsal ? '<label><input class="rsvp-event-rehearsal" type="checkbox"' + (values.rehearsal_dinner ? ' checked' : '') + '>Rehearsal Dinner</label>' : '') +
             '<label><input class="rsvp-event-brunch" type="checkbox"' + (values.sunday_brunch ? ' checked' : '') + '>Sunday Brunch</label>' +
             '</div>' +
+            (showRehearsal ? rehearsalDinnerDetailMarkup() : '') +
             '</div>';
     }
 
