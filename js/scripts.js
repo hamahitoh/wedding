@@ -320,6 +320,8 @@ $(document).ready(function () {
         $('#site-map-venue-address').html(addressHtml(venueAddress));
         $('#site-travel-notes').html(paragraphHtml(event.travel_notes || ''));
         $('#site-directions-link').attr('href', 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venueName + ' ' + venueAddress));
+        renderRsvpCeremonySummary();
+        renderTopRehearsalSummary();
     }
 
     function loadWebsiteContent() {
@@ -341,6 +343,7 @@ $(document).ready(function () {
         $('#rsvp-token').val('');
         $('#rsvp-household-panel').hide().empty();
         $('#rsvp-existing-response').hide().empty();
+        $('#rsvp-rehearsal-summary').hide().empty();
         $('#rsvp-wedding-party-note').hide().empty();
         $('#rsvp-party-note').text('');
         $('#rsvp-party-size-wrap').show();
@@ -416,6 +419,32 @@ $(document).ready(function () {
         $('#rsvp-party-size').val(String(partySize));
     }
 
+    function ceremonyDetailData() {
+        var content = rsvpState.publicContent || {};
+        var event = content.event_details || {};
+        var ceremony = ((event.schedule || []).filter(function (item) {
+            return /ceremony/i.test(item.title || '');
+        })[0]) || {};
+        return {
+            date: event.date || 'Saturday, October 17, 2026',
+            time: ceremony.time || '4:00 PM',
+            venue: event.venue_name || 'Danza Del Sol Winery',
+            address: event.venue_address || '39050 De Portola Road, Temecula, CA 92592'
+        };
+    }
+
+    function ceremonyDetailMarkup() {
+        var ceremony = ceremonyDetailData();
+        return '<strong>Wedding Ceremony</strong>' +
+            '<div>' + rsvpEscape(ceremony.date) + ' at ' + rsvpEscape(ceremony.time) + '</div>' +
+            '<div>' + rsvpEscape(ceremony.venue) + '</div>' +
+            '<div>' + rsvpEscape(ceremony.address) + '</div>';
+    }
+
+    function renderRsvpCeremonySummary() {
+        $('#rsvp-ceremony-summary').html(ceremonyDetailMarkup()).show();
+    }
+
     function rehearsalDinnerDetailMarkup() {
         var content = rsvpState.publicContent || {};
         var event = content.event_details || {};
@@ -430,11 +459,20 @@ $(document).ready(function () {
         var venueMarkup = url
             ? '<a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(venue || url) + '</a>'
             : rsvpEscape(venue);
-        return '<div class="rsvp-event-detail">' +
+        return '<strong>Rehearsal Dinner</strong>' +
             (dateTime ? '<div>' + rsvpEscape(dateTime) + '</div>' : '') +
             (venueMarkup ? '<div>' + venueMarkup + '</div>' : '') +
-            (address ? '<div>' + rsvpEscape(address) + '</div>' : '') +
-            '</div>';
+            (address ? '<div>' + rsvpEscape(address) + '</div>' : '');
+    }
+
+    function renderTopRehearsalSummary() {
+        var household = rsvpState.household || {};
+        var markup = rehearsalDinnerDetailMarkup();
+        if (household.invited_rehearsal_dinner && markup) {
+            $('#rsvp-rehearsal-summary').html(markup).show();
+        } else {
+            $('#rsvp-rehearsal-summary').hide().empty();
+        }
     }
 
     function eventOptionsMarkup(showRehearsal, visible, values) {
@@ -444,9 +482,7 @@ $(document).ready(function () {
             '<div class="rsvp-guest-options">' +
             (showRehearsal ? '<label><input class="rsvp-event-rehearsal" type="checkbox"' + (values.rehearsal_dinner ? ' checked' : '') + '>Rehearsal Dinner</label>' : '') +
             '<label><input class="rsvp-event-brunch" type="checkbox"' + (values.sunday_brunch ? ' checked' : '') + '>Sunday Brunch</label>' +
-            '</div>' +
-            (showRehearsal ? rehearsalDinnerDetailMarkup() : '') +
-            '</div>';
+            '</div></div>';
     }
 
     function rowEventSelections(row, attending) {
@@ -672,6 +708,8 @@ $(document).ready(function () {
         $('#rsvp-household-panel')
             .html('<div class="rsvp-invitation-name">' + rsvpEscape(invitationDisplayName(household)) + '</div>')
             .show();
+        renderRsvpCeremonySummary();
+        renderTopRehearsalSummary();
         renderInvitedGuestRows(householdMemberNames(household));
         renderAdditionalCountOptions(0, 0);
         renderAdditionalGuestRows(0, false);
@@ -758,6 +796,7 @@ $(document).ready(function () {
         $('#rsvp-lookup-panel').hide();
     }
 
+    renderRsvpCeremonySummary();
     loadWebsiteContent();
 
     $('#rsvp-form-modal').on('show.bs.modal', function () {

@@ -470,6 +470,18 @@ section#intro .welcome-title::after {
     font-weight: 700;
 }
 
+.rsvp-ceremony-summary {
+    max-width: 620px;
+    margin: 12px auto 0;
+    text-align: center;
+}
+
+.rsvp-rehearsal-summary {
+    display: none;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
 .rsvp-additional-empty {
     margin-top: -6px;
 }
