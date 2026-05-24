@@ -539,10 +539,21 @@ $(document).ready(function () {
             return;
         }
 
+        var maxAdditionalGuests = childGuestCount(household);
+        if (maxAdditionalGuests <= 0) {
+            $('#rsvp-party-size-wrap').hide();
+            $('#rsvp-bringing-guest-wrap').hide();
+            $('#rsvp-bringing-guest-wrap input').prop('checked', false);
+            renderAdditionalCountOptions(0, 0);
+            setPartySizeValue(attendingCount);
+            renderAdditionalGuestRows(0, false, 'children');
+            syncInvitedEventOptions();
+            return;
+        }
+
         $('#rsvp-party-size-wrap').show();
         $('#rsvp-bringing-guest-wrap').hide();
         $('#rsvp-bringing-guest-wrap input').prop('checked', false);
-        var maxAdditionalGuests = childGuestCount(household);
         var currentAdditionalCount = parseInt($('#rsvp-additional-count').val(), 10);
         renderAdditionalCountOptions(maxAdditionalGuests, currentAdditionalCount);
         var additionalGuestCount = parseInt($('#rsvp-additional-count').val(), 10) || 0;
