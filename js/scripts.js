@@ -412,7 +412,7 @@ $(document).ready(function () {
             responses.push({
                 name: row.data('guestName') || '',
                 attendance: attendance,
-                age_three_or_under: row.find('input.rsvp-age-three').is(':checked')
+                age_three_or_under: false
             });
         });
         return responses;
@@ -432,18 +432,18 @@ $(document).ready(function () {
                 '<div class="rsvp-guest-options">' +
                 '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="Yes, I will attend" required>Yes, I will attend</label>' +
                 '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="No, I cannot attend" required>No, I cannot attend</label>' +
-                '<label class="rsvp-age-check"><input class="rsvp-age-three" type="checkbox">3 Years or Younger?</label>' +
                 '</div>' +
                 '</div>';
         }).join('');
         $('#rsvp-invited-guests').html('<h4>Guests on this invitation</h4>' + rows);
     }
 
-    function renderAdditionalGuestRows(count, showEmptyMessage) {
+    function renderAdditionalGuestRows(count, showEmptyMessage, rowType) {
         var existing = [];
         if (showEmptyMessage === undefined) {
             showEmptyMessage = true;
         }
+        rowType = rowType || 'additional';
         $('#rsvp-additional-guests .rsvp-additional-row').each(function () {
             existing.push({
                 name: $(this).find('.rsvp-additional-name').val() || '',
@@ -455,14 +455,16 @@ $(document).ready(function () {
             return;
         }
         var rows = '';
+        var title = rowType === 'children' ? 'Will any children be attending?' : 'Guest information';
+        var labelPrefix = rowType === 'children' ? 'Child' : 'Guest';
         for (var i = 0; i < count; i += 1) {
             rows += '<div class="rsvp-guest-row rsvp-additional-row">' +
-                '<label for="rsvp-additional-name-' + i + '">Additional guest ' + (i + 1) + ' full name</label>' +
+                '<label for="rsvp-additional-name-' + i + '">' + labelPrefix + ' ' + (i + 1) + ' full name</label>' +
                 '<input id="rsvp-additional-name-' + i + '" class="rsvp-additional-name" type="text" autocomplete="name" value="' + rsvpEscape(existing[i] ? existing[i].name : '') + '">' +
                 '<label class="rsvp-age-check"><input class="rsvp-additional-age" type="checkbox"' + (existing[i] && existing[i].age_three_or_under ? ' checked' : '') + '>3 Years or Younger?</label>' +
                 '</div>';
         }
-        $('#rsvp-additional-guests').html('<h4>Additional guests</h4>' + rows);
+        $('#rsvp-additional-guests').html('<h4>' + title + '</h4>' + rows);
     }
 
     function syncGuestRehearsalControls(additionalGuestCount) {
@@ -492,7 +494,7 @@ $(document).ready(function () {
             var bringingGuest = $('#rsvp-bringing-guest-wrap input[name="bringingGuest"]:checked').val();
             var additionalGuestCount = singlePlusOne && attendingCount > 0 && bringingGuest === 'yes' ? 1 : 0;
             setPartySizeValue(attendingCount + additionalGuestCount);
-            renderAdditionalGuestRows(additionalGuestCount, false);
+            renderAdditionalGuestRows(additionalGuestCount, false, 'guest');
             syncGuestRehearsalControls(additionalGuestCount);
             return;
         }
@@ -506,7 +508,7 @@ $(document).ready(function () {
         renderPartyOptions(maxSelectable, minPartySize, currentValue);
         var selectedPartySize = parseInt($('#rsvp-party-size').val(), 10) || 0;
         var additionalGuestCount = Math.max(selectedPartySize - attendingCount, 0);
-        renderAdditionalGuestRows(additionalGuestCount);
+        renderAdditionalGuestRows(additionalGuestCount, true, 'children');
         syncGuestRehearsalControls(additionalGuestCount);
     }
 
