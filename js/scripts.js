@@ -223,6 +223,11 @@ $(document).ready(function () {
         });
     }
 
+    function rsvpEmailIsValid(value) {
+        var email = $.trim(value || '');
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
     function rsvpApi(path, payload) {
         return $.ajax({
             url: rsvpBackend.apiBaseUrl + path,
@@ -328,19 +333,249 @@ $(document).ready(function () {
         $('#rsvp-existing-response').hide().empty();
         $('#rsvp-wedding-party-note').hide().empty();
         $('#rsvp-party-note').text('');
-        $('#rsvp-plus-one-wrap').hide();
+        $('#rsvp-party-size-wrap').show();
+        $('#rsvp-bringing-guest-wrap').hide();
+        $('#rsvp-bringing-guest-wrap input').prop('checked', false);
+        $('#rsvp-invited-guests').empty();
+        $('#rsvp-additional-guests').empty();
         $('#rsvp-plus-one').val('');
         $('#rsvp-rehearsal-wrap').hide();
         $('#rsvp-rehearsal-wrap input').prop('checked', false);
+        $('#rsvp-guest-rehearsal-wrap').hide();
+        $('#rsvp-guest-rehearsal-wrap input').prop('checked', false);
         $('#rsvp-form')[0].reset();
     }
 
-    function renderPartyOptions(maxPartySize) {
-        var options = '<option value="">Select one</option>';
-        for (var i = 1; i <= maxPartySize; i += 1) {
+    function renderPartyOptions(maxPartySize, minPartySize, currentValue) {
+        var options = '';
+        for (var i = minPartySize; i <= maxPartySize; i += 1) {
             options += '<option value="' + i + '">' + i + '</option>';
         }
         $('#rsvp-party-size').html(options);
+        if (currentValue >= minPartySize && currentValue <= maxPartySize) {
+            $('#rsvp-party-size').val(String(currentValue));
+        } else {
+            $('#rsvp-party-size').val(String(minPartySize));
+        }
+    }
+
+    function householdMemberNames(household) {
+        var members = (household && household.members) || [];
+        if (members.length) {
+            return members;
+        }
+        return [household && household.display_name ? household.display_name : 'Guest'];
+    }
+
+    function householdMaxPartySize(household) {
+        return Math.max(parseInt(household && household.max_party_size, 10) || 1, 1);
+    }
+
+    function effectiveMaxPartySize(household) {
+        var memberCount = householdMemberNames(household).length || 1;
+        var maxPartySize = Math.max(householdMaxPartySize(household), memberCount);
+        if (memberCount <= 1 && household && household.plus_one_allowed) {
+            return Math.max(maxPartySize, memberCount + 1);
+        }
+        return maxPartySize;
+    }
+
+    function usesSinglePlusOnePrompt(household) {
+        return householdMemberNames(household).length <= 1 &&
+            !!(household && household.plus_one_allowed) &&
+            effectiveMaxPartySize(household) <= 2;
+    }
+
+    function invitationDisplayName(household) {
+        var displayName = $.trim((household && household.display_name) || '');
+        if (!displayName) {
+            displayName = householdMemberNames(household).join(' and ');
+        }
+        if (usesSinglePlusOnePrompt(household) && !/\bguest\b/i.test(displayName)) {
+            displayName += ' and Guest';
+        }
+        return displayName || 'Your Invitation';
+    }
+
+    function setPartySizeValue(value) {
+        var partySize = Math.max(parseInt(value, 10) || 0, 0);
+        $('#rsvp-party-size')
+            .html('<option value="' + partySize + '">' + partySize + '</option>')
+            .val(String(partySize));
+    }
+
+    function collectInvitedGuestResponses() {
+        var responses = [];
+        $('#rsvp-invited-guests .rsvp-guest-row').each(function () {
+            var row = $(this);
+            var attendance = row.find('input.rsvp-invited-attendance:checked').val() || '';
+            responses.push({
+                name: row.data('guestName') || '',
+                attendance: attendance,
+                age_three_or_under: row.find('input.rsvp-age-three').is(':checked')
+            });
+        });
+        return responses;
+    }
+
+    function attendingInvitedCount() {
+        return collectInvitedGuestResponses().filter(function (item) {
+            return item.attendance === 'Yes, I will attend';
+        }).length;
+    }
+
+    function renderInvitedGuestRows(members) {
+        var rows = (members || []).map(function (name, index) {
+            var radioName = 'invitedAttendance' + index;
+            return '<div class="rsvp-guest-row" data-guest-name="' + rsvpEscape(name) + '">' +
+                '<div class="rsvp-guest-row-name">' + rsvpEscape(name) + '</div>' +
+                '<div class="rsvp-guest-options">' +
+                '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="Yes, I will attend" required>Yes, I will attend</label>' +
+                '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="No, I cannot attend" required>No, I cannot attend</label>' +
+                '<label class="rsvp-age-check"><input class="rsvp-age-three" type="checkbox">3 Years or Younger?</label>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+        $('#rsvp-invited-guests').html('<h4>Guests on this invitation</h4>' + rows);
+    }
+
+    function renderAdditionalGuestRows(count, showEmptyMessage) {
+        var existing = [];
+        if (showEmptyMessage === undefined) {
+            showEmptyMessage = true;
+        }
+        $('#rsvp-additional-guests .rsvp-additional-row').each(function () {
+            existing.push({
+                name: $(this).find('.rsvp-additional-name').val() || '',
+                age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked')
+            });
+        });
+        if (count <= 0) {
+            $('#rsvp-additional-guests').html(showEmptyMessage ? '<div class="rsvp-help-text rsvp-additional-empty">No additional guest names needed for this party size.</div>' : '');
+            return;
+        }
+        var rows = '';
+        for (var i = 0; i < count; i += 1) {
+            rows += '<div class="rsvp-guest-row rsvp-additional-row">' +
+                '<label for="rsvp-additional-name-' + i + '">Additional guest ' + (i + 1) + ' full name</label>' +
+                '<input id="rsvp-additional-name-' + i + '" class="rsvp-additional-name" type="text" autocomplete="name" value="' + rsvpEscape(existing[i] ? existing[i].name : '') + '">' +
+                '<label class="rsvp-age-check"><input class="rsvp-additional-age" type="checkbox"' + (existing[i] && existing[i].age_three_or_under ? ' checked' : '') + '>3 Years or Younger?</label>' +
+                '</div>';
+        }
+        $('#rsvp-additional-guests').html('<h4>Additional guests</h4>' + rows);
+    }
+
+    function syncGuestRehearsalControls(additionalGuestCount) {
+        var household = rsvpState.household || {};
+        var shouldShow = !!household.invited_rehearsal_dinner && additionalGuestCount > 0;
+        $('#rsvp-guest-rehearsal-wrap').toggle(shouldShow);
+        if (!shouldShow) {
+            $('#rsvp-guest-rehearsal-wrap input').prop('checked', false);
+        }
+    }
+
+    function syncPartySizeControls() {
+        var household = rsvpState.household || {};
+        var maxPartySize = effectiveMaxPartySize(household);
+        var singlePlusOne = usesSinglePlusOnePrompt(household);
+        var attendingCount = attendingInvitedCount();
+
+        if (maxPartySize <= 1 || singlePlusOne) {
+            $('#rsvp-party-size-wrap').hide();
+            if (singlePlusOne && attendingCount > 0) {
+                $('#rsvp-bringing-guest-wrap').show();
+            } else {
+                $('#rsvp-bringing-guest-wrap').hide();
+                $('#rsvp-bringing-guest-wrap input').prop('checked', false);
+            }
+
+            var bringingGuest = $('#rsvp-bringing-guest-wrap input[name="bringingGuest"]:checked').val();
+            var additionalGuestCount = singlePlusOne && attendingCount > 0 && bringingGuest === 'yes' ? 1 : 0;
+            setPartySizeValue(attendingCount + additionalGuestCount);
+            renderAdditionalGuestRows(additionalGuestCount, false);
+            syncGuestRehearsalControls(additionalGuestCount);
+            return;
+        }
+
+        $('#rsvp-party-size-wrap').show();
+        $('#rsvp-bringing-guest-wrap').hide();
+        $('#rsvp-bringing-guest-wrap input').prop('checked', false);
+        var minPartySize = attendingCount > 0 ? attendingCount : 0;
+        var maxSelectable = attendingCount > 0 ? maxPartySize : 0;
+        var currentValue = parseInt($('#rsvp-party-size').val(), 10);
+        renderPartyOptions(maxSelectable, minPartySize, currentValue);
+        var selectedPartySize = parseInt($('#rsvp-party-size').val(), 10) || 0;
+        var additionalGuestCount = Math.max(selectedPartySize - attendingCount, 0);
+        renderAdditionalGuestRows(additionalGuestCount);
+        syncGuestRehearsalControls(additionalGuestCount);
+    }
+
+    function collectAdditionalGuestResponses() {
+        var responses = [];
+        $('#rsvp-additional-guests .rsvp-additional-row').each(function () {
+            responses.push({
+                name: $.trim($(this).find('.rsvp-additional-name').val() || ''),
+                age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked')
+            });
+        });
+        return responses;
+    }
+
+    function updateLegacyGuestFields(invitedResponses, additionalResponses) {
+        var attendingNames = invitedResponses.filter(function (item) {
+            return item.attendance === 'Yes, I will attend';
+        }).map(function (item) {
+            return item.name;
+        }).concat(additionalResponses.map(function (item) {
+            return item.name;
+        }).filter(Boolean));
+        var additionalNames = additionalResponses.map(function (item) {
+            return item.name;
+        }).filter(Boolean);
+        $('#rsvp-guests').val(attendingNames.join('; '));
+        $('#rsvp-plus-one').val(additionalNames.join('; '));
+        $('#rsvp-name').val((rsvpState.household && (rsvpState.household.members || [])[0]) || '');
+    }
+
+    function validateStructuredGuestResponses(invitedResponses, additionalResponses, partySize) {
+        var missingInvited = invitedResponses.some(function (item) {
+            return item.attendance !== 'Yes, I will attend' && item.attendance !== 'No, I cannot attend';
+        });
+        if (missingInvited) {
+            return 'Choose yes or no for each guest on this invitation.';
+        }
+        var attendingCount = invitedResponses.filter(function (item) {
+            return item.attendance === 'Yes, I will attend';
+        }).length;
+        if (partySize < attendingCount) {
+            return 'Party size cannot be smaller than the number of invited guests attending.';
+        }
+        if (partySize === 0 && attendingCount > 0) {
+            return 'Choose a party size for the attending guest(s).';
+        }
+        if (usesSinglePlusOnePrompt(rsvpState.household || {}) && attendingCount > 0) {
+            var bringingGuest = $('#rsvp-bringing-guest-wrap input[name="bringingGuest"]:checked').val();
+            if (bringingGuest !== 'yes' && bringingGuest !== 'no') {
+                return 'Choose whether you will be bringing a guest.';
+            }
+        }
+        var expectedAdditional = Math.max(partySize - attendingCount, 0);
+        if (additionalResponses.length !== expectedAdditional) {
+            return 'The additional guest rows do not match the selected party size.';
+        }
+        var missingAdditional = additionalResponses.some(function (item) {
+            return !item.name;
+        });
+        if (missingAdditional) {
+            return 'Enter a full name for each additional guest.';
+        }
+        if ($('#rsvp-guest-rehearsal-wrap').is(':visible')) {
+            var guestRehearsal = $('#rsvp-guest-rehearsal-wrap input[name="guestRehearsalAttendance"]:checked').val();
+            if (!guestRehearsal) {
+                return 'Choose whether your guest will attend the rehearsal dinner.';
+            }
+        }
+        return '';
     }
 
     function renderHouseholdForm(data) {
@@ -352,15 +587,17 @@ $(document).ready(function () {
         $('#rsvp-form').show();
         $('#rsvp-name').val((household.members && household.members[0]) || household.display_name || '');
         $('#rsvp-household-panel')
-            .html('<strong>Is this you?</strong><div>' + rsvpEscape(household.display_name || 'Your invitation') + '</div><div class="rsvp-help-text">' + rsvpEscape((household.members || []).join(', ')) + '</div>')
+            .html('<div class="rsvp-invitation-name">' + rsvpEscape(invitationDisplayName(household)) + '</div>')
             .show();
-        renderPartyOptions(household.max_party_size || 1);
-        $('#rsvp-party-note').text('This invitation allows up to ' + (household.max_party_size || 1) + ' guest(s).');
-        var sponsoredSlots = Math.max((household.max_party_size || 1) - ((household.members || []).length), 0);
-        $('#rsvp-plus-one-wrap').toggle(!!household.plus_one_allowed && sponsoredSlots > 0);
-        if (household.plus_one_allowed && sponsoredSlots > 0) {
-            $('#rsvp-plus-one-wrap label').text(sponsoredSlots > 1 ? 'Additional guest name(s)' : 'Additional guest name');
-        }
+        renderInvitedGuestRows(householdMemberNames(household));
+        renderPartyOptions(0, 0, 0);
+        renderAdditionalGuestRows(0, false);
+        $('#rsvp-party-size-wrap').show();
+        $('#rsvp-bringing-guest-wrap').hide();
+        $('#rsvp-bringing-guest-wrap input').prop('checked', false);
+        $('#rsvp-guest-rehearsal-wrap').hide();
+        $('#rsvp-guest-rehearsal-wrap input').prop('checked', false);
+        $('#rsvp-party-note').text('');
         $('#rsvp-rehearsal-wrap').toggle(!!household.invited_rehearsal_dinner);
         if (household.wedding_party_notes) {
             $('#rsvp-wedding-party-note')
@@ -377,15 +614,13 @@ $(document).ready(function () {
             $('#rsvp-form :input').prop('disabled', false);
             $('#rsvp-submit-button').prop('disabled', false);
         }
+        syncPartySizeControls();
     }
 
     function renderMatches(matches) {
         var markup = matches.map(function (match) {
-            var members = (match.members || []).join(', ');
             return '<div class="rsvp-match-card">' +
                 '<strong>' + rsvpEscape(match.display_name) + '</strong>' +
-                '<div>' + rsvpEscape(members) + '</div>' +
-                '<div class="rsvp-help-text">' + rsvpEscape(match.party_summary) + '</div>' +
                 '<button class="btn-fill rsvp-confirm-match" type="button" data-token="' + rsvpEscape(match.match_token) + '">Yes, this is me</button>' +
                 '</div>';
         }).join('');
@@ -486,25 +721,50 @@ $(document).ready(function () {
             });
     });
 
+    $('#rsvp-invited-guests').on('change', '.rsvp-invited-attendance', syncPartySizeControls);
+    $('#rsvp-party-size').on('change', syncPartySizeControls);
+    $('#rsvp-bringing-guest-wrap').on('change', 'input[name="bringingGuest"]', syncPartySizeControls);
+
     $('#rsvp-form').on('submit', function (e) {
         e.preventDefault();
+
+        var formData = new FormData(this);
+        var contact = $.trim(formData.get('contact') || '');
+        if (!rsvpEmailIsValid(contact)) {
+            $('#alert-wrapper').html(alert_markup('danger', '<strong>Please enter a valid email address.</strong>'));
+            $('#rsvp-contact').focus();
+            return;
+        }
+
+        var invitedResponses = collectInvitedGuestResponses();
+        var additionalResponses = collectAdditionalGuestResponses();
+        var partySize = parseInt(formData.get('partySize'), 10) || 0;
+        var guestValidation = validateStructuredGuestResponses(invitedResponses, additionalResponses, partySize);
+        if (guestValidation) {
+            $('#alert-wrapper').html(alert_markup('danger', '<strong>' + rsvpEscape(guestValidation) + '</strong>'));
+            return;
+        }
+        updateLegacyGuestFields(invitedResponses, additionalResponses);
+        formData = new FormData(this);
 
         if (rsvpState.mode !== 'api') {
             submitGoogleRsvp(this);
             return;
         }
 
-        var formData = new FormData(this);
         $('#rsvp-submit-button').prop('disabled', true).text('Submitting...');
         $('#alert-wrapper').html(alert_markup('info', '<strong>Submitting RSVP...</strong>'));
         rsvpApi('/api/wedding/public/submit', {
             rsvp_token: rsvpState.rsvpToken,
-            attendance: formData.get('attendance'),
+            attendance: partySize > 0 ? 'Yes, I will attend' : 'No, I cannot attend',
             contact: formData.get('contact'),
             party_size: formData.get('partySize'),
             guest_names: formData.get('guestNames'),
             plus_one_name: formData.get('plusOneName'),
+            invited_guest_responses: invitedResponses,
+            additional_guest_responses: additionalResponses,
             rehearsal_attendance: formData.get('rehearsalAttendance'),
+            guest_rehearsal_attendance: formData.get('guestRehearsalAttendance'),
             dietary: formData.get('dietary'),
             song: formData.get('song'),
             notes: formData.get('notes')

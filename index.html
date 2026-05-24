@@ -57,7 +57,7 @@
     <link rel="stylesheet" href="css/flexslider.css">
     <link rel="stylesheet" href="css/styles.min.css">
     <link rel="stylesheet" href="css/queries.css">
-    <link rel="stylesheet" href="css/custom.css?v=20260512-4">
+    <link rel="stylesheet" href="css/custom.css?v=20260524-2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
@@ -329,11 +329,12 @@
                                    placeholder="Enter your full name">
                             <button class="btn-fill rsvp-btn" id="rsvp-lookup-button" type="button">Search</button>
                         </div>
-                        <div class="rsvp-help-text">Start with your name. If there is more than one close match, choose your invitation below.</div>
+                        <div class="rsvp-help-text">Enter your full name. A minor typo is okay, but first name alone is not enough.</div>
                         <div id="rsvp-match-results" class="rsvp-match-results"></div>
                     </div>
                     <form id="rsvp-form" class="rsvp-form" action="" method="POST">
                         <input id="rsvp-token" name="rsvpToken" type="hidden">
+                        <input id="rsvp-name" name="fullName" type="hidden">
                         <div id="rsvp-household-panel" class="rsvp-household-panel"></div>
                         <div id="rsvp-existing-response" class="rsvp-existing-response"></div>
                         <div id="rsvp-party-note" class="rsvp-help-text"></div>
@@ -342,28 +343,14 @@
                             <div class="col-md-12" id="alert-wrapper"></div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-6">
-                                <label for="rsvp-name">Your full name</label>
-                                <input id="rsvp-name" name="fullName" type="text" required autocomplete="name">
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="rsvp-contact">Email or phone</label>
-                                <input id="rsvp-contact" name="contact" type="text" required autocomplete="email">
+                            <div class="col-sm-12">
+                                <label for="rsvp-contact">Email address</label>
+                                <input id="rsvp-contact" name="contact" type="email" required autocomplete="email" inputmode="email" placeholder="you@example.com">
                             </div>
                         </div>
-                        <fieldset class="rsvp-attendance">
-                            <legend>Will you attend?</legend>
-                            <label>
-                                <input type="radio" name="attendance" value="Yes, I will attend" required>
-                                <span>Yes, I will attend</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="attendance" value="No, I cannot attend">
-                                <span>No, I cannot attend</span>
-                            </label>
-                        </fieldset>
+                        <div id="rsvp-invited-guests" class="rsvp-guest-response-list"></div>
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-12" id="rsvp-party-size-wrap">
                                 <label for="rsvp-party-size">Guests in your party, including you</label>
                                 <select id="rsvp-party-size" name="partySize" required>
                                     <option value="">Select one</option>
@@ -371,16 +358,20 @@
                                     <option value="2">2</option>
                                 </select>
                             </div>
-                            <div class="col-sm-6">
-                                <label for="rsvp-song">Song request</label>
-                                <input id="rsvp-song" name="song" type="text">
-                            </div>
                         </div>
-                        <div id="rsvp-plus-one-wrap" class="rsvp-conditional-field">
-                            <label for="rsvp-plus-one">Additional guest name(s)</label>
-                            <input id="rsvp-plus-one" name="plusOneName" type="text" autocomplete="name"
-                                   placeholder="Names of any guest not listed on the invitation">
-                        </div>
+                        <fieldset id="rsvp-bringing-guest-wrap" class="rsvp-attendance rsvp-conditional-field">
+                            <legend>Will you be bringing a guest?</legend>
+                            <label>
+                                <input type="radio" name="bringingGuest" value="yes">
+                                <span>Yes</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="bringingGuest" value="no">
+                                <span>No</span>
+                            </label>
+                        </fieldset>
+                        <div id="rsvp-additional-guests" class="rsvp-additional-guests"></div>
+                        <input id="rsvp-plus-one" name="plusOneName" type="hidden">
                         <fieldset id="rsvp-rehearsal-wrap" class="rsvp-attendance rsvp-conditional-field">
                             <legend>Will you attend the rehearsal dinner?</legend>
                             <label>
@@ -392,14 +383,27 @@
                                 <span>No, I cannot attend</span>
                             </label>
                         </fieldset>
-                        <label for="rsvp-guests">Names of everyone attending, or write not attending</label>
-                        <textarea id="rsvp-guests" name="guestNames" rows="3" required></textarea>
+                        <fieldset id="rsvp-guest-rehearsal-wrap" class="rsvp-attendance rsvp-conditional-field">
+                            <legend>Will your guest attend the rehearsal dinner?</legend>
+                            <label>
+                                <input type="radio" name="guestRehearsalAttendance" value="Yes, they will attend">
+                                <span>Yes, they will attend</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="guestRehearsalAttendance" value="No, they cannot attend">
+                                <span>No, they cannot attend</span>
+                            </label>
+                        </fieldset>
+                        <textarea id="rsvp-guests" name="guestNames" rows="3" hidden></textarea>
 
                         <label for="rsvp-dietary">Dietary restrictions or allergies</label>
                         <textarea id="rsvp-dietary" name="dietary" rows="3"></textarea>
 
                         <label for="rsvp-notes">Anything else we should know?</label>
                         <textarea id="rsvp-notes" name="notes" rows="3"></textarea>
+
+                        <label for="rsvp-song">Song request</label>
+                        <input id="rsvp-song" name="song" type="text">
 
                         <button class="btn-fill rsvp-btn" id="rsvp-submit-button" type="submit">
                             Submit RSVP
@@ -458,6 +462,6 @@
 <script>
     window.KH_RSVP_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20260512-1"></script>
+<script src="js/scripts.js?v=20260524-6"></script>
 </body>
 </html>
