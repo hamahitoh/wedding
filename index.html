@@ -351,14 +351,13 @@
                         <div id="rsvp-invited-guests" class="rsvp-guest-response-list"></div>
                         <div class="row">
                             <div class="col-sm-12" id="rsvp-party-size-wrap">
-                                <label for="rsvp-party-size">Guests in your party, including you</label>
-                                <select id="rsvp-party-size" name="partySize" required>
-                                    <option value="">Select one</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
+                                <label for="rsvp-additional-count">Additional guests</label>
+                                <select id="rsvp-additional-count" name="additionalGuestCount" required>
+                                    <option value="0">0</option>
                                 </select>
                             </div>
                         </div>
+                        <input id="rsvp-party-size" name="partySize" type="hidden" value="0">
                         <fieldset id="rsvp-bringing-guest-wrap" class="rsvp-attendance rsvp-conditional-field">
                             <legend>Will you be bringing a guest?</legend>
                             <label>
@@ -462,6 +461,6 @@
 <script>
     window.KH_RSVP_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20260524-7"></script>
+<script src="js/scripts.js?v=20260524-8"></script>
 </body>
 </html>

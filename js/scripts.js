@@ -346,16 +346,16 @@ $(document).ready(function () {
         $('#rsvp-form')[0].reset();
     }
 
-    function renderPartyOptions(maxPartySize, minPartySize, currentValue) {
+    function renderAdditionalCountOptions(maxAdditionalGuests, currentValue) {
         var options = '';
-        for (var i = minPartySize; i <= maxPartySize; i += 1) {
+        for (var i = 0; i <= maxAdditionalGuests; i += 1) {
             options += '<option value="' + i + '">' + i + '</option>';
         }
-        $('#rsvp-party-size').html(options);
-        if (currentValue >= minPartySize && currentValue <= maxPartySize) {
-            $('#rsvp-party-size').val(String(currentValue));
+        $('#rsvp-additional-count').html(options);
+        if (currentValue >= 0 && currentValue <= maxAdditionalGuests) {
+            $('#rsvp-additional-count').val(String(currentValue));
         } else {
-            $('#rsvp-party-size').val(String(minPartySize));
+            $('#rsvp-additional-count').val('0');
         }
     }
 
@@ -399,9 +399,7 @@ $(document).ready(function () {
 
     function setPartySizeValue(value) {
         var partySize = Math.max(parseInt(value, 10) || 0, 0);
-        $('#rsvp-party-size')
-            .html('<option value="' + partySize + '">' + partySize + '</option>')
-            .val(String(partySize));
+        $('#rsvp-party-size').val(String(partySize));
     }
 
     function collectInvitedGuestResponses() {
@@ -467,9 +465,9 @@ $(document).ready(function () {
         $('#rsvp-additional-guests').html('<h4>' + title + '</h4>' + rows);
     }
 
-    function syncGuestRehearsalControls(additionalGuestCount) {
+    function syncGuestRehearsalControls(additionalGuestCount, rowType) {
         var household = rsvpState.household || {};
-        var shouldShow = !!household.invited_rehearsal_dinner && additionalGuestCount > 0;
+        var shouldShow = rowType === 'guest' && !!household.invited_rehearsal_dinner && additionalGuestCount > 0;
         $('#rsvp-guest-rehearsal-wrap').toggle(shouldShow);
         if (!shouldShow) {
             $('#rsvp-guest-rehearsal-wrap input').prop('checked', false);
@@ -495,21 +493,21 @@ $(document).ready(function () {
             var additionalGuestCount = singlePlusOne && attendingCount > 0 && bringingGuest === 'yes' ? 1 : 0;
             setPartySizeValue(attendingCount + additionalGuestCount);
             renderAdditionalGuestRows(additionalGuestCount, false, 'guest');
-            syncGuestRehearsalControls(additionalGuestCount);
+            syncGuestRehearsalControls(additionalGuestCount, 'guest');
             return;
         }
 
         $('#rsvp-party-size-wrap').show();
         $('#rsvp-bringing-guest-wrap').hide();
         $('#rsvp-bringing-guest-wrap input').prop('checked', false);
-        var minPartySize = attendingCount > 0 ? attendingCount : 0;
-        var maxSelectable = attendingCount > 0 ? maxPartySize : 0;
-        var currentValue = parseInt($('#rsvp-party-size').val(), 10);
-        renderPartyOptions(maxSelectable, minPartySize, currentValue);
-        var selectedPartySize = parseInt($('#rsvp-party-size').val(), 10) || 0;
-        var additionalGuestCount = Math.max(selectedPartySize - attendingCount, 0);
-        renderAdditionalGuestRows(additionalGuestCount, true, 'children');
-        syncGuestRehearsalControls(additionalGuestCount);
+        var memberCount = householdMemberNames(household).length || 1;
+        var maxAdditionalGuests = Math.max(maxPartySize - memberCount, 0);
+        var currentAdditionalCount = parseInt($('#rsvp-additional-count').val(), 10);
+        renderAdditionalCountOptions(maxAdditionalGuests, currentAdditionalCount);
+        var additionalGuestCount = parseInt($('#rsvp-additional-count').val(), 10) || 0;
+        setPartySizeValue(attendingCount + additionalGuestCount);
+        renderAdditionalGuestRows(additionalGuestCount, false, 'children');
+        syncGuestRehearsalControls(additionalGuestCount, 'children');
     }
 
     function collectAdditionalGuestResponses() {
@@ -555,6 +553,9 @@ $(document).ready(function () {
         if (partySize === 0 && attendingCount > 0) {
             return 'Choose a party size for the attending guest(s).';
         }
+        if (attendingCount === 0 && additionalResponses.length > 0) {
+            return 'At least one named guest must attend before adding additional guests.';
+        }
         if (usesSinglePlusOnePrompt(rsvpState.household || {}) && attendingCount > 0) {
             var bringingGuest = $('#rsvp-bringing-guest-wrap input[name="bringingGuest"]:checked').val();
             if (bringingGuest !== 'yes' && bringingGuest !== 'no') {
@@ -592,7 +593,7 @@ $(document).ready(function () {
             .html('<div class="rsvp-invitation-name">' + rsvpEscape(invitationDisplayName(household)) + '</div>')
             .show();
         renderInvitedGuestRows(householdMemberNames(household));
-        renderPartyOptions(0, 0, 0);
+        renderAdditionalCountOptions(0, 0);
         renderAdditionalGuestRows(0, false);
         $('#rsvp-party-size-wrap').show();
         $('#rsvp-bringing-guest-wrap').hide();
@@ -724,7 +725,7 @@ $(document).ready(function () {
     });
 
     $('#rsvp-invited-guests').on('change', '.rsvp-invited-attendance', syncPartySizeControls);
-    $('#rsvp-party-size').on('change', syncPartySizeControls);
+    $('#rsvp-additional-count').on('change', syncPartySizeControls);
     $('#rsvp-bringing-guest-wrap').on('change', 'input[name="bringingGuest"]', syncPartySizeControls);
 
     $('#rsvp-form').on('submit', function (e) {
