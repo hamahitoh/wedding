@@ -339,10 +339,6 @@ $(document).ready(function () {
         $('#rsvp-invited-guests').empty();
         $('#rsvp-additional-guests').empty();
         $('#rsvp-plus-one').val('');
-        $('#rsvp-rehearsal-wrap').hide();
-        $('#rsvp-rehearsal-wrap input').prop('checked', false);
-        $('#rsvp-guest-rehearsal-wrap').hide();
-        $('#rsvp-guest-rehearsal-wrap input').prop('checked', false);
         $('#rsvp-form')[0].reset();
     }
 
@@ -361,27 +357,35 @@ $(document).ready(function () {
 
     function householdMemberNames(household) {
         var members = (household && household.members) || [];
-        if (members.length) {
-            return members;
+        var primaryCount = primaryGuestCount(household);
+        if (members.length >= primaryCount) {
+            return members.slice(0, primaryCount);
         }
-        return [household && household.display_name ? household.display_name : 'Guest'];
+        var rows = members.slice();
+        if (!rows.length) {
+            rows.push(household && household.display_name ? household.display_name : 'Guest');
+        }
+        while (rows.length < primaryCount) {
+            rows.push('Guest ' + (rows.length + 1));
+        }
+        return rows;
     }
 
-    function householdMaxPartySize(household) {
-        return Math.max(parseInt(household && household.max_party_size, 10) || 1, 1);
+    function primaryGuestCount(household) {
+        return Math.max(parseInt(household && household.primary_guest_count, 10) || 1, 1);
+    }
+
+    function childGuestCount(household) {
+        return Math.max(parseInt(household && household.child_guest_count, 10) || 0, 0);
     }
 
     function effectiveMaxPartySize(household) {
-        var memberCount = householdMemberNames(household).length || 1;
-        var maxPartySize = Math.max(householdMaxPartySize(household), memberCount);
-        if (memberCount <= 1 && household && household.plus_one_allowed) {
-            return Math.max(maxPartySize, memberCount + 1);
-        }
-        return maxPartySize;
+        return primaryGuestCount(household) + childGuestCount(household) + (household && household.plus_one_allowed ? 1 : 0);
     }
 
     function usesSinglePlusOnePrompt(household) {
-        return householdMemberNames(household).length <= 1 &&
+        return primaryGuestCount(household) <= 1 &&
+            childGuestCount(household) === 0 &&
             !!(household && household.plus_one_allowed) &&
             effectiveMaxPartySize(household) <= 2;
     }
@@ -402,15 +406,54 @@ $(document).ready(function () {
         $('#rsvp-party-size').val(String(partySize));
     }
 
+    function eventOptionsMarkup(showRehearsal, visible, values) {
+        values = values || {};
+        return '<div class="rsvp-event-options' + (visible ? ' is-visible' : '') + '">' +
+            '<div class="rsvp-event-options-title">Other events this person will attend</div>' +
+            '<div class="rsvp-guest-options">' +
+            (showRehearsal ? '<label><input class="rsvp-event-rehearsal" type="checkbox"' + (values.rehearsal_dinner ? ' checked' : '') + '>Rehearsal Dinner</label>' : '') +
+            '<label><input class="rsvp-event-brunch" type="checkbox"' + (values.sunday_brunch ? ' checked' : '') + '>Sunday Brunch</label>' +
+            '</div>' +
+            '</div>';
+    }
+
+    function rowEventSelections(row, attending) {
+        if (!attending) {
+            return {
+                rehearsal_dinner: false,
+                sunday_brunch: false
+            };
+        }
+        return {
+            rehearsal_dinner: row.find('.rsvp-event-rehearsal').is(':checked'),
+            sunday_brunch: row.find('.rsvp-event-brunch').is(':checked')
+        };
+    }
+
+    function syncInvitedEventOptions() {
+        $('#rsvp-invited-guests .rsvp-guest-row').each(function () {
+            var row = $(this);
+            var attending = row.find('input.rsvp-invited-attendance:checked').val() === 'Yes, I will attend';
+            row.find('.rsvp-event-options').toggleClass('is-visible', attending);
+            if (!attending) {
+                row.find('.rsvp-event-options input').prop('checked', false);
+            }
+        });
+    }
+
     function collectInvitedGuestResponses() {
         var responses = [];
         $('#rsvp-invited-guests .rsvp-guest-row').each(function () {
             var row = $(this);
             var attendance = row.find('input.rsvp-invited-attendance:checked').val() || '';
+            var attending = attendance === 'Yes, I will attend';
+            var events = rowEventSelections(row, attending);
             responses.push({
                 name: row.data('guestName') || '',
                 attendance: attendance,
-                age_three_or_under: false
+                age_three_or_under: false,
+                rehearsal_dinner: events.rehearsal_dinner,
+                sunday_brunch: events.sunday_brunch
             });
         });
         return responses;
@@ -423,6 +466,8 @@ $(document).ready(function () {
     }
 
     function renderInvitedGuestRows(members) {
+        var household = rsvpState.household || {};
+        var showRehearsal = !!household.invited_rehearsal_dinner;
         var rows = (members || []).map(function (name, index) {
             var radioName = 'invitedAttendance' + index;
             return '<div class="rsvp-guest-row" data-guest-name="' + rsvpEscape(name) + '">' +
@@ -431,6 +476,7 @@ $(document).ready(function () {
                 '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="Yes, I will attend" required>Yes, I will attend</label>' +
                 '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="No, I cannot attend" required>No, I cannot attend</label>' +
                 '</div>' +
+                eventOptionsMarkup(showRehearsal, false, {}) +
                 '</div>';
         }).join('');
         $('#rsvp-invited-guests').html('<h4>Guests on this invitation</h4>' + rows);
@@ -445,7 +491,9 @@ $(document).ready(function () {
         $('#rsvp-additional-guests .rsvp-additional-row').each(function () {
             existing.push({
                 name: $(this).find('.rsvp-additional-name').val() || '',
-                age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked')
+                age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked'),
+                rehearsal_dinner: $(this).find('.rsvp-event-rehearsal').is(':checked'),
+                sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked')
             });
         });
         if (count <= 0) {
@@ -455,23 +503,17 @@ $(document).ready(function () {
         var rows = '';
         var title = rowType === 'children' ? 'Will any children be attending?' : 'Guest information';
         var labelPrefix = rowType === 'children' ? 'Child' : 'Guest';
+        var showRehearsal = !!(rsvpState.household && rsvpState.household.invited_rehearsal_dinner);
         for (var i = 0; i < count; i += 1) {
+            var values = existing[i] || {};
             rows += '<div class="rsvp-guest-row rsvp-additional-row">' +
                 '<label for="rsvp-additional-name-' + i + '">' + labelPrefix + ' ' + (i + 1) + ' full name</label>' +
-                '<input id="rsvp-additional-name-' + i + '" class="rsvp-additional-name" type="text" autocomplete="name" value="' + rsvpEscape(existing[i] ? existing[i].name : '') + '">' +
-                '<label class="rsvp-age-check"><input class="rsvp-additional-age" type="checkbox"' + (existing[i] && existing[i].age_three_or_under ? ' checked' : '') + '>3 Years or Younger?</label>' +
+                '<input id="rsvp-additional-name-' + i + '" class="rsvp-additional-name" type="text" autocomplete="name" value="' + rsvpEscape(values.name || '') + '">' +
+                '<label class="rsvp-age-check"><input class="rsvp-additional-age" type="checkbox"' + (values.age_three_or_under ? ' checked' : '') + '>3 Years or Younger?</label>' +
+                eventOptionsMarkup(showRehearsal, true, values) +
                 '</div>';
         }
         $('#rsvp-additional-guests').html('<h4>' + title + '</h4>' + rows);
-    }
-
-    function syncGuestRehearsalControls(additionalGuestCount, rowType) {
-        var household = rsvpState.household || {};
-        var shouldShow = rowType === 'guest' && !!household.invited_rehearsal_dinner && additionalGuestCount > 0;
-        $('#rsvp-guest-rehearsal-wrap').toggle(shouldShow);
-        if (!shouldShow) {
-            $('#rsvp-guest-rehearsal-wrap input').prop('checked', false);
-        }
     }
 
     function syncPartySizeControls() {
@@ -493,21 +535,20 @@ $(document).ready(function () {
             var additionalGuestCount = singlePlusOne && attendingCount > 0 && bringingGuest === 'yes' ? 1 : 0;
             setPartySizeValue(attendingCount + additionalGuestCount);
             renderAdditionalGuestRows(additionalGuestCount, false, 'guest');
-            syncGuestRehearsalControls(additionalGuestCount, 'guest');
+            syncInvitedEventOptions();
             return;
         }
 
         $('#rsvp-party-size-wrap').show();
         $('#rsvp-bringing-guest-wrap').hide();
         $('#rsvp-bringing-guest-wrap input').prop('checked', false);
-        var memberCount = householdMemberNames(household).length || 1;
-        var maxAdditionalGuests = Math.max(maxPartySize - memberCount, 0);
+        var maxAdditionalGuests = childGuestCount(household);
         var currentAdditionalCount = parseInt($('#rsvp-additional-count').val(), 10);
         renderAdditionalCountOptions(maxAdditionalGuests, currentAdditionalCount);
         var additionalGuestCount = parseInt($('#rsvp-additional-count').val(), 10) || 0;
         setPartySizeValue(attendingCount + additionalGuestCount);
         renderAdditionalGuestRows(additionalGuestCount, false, 'children');
-        syncGuestRehearsalControls(additionalGuestCount, 'children');
+        syncInvitedEventOptions();
     }
 
     function collectAdditionalGuestResponses() {
@@ -515,7 +556,9 @@ $(document).ready(function () {
         $('#rsvp-additional-guests .rsvp-additional-row').each(function () {
             responses.push({
                 name: $.trim($(this).find('.rsvp-additional-name').val() || ''),
-                age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked')
+                age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked'),
+                rehearsal_dinner: $(this).find('.rsvp-event-rehearsal').is(':checked'),
+                sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked')
             });
         });
         return responses;
@@ -572,12 +615,6 @@ $(document).ready(function () {
         if (missingAdditional) {
             return 'Enter a full name for each additional guest.';
         }
-        if ($('#rsvp-guest-rehearsal-wrap').is(':visible')) {
-            var guestRehearsal = $('#rsvp-guest-rehearsal-wrap input[name="guestRehearsalAttendance"]:checked').val();
-            if (!guestRehearsal) {
-                return 'Choose whether your guest will attend the rehearsal dinner.';
-            }
-        }
         return '';
     }
 
@@ -598,10 +635,7 @@ $(document).ready(function () {
         $('#rsvp-party-size-wrap').show();
         $('#rsvp-bringing-guest-wrap').hide();
         $('#rsvp-bringing-guest-wrap input').prop('checked', false);
-        $('#rsvp-guest-rehearsal-wrap').hide();
-        $('#rsvp-guest-rehearsal-wrap input').prop('checked', false);
         $('#rsvp-party-note').text('');
-        $('#rsvp-rehearsal-wrap').toggle(!!household.invited_rehearsal_dinner);
         if (household.wedding_party_notes) {
             $('#rsvp-wedding-party-note')
                 .html('<strong>' + rsvpEscape(household.wedding_party_role || 'Wedding party') + '</strong><div>' + rsvpEscape(household.wedding_party_notes) + '</div>')
@@ -766,8 +800,6 @@ $(document).ready(function () {
             plus_one_name: formData.get('plusOneName'),
             invited_guest_responses: invitedResponses,
             additional_guest_responses: additionalResponses,
-            rehearsal_attendance: formData.get('rehearsalAttendance'),
-            guest_rehearsal_attendance: formData.get('guestRehearsalAttendance'),
             dietary: formData.get('dietary'),
             song: formData.get('song'),
             notes: formData.get('notes')

@@ -436,8 +436,56 @@ section#intro .welcome-title::after {
     margin: 0 8px 0 0;
 }
 
+.rsvp-event-options {
+    display: none;
+    margin-top: 10px;
+}
+
+.rsvp-event-options.is-visible {
+    display: grid;
+}
+
+.rsvp-event-options-title {
+    margin: 0 0 8px;
+    color: rgba(28, 54, 83, 0.6);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
 .rsvp-additional-empty {
     margin-top: -6px;
+}
+
+.rsvp-optional-response {
+    margin: 12px 0;
+    border: 1px solid #dfe4e8;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.rsvp-optional-response summary {
+    display: list-item;
+    padding: 13px 14px;
+    color: #3d4351;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.rsvp-optional-response[open] summary {
+    border-bottom: 1px solid #edf0f2;
+}
+
+.rsvp .rsvp-form .rsvp-optional-response textarea,
+.rsvp .rsvp-form .rsvp-optional-response input[type="text"] {
+    border: 0;
+    border-radius: 0;
+    margin: 0;
 }
 
 .rsvp-conditional-field {
