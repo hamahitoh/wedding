@@ -368,9 +368,77 @@ section#intro .welcome-title::after {
 }
 
 .rsvp-existing-response {
-    border-color: rgba(162, 61, 61, 0.24);
-    background: #fff7f6;
-    color: #7a3434;
+    border-color: rgba(232, 202, 111, 0.46);
+    background: #fffaf0;
+    color: #5f5030;
+}
+
+.rsvp-existing-response > strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #3d4351;
+}
+
+.rsvp-existing-copy {
+    margin-bottom: 12px;
+    color: rgba(28, 54, 83, 0.68);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.rsvp-existing-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(232, 202, 111, 0.35);
+}
+
+.rsvp-existing-section h4 {
+    margin: 0 0 8px;
+    color: #3d4351;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.rsvp-existing-details,
+.rsvp-existing-people {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+}
+
+.rsvp-existing-details li,
+.rsvp-existing-people li {
+    display: grid;
+    grid-template-columns: minmax(130px, 0.35fr) minmax(0, 1fr);
+    gap: 10px;
+    color: rgba(28, 54, 83, 0.74);
+    font-size: 13px;
+    line-height: 1.45;
+    list-style: none;
+}
+
+.rsvp-existing-details strong,
+.rsvp-existing-people strong {
+    color: #3d4351;
+}
+
+.rsvp-existing-people span {
+    display: block;
+    color: rgba(28, 54, 83, 0.58);
+}
+
+.rsvp-existing-event-detail {
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(232, 202, 111, 0.42);
+    border-radius: 4px;
+    background: #fff;
+    color: rgba(28, 54, 83, 0.7);
+    font-size: 13px;
+    line-height: 1.45;
 }
 
 .rsvp-wedding-party-note {
@@ -679,5 +747,11 @@ section#intro .welcome-title::after {
 
     .rsvp-invitation-name {
         font-size: 34px;
+    }
+
+    .rsvp-existing-details li,
+    .rsvp-existing-people li {
+        grid-template-columns: 1fr;
+        gap: 2px;
     }
 }

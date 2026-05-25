@@ -550,6 +550,112 @@ $(document).ready(function () {
         $('#rsvp-invited-guests').html('<h4>Guests on this invitation</h4>' + rows);
     }
 
+    function responseDateLabel(value) {
+        if (!value) {
+            return '';
+        }
+        var date = new Date(value);
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'});
+        }
+        return value;
+    }
+
+    function splitResponseNames(value) {
+        return String(value || '').split(/[;\n,]+/).map(function (part) {
+            return $.trim(part);
+        }).filter(Boolean);
+    }
+
+    function existingPersonRows(existing) {
+        var invited = $.isArray(existing.invited_guest_responses) ? existing.invited_guest_responses : [];
+        var additional = $.isArray(existing.additional_guest_responses) ? existing.additional_guest_responses : [];
+        if (invited.length || additional.length) {
+            return invited.concat(additional).map(function (person) {
+                var events = [];
+                if (person.rehearsal_dinner) {
+                    events.push('Rehearsal Dinner');
+                }
+                if (person.sunday_brunch) {
+                    events.push('Sunday Brunch');
+                }
+                if (person.age_three_or_under) {
+                    events.push('3 years or younger');
+                }
+                return '<li><strong>' + rsvpEscape(person.name || 'Guest') + '</strong>: ' +
+                    rsvpEscape(person.attendance || 'Yes, I will attend') +
+                    (events.length ? '<span>' + rsvpEscape(events.join(' · ')) + '</span>' : '') +
+                    '</li>';
+            }).join('');
+        }
+        return splitResponseNames(existing.guest_names).map(function (name) {
+            return '<li><strong>' + rsvpEscape(name) + '</strong>: ' + rsvpEscape(existing.attendance || 'Submitted') + '</li>';
+        }).join('');
+    }
+
+    function existingListItem(label, value) {
+        if (!value) {
+            return '';
+        }
+        return '<li><strong>' + rsvpEscape(label) + '</strong><span>' + rsvpEscape(value) + '</span></li>';
+    }
+
+    function eventGuestSummary(names, fallback) {
+        if ($.isArray(names) && names.length) {
+            return 'Attending: ' + names.join('; ');
+        }
+        return fallback || 'No attendance recorded';
+    }
+
+    function renderExistingResponse(data) {
+        var existing = data.existing_response || {};
+        var household = data.household || {};
+        var submitted = responseDateLabel(existing.submitted_at);
+        var people = existingPersonRows(existing);
+        var details = [
+            existingListItem('Submitted', submitted),
+            existingListItem('Contact email', existing.contact || ''),
+            existingListItem('Overall response', existing.attendance || ''),
+            existingListItem('Party size', existing.party_size || existing.party_size === 0 ? String(existing.party_size) : ''),
+            existingListItem('Sunday brunch', eventGuestSummary(existing.sunday_brunch_guest_names, existing.sunday_brunch_attendance))
+        ].join('');
+        var optional = [
+            existingListItem('Dietary restrictions or allergies', existing.dietary_restrictions || ''),
+            existingListItem('Anything else we should know?', existing.notes || ''),
+            existingListItem('Song request', existing.song_request || '')
+        ].join('');
+        var rehearsal = '';
+        if (household.invited_rehearsal_dinner) {
+            rehearsal = '<div class="rsvp-existing-section">' +
+                '<h4>Rehearsal Dinner</h4>' +
+                '<div class="rsvp-existing-event-detail">' + rehearsalDinnerDetailMarkup() + '</div>' +
+                '<ul class="rsvp-existing-details">' +
+                existingListItem('Your response', eventGuestSummary(existing.rehearsal_dinner_guest_names, existing.rehearsal_attendance)) +
+                '</ul>' +
+                '</div>';
+        }
+        return '<strong>Your RSVP is already on file.</strong>' +
+            '<div class="rsvp-existing-copy">Here is the response we have for this invitation. Contact Hamahito or Kate if anything needs to be changed.</div>' +
+            '<div class="rsvp-existing-section">' +
+            '<h4>Response Summary</h4>' +
+            '<ul class="rsvp-existing-details">' + details + '</ul>' +
+            '</div>' +
+            (people ? '<div class="rsvp-existing-section"><h4>Guest Responses</h4><ul class="rsvp-existing-people">' + people + '</ul></div>' : '') +
+            rehearsal +
+            (optional ? '<div class="rsvp-existing-section"><h4>Other Notes</h4><ul class="rsvp-existing-details">' + optional + '</ul></div>' : '');
+    }
+
+    function setExistingResponseMode(enabled) {
+        $('#rsvp-contact').closest('.row').toggle(!enabled);
+        $('#rsvp-rehearsal-summary').toggle(!enabled && $('#rsvp-rehearsal-summary').html() !== '');
+        $('#rsvp-invited-guests').toggle(!enabled);
+        $('#rsvp-party-size-wrap').closest('.row').toggle(!enabled);
+        $('#rsvp-bringing-guest-wrap').toggle(!enabled && $('#rsvp-bringing-guest-wrap').is(':visible'));
+        $('#rsvp-additional-guests').toggle(!enabled);
+        $('#rsvp-form details').toggle(!enabled);
+        $('#rsvp-submit-button').toggle(!enabled);
+    }
+
     function renderAdditionalGuestRows(count, showEmptyMessage, rowType) {
         var existing = [];
         if (showEmptyMessage === undefined) {
@@ -571,13 +677,14 @@ $(document).ready(function () {
         var rows = '';
         var title = rowType === 'children' ? 'Will any children be attending?' : 'Guest information';
         var labelPrefix = rowType === 'children' ? 'Child' : 'Guest';
+        var showAgeCheck = rowType === 'children';
         var showRehearsal = !!(rsvpState.household && rsvpState.household.invited_rehearsal_dinner);
         for (var i = 0; i < count; i += 1) {
             var values = existing[i] || {};
             rows += '<div class="rsvp-guest-row rsvp-additional-row">' +
                 '<label for="rsvp-additional-name-' + i + '">' + labelPrefix + ' ' + (i + 1) + ' full name</label>' +
                 '<input id="rsvp-additional-name-' + i + '" class="rsvp-additional-name" type="text" autocomplete="name" value="' + rsvpEscape(values.name || '') + '">' +
-                '<label class="rsvp-age-check"><input class="rsvp-additional-age" type="checkbox"' + (values.age_three_or_under ? ' checked' : '') + '>3 Years or Younger?</label>' +
+                (showAgeCheck ? '<label class="rsvp-age-check"><input class="rsvp-additional-age" type="checkbox"' + (values.age_three_or_under ? ' checked' : '') + '>3 Years or Younger?</label>' : '') +
                 eventOptionsMarkup(showRehearsal, true, values) +
                 '</div>';
         }
@@ -724,15 +831,17 @@ $(document).ready(function () {
         }
         if (data.already_received) {
             $('#rsvp-existing-response')
-                .html('<strong>We already received your RSVP.</strong><div>Contact Hamahito or Kate if you would like to make any changes.</div>')
+                .html(renderExistingResponse(data))
                 .show();
             $('#rsvp-form :input').not('button, [data-dismiss]').prop('disabled', true);
             $('#rsvp-submit-button').prop('disabled', true);
         } else {
+            $('#rsvp-existing-response').hide().empty();
             $('#rsvp-form :input').prop('disabled', false);
             $('#rsvp-submit-button').prop('disabled', false);
         }
         syncPartySizeControls();
+        setExistingResponseMode(!!data.already_received);
     }
 
     function renderMatches(matches) {
