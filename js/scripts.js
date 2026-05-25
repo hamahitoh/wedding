@@ -316,8 +316,6 @@ $(document).ready(function () {
         $('#site-things-grid').html(renderContentCards(travel.things_to_do || []));
         $('#site-venue-name').text(venueName);
         $('#site-venue-address').text(venueAddress);
-        $('#site-map-venue-name').text(venueName);
-        $('#site-map-venue-address').html(addressHtml(venueAddress));
         $('#site-travel-notes').html(paragraphHtml(event.travel_notes || ''));
         $('#site-directions-link').attr('href', 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venueName + ' ' + venueAddress));
         renderRsvpCeremonySummary();
