@@ -468,7 +468,8 @@ $(document).ready(function () {
     function renderTopRehearsalSummary() {
         var household = rsvpState.household || {};
         var markup = rehearsalDinnerDetailMarkup();
-        if (household.invited_rehearsal_dinner && markup) {
+        var hasAttendingGuest = attendingInvitedCount() > 0;
+        if (household.invited_rehearsal_dinner && markup && hasAttendingGuest) {
             $('#rsvp-rehearsal-summary').html(markup).show();
         } else {
             $('#rsvp-rehearsal-summary').hide().empty();
@@ -507,6 +508,7 @@ $(document).ready(function () {
                 row.find('.rsvp-event-options input').prop('checked', false);
             }
         });
+        renderTopRehearsalSummary();
     }
 
     function collectInvitedGuestResponses() {
@@ -547,7 +549,7 @@ $(document).ready(function () {
                 eventOptionsMarkup(showRehearsal, false, {}) +
                 '</div>';
         }).join('');
-        $('#rsvp-invited-guests').html('<h4>Guests on this invitation</h4>' + rows);
+        $('#rsvp-invited-guests').html('<h4>Will You Be Attending The Reception?</h4>' + rows);
     }
 
     function responseDateLabel(value) {
