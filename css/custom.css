@@ -441,6 +441,36 @@ section#intro .welcome-title::after {
     line-height: 1.45;
 }
 
+.rsvp-change-request-section textarea {
+    width: 100%;
+    min-height: 108px;
+    margin: 0 0 10px;
+    border: 1px solid #dfe4e8;
+    border-radius: 4px;
+    background: #fff;
+    color: #3d4351;
+    padding: 10px 12px;
+    resize: vertical;
+}
+
+.rsvp-change-request-status {
+    min-height: 18px;
+    margin-top: 8px;
+    color: rgba(28, 54, 83, 0.68);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.rsvp-change-request-status.is-success {
+    color: #427262;
+    font-weight: 700;
+}
+
+.rsvp-change-request-status.is-error {
+    color: #a23d3d;
+    font-weight: 700;
+}
+
 .rsvp-wedding-party-note {
     border-color: rgba(232, 202, 111, 0.45);
     background: #fffaf0;

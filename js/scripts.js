@@ -637,14 +637,21 @@ $(document).ready(function () {
                 '</div>';
         }
         return '<strong>Your RSVP is already on file.</strong>' +
-            '<div class="rsvp-existing-copy">Here is the response we have for this invitation. Contact Hamahito or Kate if anything needs to be changed.</div>' +
+            '<div class="rsvp-existing-copy">Here is the response we have for this invitation. If you would like to request any changes, please let us know and we will try to accommodate.</div>' +
             '<div class="rsvp-existing-section">' +
             '<h4>Response Summary</h4>' +
             '<ul class="rsvp-existing-details">' + details + '</ul>' +
             '</div>' +
             (people ? '<div class="rsvp-existing-section"><h4>Guest Responses</h4><ul class="rsvp-existing-people">' + people + '</ul></div>' : '') +
             rehearsal +
-            (optional ? '<div class="rsvp-existing-section"><h4>Other Notes</h4><ul class="rsvp-existing-details">' + optional + '</ul></div>' : '');
+            (optional ? '<div class="rsvp-existing-section"><h4>Other Notes</h4><ul class="rsvp-existing-details">' + optional + '</ul></div>' : '') +
+            '<div class="rsvp-existing-section rsvp-change-request-section">' +
+            '<h4>Request a Change</h4>' +
+            '<label for="rsvp-change-request-message" class="sr-only">Requested RSVP change</label>' +
+            '<textarea id="rsvp-change-request-message" class="rsvp-change-request-input" rows="4" maxlength="2000" placeholder="Tell us what needs to be changed."></textarea>' +
+            '<button class="btn-fill rsvp-change-request-submit" type="button">Send Change Request</button>' +
+            '<div class="rsvp-change-request-status" role="status" aria-live="polite"></div>' +
+            '</div>';
     }
 
     function setExistingResponseMode(enabled) {
@@ -835,7 +842,7 @@ $(document).ready(function () {
             $('#rsvp-existing-response')
                 .html(renderExistingResponse(data))
                 .show();
-            $('#rsvp-form :input').not('button, [data-dismiss]').prop('disabled', true);
+            $('#rsvp-form :input').not('button, [data-dismiss], .rsvp-change-request-input').prop('disabled', true);
             $('#rsvp-submit-button').prop('disabled', true);
         } else {
             $('#rsvp-existing-response').hide().empty();
@@ -949,6 +956,32 @@ $(document).ready(function () {
                 var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Confirmation failed. Please search again.';
                 $('#rsvp-match-results').html('<div class="rsvp-existing-response">' + rsvpEscape(detail) + '</div>');
             });
+    });
+
+    $('#rsvp-existing-response').on('click', '.rsvp-change-request-submit', function () {
+        var button = $(this);
+        var panel = button.closest('.rsvp-change-request-section');
+        var message = $.trim(panel.find('.rsvp-change-request-input').val() || '');
+        var status = panel.find('.rsvp-change-request-status');
+        if (message.length < 3) {
+            status.removeClass('is-success').addClass('is-error').text('Please enter the change you would like to request.');
+            panel.find('.rsvp-change-request-input').focus();
+            return;
+        }
+        button.prop('disabled', true).text('Sending...');
+        status.removeClass('is-error is-success').text('Sending your request...');
+        rsvpApi('/api/wedding/public/change-request', {
+            rsvp_token: rsvpState.rsvpToken,
+            message: message
+        }).done(function (data) {
+            status.removeClass('is-error').addClass('is-success').text((data && data.message) || 'Your change request has been sent.');
+            panel.find('.rsvp-change-request-input').val('');
+        }).fail(function (xhr) {
+            var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Change request failed. Please try again.';
+            status.removeClass('is-success').addClass('is-error').text(detail);
+        }).always(function () {
+            button.prop('disabled', false).text('Send Change Request');
+        });
     });
 
     $('#rsvp-invited-guests').on('change', '.rsvp-invited-attendance', syncPartySizeControls);
