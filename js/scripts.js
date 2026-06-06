@@ -309,7 +309,8 @@ $(document).ready(function () {
         $('#site-event-summary').html('<span>' + rsvpEscape(date) + '</span><span>' + rsvpEscape(locationSummary) + '</span>');
         $('#site-invitation-summary').text('Join us on ' + date + ' at ' + venueName + ' in ' + locationSummary + '.');
         $('#site-schedule-right').html(renderScheduleItems(event.schedule || [], 'all', true, date));
-        $('#site-dress-title').html(rsvpEscape(event.dress_code_title || 'Wedding') + ' <span class="time">' + rsvpEscape(event.dress_code_time || '') + '</span>');
+        var dressTime = event.dress_code_time ? ' <span class="time">' + rsvpEscape(event.dress_code_time) + '</span>' : '';
+        $('#site-dress-title').html(rsvpEscape(event.dress_code_title || 'Wedding') + dressTime);
         $('#site-dress-body').html(paragraphHtml(event.dress_code_body || 'Add dress code here. Include formality, shoe advice, outdoor/indoor notes, and expected weather.'));
         $('#site-hotels-intro').text(travel.hotels_intro || '');
         $('#site-hotels-grid').html(renderContentCards(travel.hotels || []));
