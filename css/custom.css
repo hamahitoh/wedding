@@ -304,6 +304,7 @@ section#intro .welcome-title::after {
 
 .hotel-grid h5,
 .area-grid h5 {
+    color: #3d4351;
     margin-bottom: 12px;
 }
 
@@ -421,25 +422,18 @@ section#intro .welcome-title::after {
 }
 
 .content-card-links {
-    margin-top: 4px;
+    margin-top: -6px;
 }
 
 .content-card-links li {
-    border-top: 1px solid rgba(111, 122, 140, 0.14);
-    padding: 9px 0;
-}
-
-.content-card-links li:first-child {
-    border-top: 0;
+    padding: 2px 0;
 }
 
 .content-card-links a {
-    color: #b8892f;
-    font-family: Montserrat, sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    color: rgba(28, 54, 83, 0.6);
+    font-size: 17px;
+    line-height: 27px;
+    text-transform: none;
 }
 
 @media screen and (max-width: 767px) {
