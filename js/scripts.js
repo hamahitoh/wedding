@@ -271,7 +271,8 @@ $(document).ready(function () {
             'villa inn by temecula inns': 'img/hotels/villa-inn.jpg',
             'home2 suites by hilton temecula': 'img/hotels/home2-suites.jpg',
             'old town temecula': 'img/things/old-town.svg',
-            'check out the wineries': 'img/things/wineries.svg'
+            'check out the wineries': 'img/things/wineries.svg',
+            'activities': 'img/things/activities.svg'
         };
         return images[$.trim(name || '').toLowerCase()] || '';
     }
