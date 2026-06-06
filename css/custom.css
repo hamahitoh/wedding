@@ -88,6 +88,10 @@
     margin-left: -2px;
 }
 
+header .header-nav a {
+    font-size: 17px;
+}
+
 .hero {
     background:
         linear-gradient(90deg, rgba(24, 27, 25, 0.76) 0%, rgba(24, 27, 25, 0.54) 34%, rgba(24, 27, 25, 0.18) 72%),
