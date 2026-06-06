@@ -99,6 +99,11 @@ header .header-nav a {
 }
 
 .hero > .container {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
     width: 100%;
     padding-left: clamp(52px, 8vw, 120px);
     padding-right: clamp(24px, 5vw, 72px);
@@ -111,7 +116,7 @@ header .header-nav a {
 
 .hero .hero-content {
     max-width: 430px;
-    padding-top: 24%;
+    padding-top: 0;
     padding-left: clamp(28px, 4vw, 72px);
     text-align: left;
 }
@@ -172,20 +177,6 @@ header .header-nav a {
 .hero .hero-primary-rsvp {
     border-color: #e8ca6f;
     color: #e8ca6f;
-}
-
-@media screen and (max-width: 1280px) {
-    .hero > .container {
-        left: 0;
-        position: absolute;
-        right: 0;
-        top: 52%;
-        transform: translateY(-45%);
-    }
-
-    .hero .hero-content {
-        padding-top: 0;
-    }
 }
 
 body > section:not(.hero) p,
@@ -840,8 +831,6 @@ section#intro .welcome-title::after {
     .hero > .container {
         padding-left: 20px;
         padding-right: 20px;
-        top: 50%;
-        transform: translateY(-44%);
     }
 
     .hero > .container .col-md-10.col-md-offset-1 {
