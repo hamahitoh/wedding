@@ -265,12 +265,21 @@ $(document).ready(function () {
         return url;
     }
 
+    function defaultContentImageUrl(name) {
+        var images = {
+            'old town temecula': 'img/things/old-town.svg',
+            'check out the wineries': 'img/things/wineries.svg',
+            'the press espresso': 'img/things/press-espresso.svg'
+        };
+        return images[$.trim(name || '').toLowerCase()] || '';
+    }
+
     function renderContentCards(rows) {
         return (rows || []).map(function (item) {
             var name = item.name || '';
             var description = item.description || '';
             var url = item.url || '';
-            var imageUrl = safeImageUrl(item.image_url || '');
+            var imageUrl = safeImageUrl(item.image_url || defaultContentImageUrl(name));
             var image = imageUrl
                 ? '<img class="content-card-thumb" src="' + rsvpEscape(imageUrl) + '" alt="' + rsvpEscape(name) + ' thumbnail" loading="lazy">'
                 : '';
