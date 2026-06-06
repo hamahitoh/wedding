@@ -157,6 +157,16 @@ body > section:not(.hero) .btn,
     font-size: 15px;
 }
 
+.events .schedule-column-heading {
+    color: #e8ca6f;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 18px;
+    padding-bottom: 0;
+    text-align: center;
+}
+
 #events,
 #instagram,
 #eng-pics,

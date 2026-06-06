@@ -288,7 +288,7 @@ $(document).ready(function () {
             }
             return (item.column || 'left') === column;
         });
-        var html = includeHeader ? '<div><p><strong>' + rsvpEscape(headerText) + '</strong></p></div>' : '';
+        var html = includeHeader ? '<div><p class="schedule-column-heading"><strong>' + rsvpEscape(headerText) + '</strong></p></div>' : '';
         html += items.map(function (item) {
             return '<div class="schedule-item">' +
                 '<h5>' + rsvpEscape(item.title || '') + ' <span class="time">' + rsvpEscape(item.time || '') + '</span></h5>' +
