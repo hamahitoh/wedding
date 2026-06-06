@@ -271,8 +271,7 @@ $(document).ready(function () {
             'villa inn by temecula inns': 'img/hotels/villa-inn.jpg',
             'home2 suites by hilton temecula': 'img/hotels/home2-suites.jpg',
             'old town temecula': 'img/things/old-town.svg',
-            'check out the wineries': 'img/things/wineries.svg',
-            'the press espresso': 'img/things/press-espresso.svg'
+            'check out the wineries': 'img/things/wineries.svg'
         };
         return images[$.trim(name || '').toLowerCase()] || '';
     }
@@ -327,6 +326,14 @@ $(document).ready(function () {
             var name = item.name || '';
             var description = item.description || '';
             var url = safeLinkUrl(item.url || '');
+            var links = ($.isArray(item.links) ? item.links : []).map(function (link) {
+                var linkUrl = safeLinkUrl(link && link.url);
+                var label = link && link.label ? link.label : '';
+                if (!label || !linkUrl) {
+                    return '';
+                }
+                return '<li><a href="' + rsvpEscape(linkUrl) + '" target="_blank" rel="noopener">' + rsvpEscape(label) + '</a></li>';
+            }).filter(Boolean).join('');
             var imageUrl = safeImageUrl(item.image_url || defaultContentImageUrl(name));
             var preview = options.hotelPreview ? renderHotelPreview(item, name, url, index) : { html: '', id: '' };
             var image = imageUrl && !options.hotelPreview
@@ -338,7 +345,9 @@ $(document).ready(function () {
                     ' href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(name) + '</a></h5>'
                 : '<h5>' + rsvpEscape(name) + '</h5>';
             return '<div class="col-md-4' + (options.hotelPreview ? ' hotel-card' : '') + '">' +
-                image + title + preview.html + '<p>' + paragraphHtml(description) + '</p></div>';
+                image + title + preview.html + '<p>' + paragraphHtml(description) + '</p>' +
+                (links ? '<ul class="content-card-links">' + links + '</ul>' : '') +
+                '</div>';
         }).join('');
     }
 

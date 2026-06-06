@@ -420,6 +420,28 @@ section#intro .welcome-title::after {
     box-shadow: 0 16px 36px rgba(31, 37, 50, 0.12);
 }
 
+.content-card-links {
+    margin-top: 4px;
+}
+
+.content-card-links li {
+    border-top: 1px solid rgba(111, 122, 140, 0.14);
+    padding: 9px 0;
+}
+
+.content-card-links li:first-child {
+    border-top: 0;
+}
+
+.content-card-links a {
+    color: #b8892f;
+    font-family: Montserrat, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
 @media screen and (max-width: 767px) {
     .hotel-preview {
         display: none;
