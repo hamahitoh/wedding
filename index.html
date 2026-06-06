@@ -57,7 +57,7 @@
     <link rel="stylesheet" href="css/flexslider.css">
     <link rel="stylesheet" href="css/styles.min.css">
     <link rel="stylesheet" href="css/queries.css">
-    <link rel="stylesheet" href="css/custom.css?v=20260525-2">
+    <link rel="stylesheet" href="css/custom.css?v=20260606-3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
@@ -152,51 +152,9 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12 leftcol" id="site-schedule-left">
-                <div class="wp3">
-                    <p><strong>Saturday, October 17, 2026</strong></p>
-
-                    <h5>Guest Arrival <span class="time">arrival time TBD</span></h5>
-                    <p>Exact arrival, parking, shuttle, and check-in details will be added once the venue logistics are finalized.</p>
-                </div>
-                <div class="wp5">
-                    <h5>Ceremony <span class="time">4:00 PM</span></h5>
-                    <p>Vineyard Ceremony at Danza Del Sol Winery.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-12 col-xs-12 rightcol" id="site-schedule-right">
-                <div class="wp4">
-                    <p><strong>Reception</strong></p>
-
-                    <h5>Cocktail Hour <span class="time">timing TBD</span></h5>
-                    <p>Exact cocktail hour, appetizer, and photo timing will be added once the full timeline is finalized.</p>
-                </div>
-                <div class="wp6">
-                    <h5>Dinner & Dancing <span class="time">until 10:00 PM</span></h5>
-                    <p>Reception in the Barrel Room. The venue event time concludes at 10:00 PM.</p>
-                </div>
-            </div>
-        </div>
-        <div class="row section-padding">
-            <div class="col-md-4 col-md-offset-4 text-center">
-                <a class="btn btn-accent btn-small" data-toggle="modal" data-target="#dc-modal">
-                    <i class="fa fa-barcode"></i>&nbsp;&nbsp;Dress code
-                </a>
-            </div>
-        </div>
-        <!--<div class="row">
-            <div class="col-xs-12 section-border section-padding">
-            </div>
-        </div>-->
-    </div>
-
-    <div id="dc-modal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span>
-                    </button>
-                    <h3 class="text-center section-padding">Dress code</h3>
+            <div class="col-md-6 col-sm-12 col-xs-12 leftcol" id="site-dress-code">
+                <div class="dress-code-block">
+                    <p><strong>Dress code</strong></p>
                     <h5 id="site-dress-title">Cocktail Attire <span class="time">cocktail attire</span></h5>
                     <p id="site-dress-body">
                         <strong>Cocktail attire.</strong>
@@ -204,9 +162,32 @@
                         Button-down shirts, cocktail dresses, dressy separates, or comparable semi-formal attire are appropriate. Jackets and suits are optional. The ceremony is at a winery, so choose shoes that can handle outdoor paths or vineyard surfaces.
                     </p>
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12 rightcol" id="site-schedule-right">
+                <div class="schedule-item">
+                    <p><strong>Saturday, October 17, 2026</strong></p>
+                    <h5>Guest Arrival <span class="time">3:30 PM</span></h5>
+                    <p>Please arrive by 3:30 PM for parking, check-in, and seating before the ceremony.</p>
+                </div>
+                <div class="schedule-item">
+                    <h5>Ceremony <span class="time">4:00 PM</span></h5>
+                    <p>Vineyard Ceremony at Danza Del Sol Winery.</p>
+                </div>
+                <div class="schedule-item">
+                    <h5>Cocktail Hour <span class="time">4:30 PM - 5:30 PM</span></h5>
+                    <p>Cocktail hour with drinks, appetizers, and photos.</p>
+                </div>
+                <div class="schedule-item">
+                    <h5>Dinner & Dancing <span class="time">until 10:00 PM</span></h5>
+                    <p>Reception in the Barrel Room. The venue event time concludes at 10:00 PM.</p>
+                </div>
+            </div>
+        </div>
+        <!--<div class="row">
+            <div class="col-xs-12 section-border section-padding">
+            </div>
+        </div>-->
+    </div>
 
 </section>
 
@@ -431,6 +412,6 @@
 <script>
     window.KH_RSVP_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20260525-4"></script>
+<script src="js/scripts.js?v=20260606-2"></script>
 </body>
 </html>

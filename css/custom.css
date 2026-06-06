@@ -125,6 +125,54 @@
     color: #e8ca6f;
 }
 
+body > section:not(.hero) p,
+footer p,
+.modal p {
+    font-size: 17px;
+    line-height: 31px;
+}
+
+body > section:not(.hero) h3,
+.modal h3 {
+    font-size: 20px;
+}
+
+body > section:not(.hero) h4,
+.modal h4 {
+    font-size: 20px;
+}
+
+body > section:not(.hero) h5,
+.modal h5 {
+    font-size: 17px;
+}
+
+body > section:not(.hero) .btn,
+.modal .btn,
+#btn-show-content {
+    font-size: 15px;
+}
+
+.events .time {
+    font-size: 15px;
+}
+
+.events .dress-code-block {
+    max-width: 440px;
+}
+
+.events .schedule-item {
+    margin-bottom: 22px;
+}
+
+.events .schedule-item:last-child {
+    margin-bottom: 0;
+}
+
+.events .dress-code-block p:last-child {
+    padding-bottom: 0;
+}
+
 section#invitation .invitation-title {
     display: flex;
     align-items: center;
@@ -132,7 +180,7 @@ section#invitation .invitation-title {
     gap: 18px;
     color: #433b33 !important;
     font-family: "Cormorant Garamond", Merriweather, Georgia, serif !important;
-    font-size: 38px;
+    font-size: 40px;
     font-style: italic;
     font-weight: 600;
     letter-spacing: 0 !important;
@@ -157,7 +205,7 @@ section#invitation .invitation-title .title-rule:last-child {
 #site-invitation-summary {
     color: rgba(67, 59, 51, 0.62);
     font-family: "Cormorant Garamond", Merriweather, Georgia, serif;
-    font-size: 20px;
+    font-size: 22px;
     font-style: italic;
     font-weight: 500;
     line-height: 1.5;
@@ -166,7 +214,7 @@ section#invitation .invitation-title .title-rule:last-child {
 section#intro .welcome-title {
     color: #b8892f !important;
     font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif !important;
-    font-size: 62px;
+    font-size: 64px;
     font-weight: 400;
     letter-spacing: 0 !important;
     line-height: 1;
@@ -190,7 +238,7 @@ section#intro .welcome-title::after {
 #intro p {
     color: rgba(55, 61, 70, 0.72);
     font-family: "Cormorant Garamond", Merriweather, Georgia, serif;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 500;
     line-height: 1.65;
 }
@@ -263,7 +311,7 @@ section#intro .welcome-title::after {
     right: 20px;
     z-index: 2;
     color: #3d4351;
-    font-size: 28px;
+    font-size: 30px;
     opacity: 0.45;
 }
 
@@ -340,7 +388,7 @@ section#intro .welcome-title::after {
 .rsvp-invitation-name {
     color: #b8892f;
     font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif;
-    font-size: 38px;
+    font-size: 40px;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.1;
@@ -363,7 +411,7 @@ section#intro .welcome-title::after {
 .rsvp-help-text {
     margin: -6px 0 16px;
     color: rgba(28, 54, 83, 0.64);
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.45;
 }
 
@@ -382,7 +430,7 @@ section#intro .welcome-title::after {
 .rsvp-existing-copy {
     margin-bottom: 12px;
     color: rgba(28, 54, 83, 0.68);
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.45;
 }
 
@@ -395,7 +443,7 @@ section#intro .welcome-title::after {
 .rsvp-existing-section h4 {
     margin: 0 0 8px;
     color: #3d4351;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -415,7 +463,7 @@ section#intro .welcome-title::after {
     grid-template-columns: minmax(130px, 0.35fr) minmax(0, 1fr);
     gap: 10px;
     color: rgba(28, 54, 83, 0.74);
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.45;
     list-style: none;
 }
@@ -437,7 +485,7 @@ section#intro .welcome-title::after {
     border-radius: 4px;
     background: #fff;
     color: rgba(28, 54, 83, 0.7);
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.45;
 }
 
@@ -457,7 +505,7 @@ section#intro .welcome-title::after {
     min-height: 18px;
     margin-top: 8px;
     color: rgba(28, 54, 83, 0.68);
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.4;
 }
 
@@ -488,7 +536,7 @@ section#intro .welcome-title::after {
 .rsvp-additional-guests h4 {
     margin: 0;
     color: #3d4351;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -523,7 +571,7 @@ section#intro .welcome-title::after {
     border: 1px solid #dfe4e8;
     border-radius: 4px;
     color: rgba(28, 54, 83, 0.74);
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: 0;
     text-transform: none;
@@ -546,7 +594,7 @@ section#intro .welcome-title::after {
 .rsvp-event-options-title {
     margin: 0 0 8px;
     color: rgba(28, 54, 83, 0.6);
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.7px;
     text-transform: uppercase;
@@ -559,7 +607,7 @@ section#intro .welcome-title::after {
     border-radius: 4px;
     background: #fffaf0;
     color: rgba(28, 54, 83, 0.7);
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.45;
 }
 
@@ -595,7 +643,7 @@ section#intro .welcome-title::after {
     display: list-item;
     padding: 13px 14px;
     color: #3d4351;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 1px;
     line-height: 1.4;
@@ -623,7 +671,7 @@ section#intro .welcome-title::after {
     display: block;
     margin: 0 0 8px;
     color: #3d4351;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 1px;
     line-height: 1.4;
@@ -642,7 +690,7 @@ section#intro .welcome-title::after {
     border-radius: 4px;
     background: #fff;
     color: #3d4351;
-    font-size: 15px;
+    font-size: 17px;
     line-height: 1.45;
 }
 
@@ -674,7 +722,7 @@ section#intro .welcome-title::after {
     border: 1px solid #dfe4e8;
     border-radius: 4px;
     color: rgba(28, 54, 83, 0.7);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: 0;
     text-transform: none;
@@ -725,7 +773,7 @@ section#intro .welcome-title::after {
     }
 
     section#invitation .invitation-title {
-        font-size: 30px;
+        font-size: 32px;
         gap: 10px;
     }
 
@@ -734,15 +782,15 @@ section#intro .welcome-title::after {
     }
 
     #site-invitation-summary {
-        font-size: 18px;
+        font-size: 20px;
     }
 
     section#intro .welcome-title {
-        font-size: 48px;
+        font-size: 50px;
     }
 
     #intro p {
-        font-size: 20px;
+        font-size: 22px;
     }
 
     .hero > .container {
@@ -776,7 +824,7 @@ section#intro .welcome-title::after {
     }
 
     .rsvp-invitation-name {
-        font-size: 34px;
+        font-size: 36px;
     }
 
     .rsvp-existing-details li,

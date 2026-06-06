@@ -283,12 +283,14 @@ $(document).ready(function () {
 
     function renderScheduleItems(rows, column, includeHeader, headerText) {
         var items = (rows || []).filter(function (item) {
+            if (column === 'all') {
+                return true;
+            }
             return (item.column || 'left') === column;
         });
         var html = includeHeader ? '<div><p><strong>' + rsvpEscape(headerText) + '</strong></p></div>' : '';
-        html += items.map(function (item, index) {
-            var waypoint = column === 'left' ? (index % 2 === 0 ? 'wp3' : 'wp5') : (index % 2 === 0 ? 'wp4' : 'wp6');
-            return '<div class="' + waypoint + '">' +
+        html += items.map(function (item) {
+            return '<div class="schedule-item">' +
                 '<h5>' + rsvpEscape(item.title || '') + ' <span class="time">' + rsvpEscape(item.time || '') + '</span></h5>' +
                 '<p>' + paragraphHtml(item.description || '') + '</p>' +
                 '</div>';
@@ -306,8 +308,7 @@ $(document).ready(function () {
         var venueAddress = event.venue_address || '39050 De Portola Road, Temecula, CA 92592';
         $('#site-event-summary').html('<span>' + rsvpEscape(date) + '</span><span>' + rsvpEscape(locationSummary) + '</span>');
         $('#site-invitation-summary').text('Join us on ' + date + ' at ' + venueName + ' in ' + locationSummary + '.');
-        $('#site-schedule-left').html(renderScheduleItems(event.schedule || [], 'left', true, date));
-        $('#site-schedule-right').html(renderScheduleItems(event.schedule || [], 'right', true, 'Reception'));
+        $('#site-schedule-right').html(renderScheduleItems(event.schedule || [], 'all', true, date));
         $('#site-dress-title').html(rsvpEscape(event.dress_code_title || 'Wedding') + ' <span class="time">' + rsvpEscape(event.dress_code_time || '') + '</span>');
         $('#site-dress-body').html(paragraphHtml(event.dress_code_body || 'Add dress code here. Include formality, shoe advice, outdoor/indoor notes, and expected weather.'));
         $('#site-hotels-intro').text(travel.hotels_intro || '');
