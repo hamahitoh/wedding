@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Villa Inn by Temecula Inns thumbnail</title>
+  <desc id="desc">A vineyard-side villa illustration with terracotta roofs and sunset hills.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f7ead0"/>
+      <stop offset=".7" stop-color="#d49b6f"/>
+      <stop offset="1" stop-color="#684549"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" x2="1">
+      <stop offset="0" stop-color="#fff4dc"/>
+      <stop offset="1" stop-color="#d8c1a0"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#sky)"/>
+  <path d="M0 190c70-45 143-55 219-31 55 17 101 49 160 43 88-9 153-71 261-76v234H0z" fill="#6d5940" opacity=".42"/>
+  <path d="M0 259c84-17 162-22 235-15 86 8 153 32 247 23 57-6 109-20 158-43v136H0z" fill="#27382e" opacity=".84"/>
+  <g stroke="#b8892f" stroke-width="3" opacity=".5">
+    <path d="M28 302c71-24 139-24 204 0M252 303c79-25 151-25 217 0M486 302c49-18 91-18 126 0"/>
+    <path d="M72 279c43-14 82-14 118 0M300 280c54-15 103-15 148 0M496 278c37-12 70-12 100 0"/>
+  </g>
+  <g transform="translate(122 92)">
+    <path d="M22 88h350v151H22z" fill="url(#wall)" stroke="#fff5dc" stroke-width="5"/>
+    <path d="M0 91 84 22h226l85 69z" fill="#7b3f3e"/>
+    <path d="M84 22h226l39 31H47z" fill="#b45e44"/>
+    <rect x="55" y="130" width="54" height="48" rx="4" fill="#4c3438"/>
+    <rect x="142" y="130" width="54" height="48" rx="4" fill="#4c3438"/>
+    <rect x="232" y="130" width="54" height="48" rx="4" fill="#4c3438"/>
+    <rect x="166" y="184" width="64" height="55" rx="24" fill="#3a292d"/>
+    <path d="M-28 239h448" stroke="#f4de99" stroke-width="9" stroke-linecap="round"/>
+    <text x="197" y="75" text-anchor="middle" fill="#fff4c7" font-family="Georgia, serif" font-size="27">Villa Inn</text>
+  </g>
+</svg>

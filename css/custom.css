@@ -297,9 +297,115 @@ section#intro .welcome-title::after {
     padding: 28px;
 }
 
+.hotel-grid .hotel-card {
+    position: relative;
+}
+
 .hotel-grid h5,
 .area-grid h5 {
     margin-bottom: 12px;
+}
+
+.hotel-preview-trigger {
+    position: relative;
+    z-index: 2;
+}
+
+.hotel-preview {
+    background: #fff;
+    border: 1px solid rgba(184, 137, 47, 0.25);
+    border-radius: 6px;
+    box-shadow: 0 22px 58px rgba(31, 37, 50, 0.18);
+    left: 28px;
+    max-width: 360px;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 28px;
+    top: 62px;
+    transform: translateY(8px);
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    visibility: hidden;
+    z-index: 24;
+}
+
+.hotel-card:hover .hotel-preview,
+.hotel-card:focus-within .hotel-preview,
+.hotel-card.is-preview-open .hotel-preview {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.hotel-card.is-preview-open .hotel-preview-trigger {
+    color: #b8892f;
+}
+
+.hotel-preview-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    object-fit: cover;
+}
+
+.hotel-preview-copy {
+    padding: 18px 20px 20px;
+}
+
+.hotel-preview-copy p {
+    color: #6f7a8c;
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0 0 12px;
+}
+
+.hotel-preview-copy p:last-child {
+    margin-bottom: 0;
+}
+
+.hotel-preview-label {
+    color: #b8892f !important;
+    font-family: Montserrat, sans-serif;
+    font-size: 11px !important;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.2 !important;
+    margin-bottom: 5px !important;
+    text-transform: uppercase;
+}
+
+.hotel-preview-footer {
+    align-items: center;
+    border-top: 1px solid rgba(111, 122, 140, 0.16);
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 14px;
+}
+
+.hotel-preview-footer span {
+    color: #7d8797;
+    font-family: Montserrat, sans-serif;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.hotel-preview-link {
+    border: 1px solid #b8892f;
+    border-radius: 999px;
+    color: #b8892f !important;
+    flex: 0 0 auto;
+    font-family: Montserrat, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    line-height: 1;
+    padding: 9px 12px;
+    text-transform: uppercase;
 }
 
 .content-card-thumb {
@@ -311,6 +417,44 @@ section#intro .welcome-title::after {
     border-radius: 4px;
     object-fit: cover;
     box-shadow: 0 16px 36px rgba(31, 37, 50, 0.12);
+}
+
+@media screen and (max-width: 767px) {
+    .hotel-preview {
+        display: none;
+        left: auto;
+        margin-top: 14px;
+        max-width: none;
+        opacity: 1;
+        position: static;
+        right: auto;
+        top: auto;
+        transform: none;
+        visibility: visible;
+    }
+
+    .hotel-card.is-preview-open .hotel-preview {
+        display: block;
+    }
+
+    .hotel-card:hover .hotel-preview,
+    .hotel-card:focus-within .hotel-preview {
+        display: none;
+    }
+
+    .hotel-card.is-preview-open:hover .hotel-preview,
+    .hotel-card.is-preview-open:focus-within .hotel-preview {
+        display: block;
+    }
+
+    .hotel-preview-copy {
+        padding: 16px 18px 18px;
+    }
+
+    .hotel-preview-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }
 
 .map-placeholder {

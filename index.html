@@ -57,7 +57,7 @@
     <link rel="stylesheet" href="css/flexslider.css">
     <link rel="stylesheet" href="css/styles.min.css">
     <link rel="stylesheet" href="css/queries.css">
-    <link rel="stylesheet" href="css/custom.css?v=20260606-16">
+    <link rel="stylesheet" href="css/custom.css?v=20260606-17">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
@@ -183,20 +183,50 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <h3>Hotels</h3>
-                <p id="site-hotels-intro">Recommended Temecula hotel options depending on whether guests prefer downtown or Old Town convenience, or staying closer to the wedding venue.</p>
+                <p id="site-hotels-intro">Recommended accommodations in Downtown Temecula, Old Town, and near the wedding venue. For guests traveling with family or groups, Airbnb and vacation rental options are also widely available throughout the area.</p>
             </div>
         </div>
         <div class="row hotel-grid" id="site-hotels-grid">
-            <div class="col-md-4">
-                <h5><a href="https://www.google.com/maps/search/?api=1&amp;query=Hilton%20Garden%20Inn%20Temecula%2028210%20Jefferson%20Ave%20Temecula%20CA%2092590" target="_blank" rel="noopener">Hilton Garden Inn Temecula</a></h5>
+            <div class="col-md-4 hotel-card">
+                <h5><a class="hotel-preview-trigger" href="https://www.google.com/maps/search/?api=1&amp;query=Hilton%20Garden%20Inn%20Temecula%2028210%20Jefferson%20Ave%20Temecula%20CA%2092590" target="_blank" rel="noopener" aria-describedby="hotel-preview-hilton-garden-inn-temecula" aria-expanded="false">Hilton Garden Inn Temecula</a></h5>
+                <div class="hotel-preview" id="hotel-preview-hilton-garden-inn-temecula" role="tooltip">
+                    <img class="hotel-preview-thumb" src="img/hotels/hilton-garden-inn.svg" alt="Hilton Garden Inn Temecula thumbnail" loading="lazy">
+                    <div class="hotel-preview-copy">
+                        <p class="hotel-preview-label">Budget note</p>
+                        <p>Mid-range downtown option; use the hotel link for current wedding-weekend nightly rates.</p>
+                        <p class="hotel-preview-label">Availability</p>
+                        <p>Best for guests who want to stay near Old Town and the after-party area. Availability can change quickly.</p>
+                        <div class="hotel-preview-footer"><span>Last checked: June 6, 2026</span><a class="hotel-preview-link" href="https://www.google.com/maps/search/?api=1&amp;query=Hilton%20Garden%20Inn%20Temecula%2028210%20Jefferson%20Ave%20Temecula%20CA%2092590" target="_blank" rel="noopener">Open hotel</a></div>
+                    </div>
+                </div>
                 <p>28210 Jefferson Ave, Temecula, CA 92590. Phone: (951) 296-2288. Near downtown Temecula and walking distance from Blackbird Tavern, where we plan to start the night after the reception.</p>
             </div>
-            <div class="col-md-4">
-                <h5><a href="https://www.google.com/maps/search/?api=1&amp;query=Villa%20Inn%20by%20Temecula%20Inns%2036130%20Meadow%20Ridge%20Rd%20Temecula%20CA%2092592" target="_blank" rel="noopener">Villa Inn by Temecula Inns</a></h5>
+            <div class="col-md-4 hotel-card">
+                <h5><a class="hotel-preview-trigger" href="https://www.google.com/maps/search/?api=1&amp;query=Villa%20Inn%20by%20Temecula%20Inns%2036130%20Meadow%20Ridge%20Rd%20Temecula%20CA%2092592" target="_blank" rel="noopener" aria-describedby="hotel-preview-villa-inn-by-temecula-inns" aria-expanded="false">Villa Inn by Temecula Inns</a></h5>
+                <div class="hotel-preview" id="hotel-preview-villa-inn-by-temecula-inns" role="tooltip">
+                    <img class="hotel-preview-thumb" src="img/hotels/villa-inn.svg" alt="Villa Inn by Temecula Inns thumbnail" loading="lazy">
+                    <div class="hotel-preview-copy">
+                        <p class="hotel-preview-label">Budget note</p>
+                        <p>Venue-area boutique option; rates may vary by room type and wedding-weekend demand.</p>
+                        <p class="hotel-preview-label">Availability</p>
+                        <p>Closest listed option to the venue; plan transportation if continuing downtown after the reception.</p>
+                        <div class="hotel-preview-footer"><span>Last checked: June 6, 2026</span><a class="hotel-preview-link" href="https://www.google.com/maps/search/?api=1&amp;query=Villa%20Inn%20by%20Temecula%20Inns%2036130%20Meadow%20Ridge%20Rd%20Temecula%20CA%2092592" target="_blank" rel="noopener">Open hotel</a></div>
+                    </div>
+                </div>
                 <p>36130 Meadow Ridge Rd, Temecula, CA 92592. Kate and Hamahito will be staying here. Closer to the wedding venue, but not close to downtown or Blackbird Tavern; guests should plan transportation back if they go out afterward.</p>
             </div>
-            <div class="col-md-4">
-                <h5><a href="https://www.hilton.com/en/hotels/cldteht-home2-suites-temecula/" target="_blank" rel="noopener">Home2 Suites by Hilton Temecula</a></h5>
+            <div class="col-md-4 hotel-card">
+                <h5><a class="hotel-preview-trigger" href="https://www.hilton.com/en/hotels/cldteht-home2-suites-temecula/" target="_blank" rel="noopener" aria-describedby="hotel-preview-home2-suites-by-hilton-temecula" aria-expanded="false">Home2 Suites by Hilton Temecula</a></h5>
+                <div class="hotel-preview" id="hotel-preview-home2-suites-by-hilton-temecula" role="tooltip">
+                    <img class="hotel-preview-thumb" src="img/hotels/home2-suites.svg" alt="Home2 Suites by Hilton Temecula thumbnail" loading="lazy">
+                    <div class="hotel-preview-copy">
+                        <p class="hotel-preview-label">Budget note</p>
+                        <p>Suite-style option that may work well for longer stays or guests sharing space. Check live rates before booking.</p>
+                        <p class="hotel-preview-label">Availability</p>
+                        <p>Near Old Town and I-15; availability and prices can change with demand.</p>
+                        <div class="hotel-preview-footer"><span>Last checked: June 6, 2026</span><a class="hotel-preview-link" href="https://www.hilton.com/en/hotels/cldteht-home2-suites-temecula/" target="_blank" rel="noopener">Open hotel</a></div>
+                    </div>
+                </div>
                 <p>28400 Rancho California Road, Temecula, CA 92590. Another Hilton option near Old Town Temecula and I-15, with suite-style rooms.</p>
             </div>
         </div>
@@ -399,6 +429,6 @@
 <script>
     window.KH_RSVP_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20260606-6"></script>
+<script src="js/scripts.js?v=20260606-7"></script>
 </body>
 </html>

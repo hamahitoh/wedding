@@ -267,6 +267,9 @@ $(document).ready(function () {
 
     function defaultContentImageUrl(name) {
         var images = {
+            'hilton garden inn temecula': 'img/hotels/hilton-garden-inn.svg',
+            'villa inn by temecula inns': 'img/hotels/villa-inn.svg',
+            'home2 suites by hilton temecula': 'img/hotels/home2-suites.svg',
             'old town temecula': 'img/things/old-town.svg',
             'check out the wineries': 'img/things/wineries.svg',
             'the press espresso': 'img/things/press-espresso.svg'
@@ -274,20 +277,80 @@ $(document).ready(function () {
         return images[$.trim(name || '').toLowerCase()] || '';
     }
 
-    function renderContentCards(rows) {
-        return (rows || []).map(function (item) {
+    function contentId(value, fallback) {
+        var slug = $.trim(value || '').toLowerCase()
+            .replace(/&/g, 'and')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        return slug || fallback;
+    }
+
+    function renderHotelPreview(item, name, url, index) {
+        var imageUrl = safeImageUrl(item.image_url || defaultContentImageUrl(name));
+        var budgetNote = item.budget_note || '';
+        var availabilityNote = item.availability_note || '';
+        var lastChecked = item.last_checked || '';
+        var previewId = 'hotel-preview-' + contentId(name, 'option-' + index);
+        var image = imageUrl
+            ? '<img class="hotel-preview-thumb" src="' + rsvpEscape(imageUrl) + '" alt="' + rsvpEscape(name) + ' thumbnail" loading="lazy">'
+            : '';
+        var footerLink = url
+            ? '<a class="hotel-preview-link" href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">Open hotel</a>'
+            : '';
+        var footer = lastChecked || footerLink
+            ? '<div class="hotel-preview-footer">' +
+                (lastChecked ? '<span>Last checked: ' + rsvpEscape(lastChecked) + '</span>' : '<span></span>') +
+                footerLink +
+                '</div>'
+            : '';
+
+        if (!image && !budgetNote && !availabilityNote && !lastChecked && !url) {
+            return { html: '', id: '' };
+        }
+
+        return {
+            id: previewId,
+            html: '<div class="hotel-preview" id="' + rsvpEscape(previewId) + '" role="tooltip">' +
+                image +
+                '<div class="hotel-preview-copy">' +
+                (budgetNote ? '<p class="hotel-preview-label">Budget note</p><p>' + paragraphHtml(budgetNote) + '</p>' : '') +
+                (availabilityNote ? '<p class="hotel-preview-label">Availability</p><p>' + paragraphHtml(availabilityNote) + '</p>' : '') +
+                footer +
+                '</div>' +
+                '</div>'
+        };
+    }
+
+    function renderContentCards(rows, options) {
+        options = options || {};
+        return (rows || []).map(function (item, index) {
             var name = item.name || '';
             var description = item.description || '';
-            var url = item.url || '';
+            var url = safeLinkUrl(item.url || '');
             var imageUrl = safeImageUrl(item.image_url || defaultContentImageUrl(name));
-            var image = imageUrl
+            var preview = options.hotelPreview ? renderHotelPreview(item, name, url, index) : { html: '', id: '' };
+            var image = imageUrl && !options.hotelPreview
                 ? '<img class="content-card-thumb" src="' + rsvpEscape(imageUrl) + '" alt="' + rsvpEscape(name) + ' thumbnail" loading="lazy">'
                 : '';
             var title = url
-                ? '<h5><a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(name) + '</a></h5>'
+                ? '<h5><a' +
+                    (options.hotelPreview ? ' class="hotel-preview-trigger" aria-expanded="false"' + (preview.id ? ' aria-describedby="' + rsvpEscape(preview.id) + '"' : '') : '') +
+                    ' href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(name) + '</a></h5>'
                 : '<h5>' + rsvpEscape(name) + '</h5>';
-            return '<div class="col-md-4">' + image + title + '<p>' + paragraphHtml(description) + '</p></div>';
+            return '<div class="col-md-4' + (options.hotelPreview ? ' hotel-card' : '') + '">' +
+                image + title + preview.html + '<p>' + paragraphHtml(description) + '</p></div>';
         }).join('');
+    }
+
+    function isHotelTapMode() {
+        return window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    }
+
+    function closeHotelPreviews() {
+        $('.hotel-card.is-preview-open')
+            .removeClass('is-preview-open')
+            .find('.hotel-preview-trigger')
+            .attr('aria-expanded', 'false');
     }
 
     function renderScheduleItems(rows, column, includeHeader, headerText) {
@@ -322,7 +385,7 @@ $(document).ready(function () {
         $('#site-dress-title').html(rsvpEscape(event.dress_code_title || 'Wedding') + dressTime);
         $('#site-dress-body').html(paragraphHtml(event.dress_code_body || 'Add dress code here. Include formality, shoe advice, outdoor/indoor notes, and expected weather.'));
         $('#site-hotels-intro').text(travel.hotels_intro || '');
-        $('#site-hotels-grid').html(renderContentCards(travel.hotels || []));
+        $('#site-hotels-grid').html(renderContentCards(travel.hotels || [], { hotelPreview: true }));
         $('#site-things-intro').text(travel.things_intro || '').toggle(!!travel.things_intro);
         $('#site-things-grid').html(renderContentCards(travel.things_to_do || []));
         $('#site-venue-name').text(venueName);
@@ -991,6 +1054,32 @@ $(document).ready(function () {
         }).always(function () {
             button.prop('disabled', false).text('Send Change Request');
         });
+    });
+
+    $(document).on('click', '.hotel-preview-trigger', function (event) {
+        if (!isHotelTapMode()) {
+            return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        var card = $(this).closest('.hotel-card');
+        var shouldOpen = !card.hasClass('is-preview-open');
+        closeHotelPreviews();
+        card.toggleClass('is-preview-open', shouldOpen);
+        $(this).attr('aria-expanded', shouldOpen ? 'true' : 'false');
+    });
+
+    $(document).on('click touchstart', function (event) {
+        if (!$(event.target).closest('.hotel-card').length) {
+            closeHotelPreviews();
+        }
+    });
+
+    $(document).on('keydown', function (event) {
+        var key = event.key || event.which;
+        if (key === 'Escape' || key === 'Esc' || key === 27) {
+            closeHotelPreviews();
+        }
     });
 
     $('#rsvp-invited-guests').on('change', '.rsvp-invited-attendance', syncPartySizeControls);
