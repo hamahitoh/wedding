@@ -88,8 +88,9 @@
     margin-left: -2px;
 }
 
-header .header-nav a {
-    font-size: 17px;
+header .header-nav a,
+header .member-actions a {
+    font-size: 19px;
 }
 
 .hero {
