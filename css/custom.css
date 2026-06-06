@@ -302,9 +302,13 @@ section#intro .welcome-title::after {
     position: relative;
 }
 
-.hotel-grid h5,
-.area-grid h5 {
+.hotel-grid h5 {
     color: #3d4351;
+    margin-bottom: 12px;
+}
+
+.area-grid h5 {
+    color: #e8ca6f;
     margin-bottom: 12px;
 }
 
