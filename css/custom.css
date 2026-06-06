@@ -174,9 +174,17 @@ header .header-nav a {
     color: #e8ca6f;
 }
 
-@media screen and (min-width: 641px) and (max-width: 1280px) {
+@media screen and (max-width: 1280px) {
+    .hero > .container {
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 52%;
+        transform: translateY(-45%);
+    }
+
     .hero .hero-content {
-        padding-top: clamp(240px, 22vw, 310px);
+        padding-top: 0;
     }
 }
 
@@ -797,7 +805,7 @@ section#intro .welcome-title::after {
     }
 
     .hero .hero-content {
-        padding-top: clamp(200px, 36vh, 250px);
+        padding-top: 0;
         padding-left: 0;
         text-align: center;
     }
@@ -832,6 +840,8 @@ section#intro .welcome-title::after {
     .hero > .container {
         padding-left: 20px;
         padding-right: 20px;
+        top: 50%;
+        transform: translateY(-44%);
     }
 
     .hero > .container .col-md-10.col-md-offset-1 {
