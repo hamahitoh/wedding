@@ -173,44 +173,6 @@ body > section:not(.hero) .btn,
     padding-bottom: 0;
 }
 
-section#invitation .invitation-title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    color: #433b33 !important;
-    font-family: "Cormorant Garamond", Merriweather, Georgia, serif !important;
-    font-size: 40px;
-    font-style: italic;
-    font-weight: 600;
-    letter-spacing: 0 !important;
-    line-height: 1.2;
-    max-width: 760px;
-    margin: 0 auto 14px;
-    text-transform: none !important;
-}
-
-section#invitation .invitation-title .title-rule {
-    display: block;
-    flex: 0 1 92px;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(232, 202, 111, 0), #c99b3d, #fff0aa);
-    box-shadow: 0 1px 8px rgba(184, 137, 47, 0.22);
-}
-
-section#invitation .invitation-title .title-rule:last-child {
-    background: linear-gradient(90deg, #fff0aa, #c99b3d, rgba(232, 202, 111, 0));
-}
-
-#site-invitation-summary {
-    color: rgba(67, 59, 51, 0.62);
-    font-family: "Cormorant Garamond", Merriweather, Georgia, serif;
-    font-size: 22px;
-    font-style: italic;
-    font-weight: 500;
-    line-height: 1.5;
-}
-
 section#intro .welcome-title {
     color: #b8892f !important;
     font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif !important;
@@ -241,6 +203,14 @@ section#intro .welcome-title::after {
     font-size: 24px;
     font-weight: 500;
     line-height: 1.65;
+}
+
+#site-invitation-summary {
+    margin-top: 8px;
+    color: rgba(67, 59, 51, 0.62);
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.5;
 }
 
 .hotel-grid,
@@ -770,15 +740,6 @@ section#intro .welcome-title::after {
         max-width: none;
         margin-bottom: 24px;
         font-size: 23px;
-    }
-
-    section#invitation .invitation-title {
-        font-size: 32px;
-        gap: 10px;
-    }
-
-    section#invitation .invitation-title .title-rule {
-        flex-basis: 34px;
     }
 
     #site-invitation-summary {
