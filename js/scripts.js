@@ -267,9 +267,9 @@ $(document).ready(function () {
 
     function defaultContentImageUrl(name) {
         var images = {
-            'hilton garden inn temecula': 'img/hotels/hilton-garden-inn.svg',
-            'villa inn by temecula inns': 'img/hotels/villa-inn.svg',
-            'home2 suites by hilton temecula': 'img/hotels/home2-suites.svg',
+            'hilton garden inn temecula': 'img/hotels/hilton-garden-inn.jpg',
+            'villa inn by temecula inns': 'img/hotels/villa-inn.jpg',
+            'home2 suites by hilton temecula': 'img/hotels/home2-suites.jpg',
             'old town temecula': 'img/things/old-town.svg',
             'check out the wineries': 'img/things/wineries.svg',
             'the press espresso': 'img/things/press-espresso.svg'
@@ -295,7 +295,7 @@ $(document).ready(function () {
             ? '<img class="hotel-preview-thumb" src="' + rsvpEscape(imageUrl) + '" alt="' + rsvpEscape(name) + ' thumbnail" loading="lazy">'
             : '';
         var footerLink = url
-            ? '<a class="hotel-preview-link" href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">Open hotel</a>'
+            ? '<a class="hotel-preview-link" href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">Open source</a>'
             : '';
         var footer = lastChecked || footerLink
             ? '<div class="hotel-preview-footer">' +
@@ -313,7 +313,7 @@ $(document).ready(function () {
             html: '<div class="hotel-preview" id="' + rsvpEscape(previewId) + '" role="tooltip">' +
                 image +
                 '<div class="hotel-preview-copy">' +
-                (budgetNote ? '<p class="hotel-preview-label">Budget note</p><p>' + paragraphHtml(budgetNote) + '</p>' : '') +
+                (budgetNote ? '<p class="hotel-preview-label">Rate snapshot</p><p>' + paragraphHtml(budgetNote) + '</p>' : '') +
                 (availabilityNote ? '<p class="hotel-preview-label">Availability</p><p>' + paragraphHtml(availabilityNote) + '</p>' : '') +
                 footer +
                 '</div>' +
