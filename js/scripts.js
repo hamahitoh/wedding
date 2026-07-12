@@ -238,6 +238,16 @@ $(document).ready(function () {
         });
     }
 
+    function photoUploadApi(formData) {
+        return $.ajax({
+            url: rsvpBackend.apiBaseUrl + '/api/wedding/public/photos',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false
+        });
+    }
+
     function addressHtml(value) {
         return rsvpEscape(value).replace(/,\s*/g, '<br>');
     }
@@ -1149,6 +1159,49 @@ $(document).ready(function () {
             $('#rsvp-submit-button').prop('disabled', false).text('Submit RSVP');
             $('#alert-wrapper').html(alert_markup('danger', '<strong>' + rsvpEscape(detail) + '</strong>'));
         });
+    });
+
+    $('#photo-share-modal').on('show.bs.modal', function () {
+        $('#photo-share-form')[0].reset();
+        $('#photo-share-status').removeClass('is-success is-error').text('');
+        $('#photo-share-submit').prop('disabled', false).text('Upload Photos');
+    });
+
+    $('#photo-share-form').on('submit', function (event) {
+        event.preventDefault();
+        var files = $('#photo-share-files')[0].files;
+        var status = $('#photo-share-status');
+        if (!rsvpBackend.apiBaseUrl) {
+            status.removeClass('is-success').addClass('is-error').text('Photo uploads are not available right now.');
+            return;
+        }
+        if (!files || !files.length) {
+            status.removeClass('is-success').addClass('is-error').text('Please choose at least one photo.');
+            return;
+        }
+        if (files.length > 10) {
+            status.removeClass('is-success').addClass('is-error').text('Please upload 10 photos or fewer at a time.');
+            return;
+        }
+        var formData = new FormData();
+        $.each(files, function (_index, file) {
+            formData.append('files', file);
+        });
+        $('#photo-share-submit').prop('disabled', true).text('Uploading...');
+        status.removeClass('is-success is-error').text('Uploading photos...');
+        photoUploadApi(formData)
+            .done(function (data) {
+                var count = (data && data.count) || files.length;
+                status.removeClass('is-error').addClass('is-success').text('Thank you! Uploaded ' + count + ' photo' + (count === 1 ? '' : 's') + '.');
+                $('#photo-share-form')[0].reset();
+            })
+            .fail(function (xhr) {
+                var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Photo upload failed. Please try again.';
+                status.removeClass('is-success').addClass('is-error').text(detail);
+            })
+            .always(function () {
+                $('#photo-share-submit').prop('disabled', false).text('Upload Photos');
+            });
     });
 
 });

@@ -12,6 +12,52 @@
         local("Versailles");
 }
 
+.photo-share-panel {
+    padding: 36px 18px 24px;
+}
+
+.photo-share-panel h3 {
+    margin-bottom: 16px;
+}
+
+.photo-share-panel p {
+    max-width: 640px;
+    margin: 0 auto 24px;
+    color: #4c4947;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+.photo-share-form {
+    display: grid;
+    gap: 16px;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.photo-share-form input[type="file"] {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 4px;
+    background: #fff;
+}
+
+.photo-share-status {
+    min-height: 24px;
+    margin-top: 16px;
+    color: #5f584f;
+    font-weight: 600;
+}
+
+.photo-share-status.is-success {
+    color: #2f6d4f;
+}
+
+.photo-share-status.is-error {
+    color: #9f3a38;
+}
+
 @font-face {
     font-family: "Wedding Versailles";
     font-style: normal;
@@ -91,6 +137,10 @@
 header .header-nav a,
 header .member-actions a {
     font-size: 19px;
+}
+
+header .member-actions li + li {
+    margin-left: 10px;
 }
 
 .hero {

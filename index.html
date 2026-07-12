@@ -57,7 +57,7 @@
     <link rel="stylesheet" href="css/flexslider.css">
     <link rel="stylesheet" href="css/styles.min.css">
     <link rel="stylesheet" href="css/queries.css">
-    <link rel="stylesheet" href="css/custom.css?v=20260606-24">
+    <link rel="stylesheet" href="css/custom.css?v=20260712-1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
@@ -86,6 +86,8 @@
                             <li class="hidden-sm hidden-xs"><a href="#map">Venue</a></li>
                         </ul>
                         <ul class="member-actions">
+                            <li><a href="#" class="btn-white btn-small" data-toggle="modal"
+                                   data-target="#photo-share-modal">Share Photos</a></li>
                             <li><a href="#" class="btn-white btn-small" data-toggle="modal"
                                    data-target="#rsvp-form-modal">RSVP</a></li>
                         </ul>
@@ -299,6 +301,27 @@
     </div>
 </section>
 
+<div id="photo-share-modal" class="modal fade photo-share-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span>
+                </button>
+                <div class="photo-share-panel text-center">
+                    <h3>Share Photos</h3>
+                    <p>Share any favorite moments you had with either the Bride, Groom or both. We may use it for decorating the venue! Thank you.</p>
+                    <form id="photo-share-form" class="photo-share-form">
+                        <label for="photo-share-files" class="sr-only">Choose photos</label>
+                        <input id="photo-share-files" name="files" type="file" accept="image/*" multiple required>
+                        <button class="btn-fill photo-share-submit" id="photo-share-submit" type="submit">Upload Photos</button>
+                    </form>
+                    <div id="photo-share-status" class="photo-share-status" role="status" aria-live="polite"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <section class="rsvp text-center" id="rsvp">
     <div id="rsvp-form-modal" class="modal fade rsvp-form-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
@@ -435,6 +458,6 @@
 <script>
     window.KH_RSVP_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20260606-10"></script>
+<script src="js/scripts.js?v=20260712-1"></script>
 </body>
 </html>
