@@ -568,13 +568,21 @@ $(document).ready(function () {
         }
     }
 
-    function eventOptionsMarkup(showRehearsal, visible, values) {
+    function eventOptionsMarkup(showRehearsal, visible, values, rowKey) {
         values = values || {};
+        rowKey = String(rowKey || 'guest').replace(/[^a-zA-Z0-9_-]+/g, '-');
         return '<div class="rsvp-event-options' + (visible ? ' is-visible' : '') + '">' +
             '<div class="rsvp-event-options-title">Other events this person will attend</div>' +
             '<div class="rsvp-guest-options">' +
             (showRehearsal ? '<label><input class="rsvp-event-rehearsal" type="checkbox"' + (values.rehearsal_dinner ? ' checked' : '') + '>Rehearsal Dinner</label>' : '') +
             '<label><input class="rsvp-event-brunch" type="checkbox"' + (values.sunday_brunch ? ' checked' : '') + '>Sunday Brunch</label>' +
+            '</div>' +
+            '<div class="rsvp-shuttle-question">' +
+            '<div class="rsvp-shuttle-title">Do you need a shuttle to take you from downtown Temecula to the venue and back at the end of the event?</div>' +
+            '<div class="rsvp-guest-options">' +
+            '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="yes"' + (values.shuttle_needed === 'yes' ? ' checked' : '') + '>Yes</label>' +
+            '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="no"' + (values.shuttle_needed === 'no' ? ' checked' : '') + '>No</label>' +
+            '</div>' +
             '</div></div>';
     }
 
@@ -582,12 +590,14 @@ $(document).ready(function () {
         if (!attending) {
             return {
                 rehearsal_dinner: false,
-                sunday_brunch: false
+                sunday_brunch: false,
+                shuttle_needed: ''
             };
         }
         return {
             rehearsal_dinner: row.find('.rsvp-event-rehearsal').is(':checked'),
-            sunday_brunch: row.find('.rsvp-event-brunch').is(':checked')
+            sunday_brunch: row.find('.rsvp-event-brunch').is(':checked'),
+            shuttle_needed: row.find('.rsvp-shuttle-needed:checked').val() || ''
         };
     }
 
@@ -615,7 +625,8 @@ $(document).ready(function () {
                 attendance: attendance,
                 age_three_or_under: false,
                 rehearsal_dinner: events.rehearsal_dinner,
-                sunday_brunch: events.sunday_brunch
+                sunday_brunch: events.sunday_brunch,
+                shuttle_needed: events.shuttle_needed
             });
         });
         return responses;
@@ -638,7 +649,7 @@ $(document).ready(function () {
                 '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="Yes, I will attend" required>Yes, I will attend</label>' +
                 '<label><input class="rsvp-invited-attendance" type="radio" name="' + radioName + '" value="No, I cannot attend" required>No, I cannot attend</label>' +
                 '</div>' +
-                eventOptionsMarkup(showRehearsal, false, {}) +
+                eventOptionsMarkup(showRehearsal, false, {}, 'invited-' + index) +
                 '</div>';
         }).join('');
         $('#rsvp-invited-guests').html('<h4>Will You Be Attending The Reception?</h4>' + rows);
@@ -672,6 +683,11 @@ $(document).ready(function () {
                 }
                 if (person.sunday_brunch) {
                     events.push('Sunday Brunch');
+                }
+                if (person.shuttle_needed === 'yes') {
+                    events.push('Shuttle: yes');
+                } else if (person.shuttle_needed === 'no') {
+                    events.push('Shuttle: no');
                 }
                 if (person.age_three_or_under) {
                     events.push('3 years or younger');
@@ -711,7 +727,8 @@ $(document).ready(function () {
             existingListItem('Contact email', existing.contact || ''),
             existingListItem('Overall response', existing.attendance || ''),
             existingListItem('Party size', existing.party_size || existing.party_size === 0 ? String(existing.party_size) : ''),
-            existingListItem('Sunday brunch', eventGuestSummary(existing.sunday_brunch_guest_names, existing.sunday_brunch_attendance))
+            existingListItem('Sunday brunch', eventGuestSummary(existing.sunday_brunch_guest_names, existing.sunday_brunch_attendance)),
+            existingListItem('Shuttle needed', existing.shuttle_needed || '')
         ].join('');
         var optional = [
             existingListItem('Dietary restrictions or allergies', existing.dietary_restrictions || ''),
@@ -768,7 +785,8 @@ $(document).ready(function () {
                 name: $(this).find('.rsvp-additional-name').val() || '',
                 age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked'),
                 rehearsal_dinner: $(this).find('.rsvp-event-rehearsal').is(':checked'),
-                sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked')
+                sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked'),
+                shuttle_needed: $(this).find('.rsvp-shuttle-needed:checked').val() || ''
             });
         });
         if (count <= 0) {
@@ -786,7 +804,7 @@ $(document).ready(function () {
                 '<label for="rsvp-additional-name-' + i + '">' + labelPrefix + ' ' + (i + 1) + ' full name</label>' +
                 '<input id="rsvp-additional-name-' + i + '" class="rsvp-additional-name" type="text" autocomplete="name" value="' + rsvpEscape(values.name || '') + '">' +
                 (showAgeCheck ? '<label class="rsvp-age-check"><input class="rsvp-additional-age" type="checkbox"' + (values.age_three_or_under ? ' checked' : '') + '>3 Years or Younger?</label>' : '') +
-                eventOptionsMarkup(showRehearsal, true, values) +
+                eventOptionsMarkup(showRehearsal, true, values, rowType + '-' + i) +
                 '</div>';
         }
         $('#rsvp-additional-guests').html('<h4>' + title + '</h4>' + rows);
@@ -845,7 +863,8 @@ $(document).ready(function () {
                 name: $.trim($(this).find('.rsvp-additional-name').val() || ''),
                 age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked'),
                 rehearsal_dinner: $(this).find('.rsvp-event-rehearsal').is(':checked'),
-                sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked')
+                sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked'),
+                shuttle_needed: $(this).find('.rsvp-shuttle-needed:checked').val() || ''
             });
         });
         return responses;
@@ -874,6 +893,12 @@ $(document).ready(function () {
         if (missingInvited) {
             return 'Choose yes or no for each guest on this invitation.';
         }
+        var missingInvitedShuttle = invitedResponses.some(function (item) {
+            return item.attendance === 'Yes, I will attend' && item.shuttle_needed !== 'yes' && item.shuttle_needed !== 'no';
+        });
+        if (missingInvitedShuttle) {
+            return 'Choose yes or no for the shuttle question for each attending guest.';
+        }
         var attendingCount = invitedResponses.filter(function (item) {
             return item.attendance === 'Yes, I will attend';
         }).length;
@@ -901,6 +926,12 @@ $(document).ready(function () {
         });
         if (missingAdditional) {
             return 'Enter a full name for each additional guest.';
+        }
+        var missingAdditionalShuttle = additionalResponses.some(function (item) {
+            return item.shuttle_needed !== 'yes' && item.shuttle_needed !== 'no';
+        });
+        if (missingAdditionalShuttle) {
+            return 'Choose yes or no for the shuttle question for each additional guest.';
         }
         return '';
     }
