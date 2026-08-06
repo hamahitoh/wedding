@@ -740,6 +740,9 @@ $(document).ready(function () {
                 }
                 if (person.shuttle_needed === 'yes') {
                     events.push('Shuttle: yes');
+                    if (person.shuttle_hotel_address) {
+                        events.push('Lodging: ' + person.shuttle_hotel_address);
+                    }
                 } else if (person.shuttle_needed === 'no') {
                     events.push('Shuttle: no');
                 }
@@ -769,6 +772,32 @@ $(document).ready(function () {
             return 'Attending: ' + names.join('; ');
         }
         return fallback || 'No attendance recorded';
+    }
+
+    function existingShuttleAddressEditor(existing) {
+        var invited = $.isArray(existing.invited_guest_responses) ? existing.invited_guest_responses : [];
+        var additional = $.isArray(existing.additional_guest_responses) ? existing.additional_guest_responses : [];
+        var people = invited.concat(additional).filter(function (person) {
+            var attendance = String(person.attendance_bucket || person.attendance || '').toLowerCase();
+            return person.shuttle_needed === 'yes' && attendance !== 'declined' && !attendance.match(/^no\b/);
+        });
+        if (!people.length) {
+            return '';
+        }
+        var rows = people.map(function (person, index) {
+            var inputId = 'rsvp-existing-shuttle-address-' + index;
+            return '<label for="' + inputId + '">' +
+                '<span>' + rsvpEscape(person.name || 'Guest') + '</span>' +
+                '<input id="' + inputId + '" class="rsvp-existing-shuttle-address-input" type="text" autocomplete="street-address" data-guest-name="' + rsvpEscape(person.name || '') + '" value="' + rsvpEscape(person.shuttle_hotel_address || '') + '" placeholder="Hotel or lodging address">' +
+                '</label>';
+        }).join('');
+        return '<div class="rsvp-existing-section rsvp-existing-shuttle-address-section">' +
+            '<h4>Shuttle Lodging</h4>' +
+            '<div class="rsvp-existing-copy">If you booked your stay after RSVPing, add or update your hotel or lodging address here.</div>' +
+            '<div class="rsvp-existing-shuttle-address-list">' + rows + '</div>' +
+            '<button class="btn-fill rsvp-shuttle-address-submit" type="button">Save Shuttle Lodging</button>' +
+            '<div class="rsvp-shuttle-address-update-status" role="status" aria-live="polite"></div>' +
+            '</div>';
     }
 
     function renderExistingResponse(data) {
@@ -806,6 +835,7 @@ $(document).ready(function () {
             '<ul class="rsvp-existing-details">' + details + '</ul>' +
             '</div>' +
             (people ? '<div class="rsvp-existing-section"><h4>Guest Responses</h4><ul class="rsvp-existing-people">' + people + '</ul></div>' : '') +
+            existingShuttleAddressEditor(existing) +
             rehearsal +
             (optional ? '<div class="rsvp-existing-section"><h4>Other Notes</h4><ul class="rsvp-existing-details">' + optional + '</ul></div>' : '') +
             '<div class="rsvp-existing-section rsvp-change-request-section">' +
@@ -1023,7 +1053,7 @@ $(document).ready(function () {
             $('#rsvp-existing-response')
                 .html(renderExistingResponse(data))
                 .show();
-            $('#rsvp-form :input').not('button, [data-dismiss], .rsvp-change-request-input').prop('disabled', true);
+            $('#rsvp-form :input').not('button, [data-dismiss], .rsvp-change-request-input, .rsvp-existing-shuttle-address-input').prop('disabled', true);
             $('#rsvp-submit-button').prop('disabled', true);
         } else {
             $('#rsvp-existing-response').hide().empty();
@@ -1162,6 +1192,40 @@ $(document).ready(function () {
             status.removeClass('is-success').addClass('is-error').text(detail);
         }).always(function () {
             button.prop('disabled', false).text('Send Change Request');
+        });
+    });
+
+    $('#rsvp-existing-response').on('click', '.rsvp-shuttle-address-submit', function () {
+        var button = $(this);
+        var panel = button.closest('.rsvp-existing-shuttle-address-section');
+        var status = panel.find('.rsvp-shuttle-address-update-status');
+        var updates = [];
+        panel.find('.rsvp-existing-shuttle-address-input').each(function () {
+            updates.push({
+                name: $(this).data('guest-name') || '',
+                shuttle_hotel_address: $.trim($(this).val() || '')
+            });
+        });
+        button.prop('disabled', true).text('Saving...');
+        status.removeClass('is-success is-error').text('Saving shuttle lodging...');
+        rsvpApi('/api/wedding/public/shuttle-address', {
+            rsvp_token: rsvpState.rsvpToken,
+            shuttle_hotel_addresses: updates
+        }).done(function (data) {
+            var message = data.message || 'Shuttle lodging updated.';
+            status.removeClass('is-error').addClass('is-success').text(message);
+            if (data.existing_response) {
+                $('#rsvp-existing-response').html(renderExistingResponse({
+                    existing_response: data.existing_response,
+                    household: rsvpState.household || {}
+                }));
+                $('#rsvp-existing-response .rsvp-shuttle-address-update-status').addClass('is-success').text(message);
+            }
+        }).fail(function (xhr) {
+            var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Could not update shuttle lodging. Please try again.';
+            status.removeClass('is-success').addClass('is-error').text(detail);
+        }).always(function () {
+            button.prop('disabled', false).text('Save Shuttle Lodging');
         });
     });
 

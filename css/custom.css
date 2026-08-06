@@ -760,7 +760,30 @@ section#intro .welcome-title::after {
     resize: vertical;
 }
 
-.rsvp-change-request-status {
+.rsvp-existing-shuttle-address-list {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 12px;
+}
+
+.rsvp-existing-shuttle-address-list label {
+    display: block;
+    margin: 0;
+    color: rgba(28, 54, 83, 0.74);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.45;
+    text-transform: none;
+}
+
+.rsvp-existing-shuttle-address-list span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.rsvp-change-request-status,
+.rsvp-shuttle-address-update-status {
     min-height: 18px;
     margin-top: 8px;
     color: rgba(28, 54, 83, 0.68);
@@ -768,12 +791,14 @@ section#intro .welcome-title::after {
     line-height: 1.4;
 }
 
-.rsvp-change-request-status.is-success {
+.rsvp-change-request-status.is-success,
+.rsvp-shuttle-address-update-status.is-success {
     color: #427262;
     font-weight: 700;
 }
 
-.rsvp-change-request-status.is-error {
+.rsvp-change-request-status.is-error,
+.rsvp-shuttle-address-update-status.is-error {
     color: #a23d3d;
     font-weight: 700;
 }
