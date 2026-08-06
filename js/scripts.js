@@ -614,6 +614,11 @@ $(document).ready(function () {
             '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="yes"' + (values.shuttle_needed === 'yes' ? ' checked' : '') + '>Yes</label>' +
             '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="no"' + (values.shuttle_needed === 'no' ? ' checked' : '') + '>No</label>' +
             '</div>' +
+            '<div class="rsvp-shuttle-address' + (values.shuttle_needed === 'yes' ? ' is-visible' : '') + '">' +
+            '<label>Optional: If you have a place to stay, please enter the address so we can do our best to choose dropoff location.' +
+            '<input class="rsvp-shuttle-hotel-address" type="text" autocomplete="street-address" value="' + rsvpEscape(values.shuttle_hotel_address || '') + '" placeholder="Hotel or lodging address">' +
+            '</label>' +
+            '</div>' +
             '</div></div>';
     }
 
@@ -622,14 +627,30 @@ $(document).ready(function () {
             return {
                 rehearsal_dinner: false,
                 sunday_brunch: false,
-                shuttle_needed: ''
+                shuttle_needed: '',
+                shuttle_hotel_address: ''
             };
         }
+        var shuttleNeeded = row.find('.rsvp-shuttle-needed:checked').val() || '';
         return {
             rehearsal_dinner: row.find('.rsvp-event-rehearsal').is(':checked'),
             sunday_brunch: row.find('.rsvp-event-brunch').is(':checked'),
-            shuttle_needed: row.find('.rsvp-shuttle-needed:checked').val() || ''
+            shuttle_needed: shuttleNeeded,
+            shuttle_hotel_address: shuttleNeeded === 'yes' ? (row.find('.rsvp-shuttle-hotel-address').val() || '').trim() : ''
         };
+    }
+
+    function syncShuttleAddressFields(scope) {
+        var root = $(scope || document);
+        var questions = root.is('.rsvp-shuttle-question') ? root : root.find('.rsvp-shuttle-question');
+        questions.each(function () {
+            var question = $(this);
+            var isNeeded = question.find('.rsvp-shuttle-needed:checked').val() === 'yes';
+            question.find('.rsvp-shuttle-address').toggleClass('is-visible', isNeeded);
+            if (!isNeeded) {
+                question.find('.rsvp-shuttle-hotel-address').val('');
+            }
+        });
     }
 
     function syncInvitedEventOptions() {
@@ -641,6 +662,7 @@ $(document).ready(function () {
                 row.find('.rsvp-event-options input').prop('checked', false);
             }
         });
+        syncShuttleAddressFields('#rsvp-invited-guests');
         renderTopRehearsalSummary();
         renderTopBrunchSummary();
     }
@@ -818,7 +840,8 @@ $(document).ready(function () {
                 age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked'),
                 rehearsal_dinner: $(this).find('.rsvp-event-rehearsal').is(':checked'),
                 sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked'),
-                shuttle_needed: $(this).find('.rsvp-shuttle-needed:checked').val() || ''
+                shuttle_needed: $(this).find('.rsvp-shuttle-needed:checked').val() || '',
+                shuttle_hotel_address: $(this).find('.rsvp-shuttle-hotel-address').val() || ''
             });
         });
         if (count <= 0) {
@@ -840,6 +863,7 @@ $(document).ready(function () {
                 '</div>';
         }
         $('#rsvp-additional-guests').html('<h4>' + title + '</h4>' + rows);
+        syncShuttleAddressFields('#rsvp-additional-guests');
     }
 
     function syncPartySizeControls() {
@@ -896,7 +920,8 @@ $(document).ready(function () {
                 age_three_or_under: $(this).find('.rsvp-additional-age').is(':checked'),
                 rehearsal_dinner: $(this).find('.rsvp-event-rehearsal').is(':checked'),
                 sunday_brunch: $(this).find('.rsvp-event-brunch').is(':checked'),
-                shuttle_needed: $(this).find('.rsvp-shuttle-needed:checked').val() || ''
+                shuttle_needed: $(this).find('.rsvp-shuttle-needed:checked').val() || '',
+                shuttle_hotel_address: $(this).find('.rsvp-shuttle-needed:checked').val() === 'yes' ? $.trim($(this).find('.rsvp-shuttle-hotel-address').val() || '') : ''
             });
         });
         return responses;
@@ -1167,6 +1192,9 @@ $(document).ready(function () {
     });
 
     $('#rsvp-invited-guests').on('change', '.rsvp-invited-attendance', syncPartySizeControls);
+    $('#rsvp-invited-guests, #rsvp-additional-guests').on('change', '.rsvp-shuttle-needed', function () {
+        syncShuttleAddressFields($(this).closest('.rsvp-shuttle-question'));
+    });
     $('#rsvp-additional-count').on('change', syncPartySizeControls);
     $('#rsvp-bringing-guest-wrap').on('change', 'input[name="bringingGuest"]', syncPartySizeControls);
 
