@@ -609,7 +609,7 @@ $(document).ready(function () {
             '<label><input class="rsvp-event-brunch" type="checkbox"' + (values.sunday_brunch ? ' checked' : '') + '>Sunday Brunch</label>' +
             '</div>' +
             '<div class="rsvp-shuttle-question">' +
-            '<div class="rsvp-shuttle-title">Do you need a shuttle to take you from downtown Temecula to the venue and back at the end of the event?</div>' +
+            '<div class="rsvp-shuttle-title">Do you need a shuttle from the venue back to downtown Temecula at the end of the event?</div>' +
             '<div class="rsvp-guest-options">' +
             '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="yes"' + (values.shuttle_needed === 'yes' ? ' checked' : '') + '>Yes</label>' +
             '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="no"' + (values.shuttle_needed === 'no' ? ' checked' : '') + '>No</label>' +
