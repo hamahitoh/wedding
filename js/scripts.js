@@ -256,6 +256,21 @@ $(document).ready(function () {
         return rsvpEscape(value).replace(/\n/g, '<br>');
     }
 
+    function dressCodeBodyHtml(value) {
+        var text = String(value || '');
+        var marker = 'Sunday Brunch Attire:';
+        var markerIndex = text.indexOf(marker);
+        if (markerIndex === -1) {
+            return '<p>' + paragraphHtml(text) + '</p>';
+        }
+
+        var before = $.trim(text.slice(0, markerIndex));
+        var after = $.trim(text.slice(markerIndex + marker.length));
+        return (before ? '<p>' + paragraphHtml(before) + '</p>' : '') +
+            '<h5>Sunday Brunch Attire</h5>' +
+            (after ? '<p>' + paragraphHtml(after) + '</p>' : '');
+    }
+
     function safeImageUrl(value) {
         var url = $.trim(value || '');
         if (!url || url.indexOf('//') === 0) {
@@ -403,7 +418,7 @@ $(document).ready(function () {
         $('#site-schedule-right').html(renderScheduleItems(event.schedule || [], 'all', true, date));
         var dressTime = event.dress_code_time ? ' <span class="time">' + rsvpEscape(event.dress_code_time) + '</span>' : '';
         $('#site-dress-title').html(rsvpEscape(event.dress_code_title || 'Wedding') + dressTime);
-        $('#site-dress-body').html(paragraphHtml(event.dress_code_body || 'Add dress code here. Include formality, shoe advice, outdoor/indoor notes, and expected weather.'));
+        $('#site-dress-body').html(dressCodeBodyHtml(event.dress_code_body || 'Add dress code here. Include formality, shoe advice, outdoor/indoor notes, and expected weather.'));
         $('#site-hotels-intro').text(travel.hotels_intro || '');
         $('#site-hotels-grid').html(renderContentCards(travel.hotels || [], { hotelPreview: true }));
         $('#site-things-intro').text(travel.things_intro || '').toggle(!!travel.things_intro);

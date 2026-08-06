@@ -298,6 +298,14 @@ footer {
     padding-bottom: 0;
 }
 
+.events .dress-code-body h5 {
+    margin-top: 18px;
+}
+
+.events .dress-code-body p {
+    padding-bottom: 0;
+}
+
 section#intro .welcome-title {
     color: #b8892f !important;
     font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif !important;
