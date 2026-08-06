@@ -615,7 +615,7 @@ $(document).ready(function () {
             '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="no"' + (values.shuttle_needed === 'no' ? ' checked' : '') + '>No</label>' +
             '</div>' +
             '<div class="rsvp-shuttle-address' + (values.shuttle_needed === 'yes' ? ' is-visible' : '') + '">' +
-            '<label>Optional: If you have a place to stay, please enter the address so we can do our best to choose dropoff location.' +
+            '<label>Optional: Where are you staying in Temecula? Add your hotel or lodging address so we can plan the best shuttle pickup and dropoff location.' +
             '<input class="rsvp-shuttle-hotel-address" type="text" autocomplete="street-address" value="' + rsvpEscape(values.shuttle_hotel_address || '') + '" placeholder="Hotel or lodging address">' +
             '</label>' +
             '</div>' +
