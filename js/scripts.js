@@ -414,6 +414,7 @@ $(document).ready(function () {
         $('#site-directions-link').attr('href', 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venueName + ' ' + venueAddress));
         renderRsvpCeremonySummary();
         renderTopRehearsalSummary();
+        renderTopBrunchSummary();
     }
 
     function loadWebsiteContent() {
@@ -568,6 +569,36 @@ $(document).ready(function () {
         }
     }
 
+    function brunchDetailMarkup() {
+        var content = rsvpState.publicContent || {};
+        var event = content.event_details || {};
+        var brunch = event.sunday_brunch || {};
+        var date = brunch.date || 'Sunday, October 18, 2026';
+        var time = brunch.time || '11:00 AM - 2:00 PM';
+        var venue = brunch.venue_name || 'Big Nose Winery';
+        var address = brunch.venue_address || '42100 Main Street, Suite D, Temecula, CA 92590';
+        var url = safeLinkUrl(brunch.url || 'https://bignosefamilywinery.com/');
+        var note = brunch.description || 'Casual brunch and lawn games in Old Town Temecula. Drop by anytime.';
+        var venueMarkup = url
+            ? '<a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(venue || url) + '</a>'
+            : rsvpEscape(venue);
+        return '<strong>Sunday Brunch</strong>' +
+            '<div>' + rsvpEscape(date) + ' at ' + rsvpEscape(time) + '</div>' +
+            (venueMarkup ? '<div>' + venueMarkup + '</div>' : '') +
+            '<div>' + rsvpEscape(address) + '</div>' +
+            '<div>' + rsvpEscape(note) + '</div>';
+    }
+
+    function renderTopBrunchSummary() {
+        var markup = brunchDetailMarkup();
+        var hasAttendingGuest = attendingInvitedCount() > 0;
+        if (markup && hasAttendingGuest) {
+            $('#rsvp-brunch-summary').html(markup).show();
+        } else {
+            $('#rsvp-brunch-summary').hide().empty();
+        }
+    }
+
     function eventOptionsMarkup(showRehearsal, visible, values, rowKey) {
         values = values || {};
         rowKey = String(rowKey || 'guest').replace(/[^a-zA-Z0-9_-]+/g, '-');
@@ -611,6 +642,7 @@ $(document).ready(function () {
             }
         });
         renderTopRehearsalSummary();
+        renderTopBrunchSummary();
     }
 
     function collectInvitedGuestResponses() {
@@ -949,6 +981,7 @@ $(document).ready(function () {
             .show();
         renderRsvpCeremonySummary();
         renderTopRehearsalSummary();
+        renderTopBrunchSummary();
         renderInvitedGuestRows(householdMemberNames(household));
         renderAdditionalCountOptions(0, 0);
         renderAdditionalGuestRows(0, false);

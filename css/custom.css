@@ -899,6 +899,12 @@ section#intro .welcome-title::after {
     text-align: left;
 }
 
+.rsvp-brunch-summary {
+    display: none;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
 .rsvp-additional-empty {
     margin-top: -6px;
 }
