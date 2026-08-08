@@ -395,9 +395,16 @@ $(document).ready(function () {
             }
             return (item.column || 'left') === column;
         });
-        var html = includeHeader ? '<div><p class="schedule-column-heading"><strong>' + rsvpEscape(headerText) + '</strong></p></div>' : '';
+        var activeHeading = '';
+        var html = '';
         html += items.map(function (item) {
-            return '<div class="schedule-item">' +
+            var heading = item.date || headerText || '';
+            var headingHtml = '';
+            if (includeHeader && heading && heading !== activeHeading) {
+                activeHeading = heading;
+                headingHtml = '<div><p class="schedule-column-heading"><strong>' + rsvpEscape(heading) + '</strong></p></div>';
+            }
+            return headingHtml + '<div class="schedule-item">' +
                 '<h5>' + rsvpEscape(item.title || '') + ' <span class="time">' + rsvpEscape(item.time || '') + '</span></h5>' +
                 '<p>' + paragraphHtml(item.description || '') + '</p>' +
                 '</div>';
