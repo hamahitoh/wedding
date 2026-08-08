@@ -282,8 +282,13 @@ footer {
     font-weight: 500;
 }
 
+.events .dress-code-row {
+    margin-bottom: 36px;
+}
+
 .events .dress-code-block {
-    max-width: 440px;
+    border-bottom: 1px solid rgba(71, 76, 91, 0.16);
+    padding-bottom: 32px;
 }
 
 .events .schedule-item {
