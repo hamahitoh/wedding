@@ -253,8 +253,7 @@ body > section:not(.hero) h5,
 }
 
 body > section:not(.hero) .btn,
-.modal .btn,
-#btn-show-content {
+.modal .btn {
     font-size: 17px;
 }
 
@@ -280,6 +279,10 @@ body > section:not(.hero) .btn,
 footer {
     font-family: "Wedding Versailles", "Versailles", "Versailles LT Std", "Versailles LT Pro", Merriweather, Georgia, serif;
     font-weight: 500;
+}
+
+#map .venue-directions {
+    margin-bottom: 28px;
 }
 
 .events .dress-code-row {
@@ -545,14 +548,6 @@ section#intro .welcome-title::after {
     background:
         linear-gradient(rgba(55, 36, 40, 0.7), rgba(55, 36, 40, 0.7)),
         url("../img/polygonal-bg.jpg") center / cover;
-}
-
-#map-content-wrapper {
-    margin-top: -410px;
-}
-
-#map-content {
-    box-shadow: 0 18px 44px rgba(31, 37, 50, 0.16);
 }
 
 .rsvp {

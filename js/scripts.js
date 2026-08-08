@@ -168,17 +168,6 @@ $(document).ready(function () {
     /********************** Embed youtube video *********************/
     $('.player').YTPlayer();
 
-
-    /********************** Toggle Map Content **********************/
-    $('#btn-show-map').click(function () {
-        $('#map-content').toggleClass('toggle-map-content');
-        $('#btn-show-content').toggleClass('toggle-map-content');
-    });
-    $('#btn-show-content').click(function () {
-        $('#map-content').toggleClass('toggle-map-content');
-        $('#btn-show-content').toggleClass('toggle-map-content');
-    });
-
     /********************** Add to Calendar **********************/
     var myCalendar = createCalendar({
         options: {
@@ -441,7 +430,6 @@ $(document).ready(function () {
         $('#site-things-grid').html(renderContentCards(travel.things_to_do || []));
         $('#site-venue-name').text(venueName);
         $('#site-venue-address').text(venueAddress);
-        $('#site-travel-notes').html(paragraphHtml(event.travel_notes || ''));
         $('#site-directions-link').attr('href', 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venueName + ' ' + venueAddress));
         renderRsvpCeremonySummary();
         renderTopRehearsalSummary();
