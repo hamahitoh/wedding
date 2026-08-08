@@ -633,7 +633,7 @@ $(document).ready(function () {
             '<label><input class="rsvp-shuttle-needed" type="radio" name="rsvp-shuttle-' + rsvpEscape(rowKey) + '" value="no"' + (values.shuttle_needed === 'no' ? ' checked' : '') + '>No</label>' +
             '</div>' +
             '<div class="rsvp-shuttle-address' + (values.shuttle_needed === 'yes' ? ' is-visible' : '') + '">' +
-            '<label>Optional: Where are you staying in Temecula? Add your hotel or lodging address. You may also enter it later by searching your name again after RSVPing.' +
+            '<label>Optional: Where are you staying in Temecula? Add your hotel or lodging address. You may also enter it later by searching your name again after RSVPing. You only need to enter this information once for a single guest.' +
             '<input class="rsvp-shuttle-hotel-address" type="text" autocomplete="street-address" value="' + rsvpEscape(values.shuttle_hotel_address || '') + '" placeholder="Hotel or lodging address">' +
             '</label>' +
             '</div>' +
