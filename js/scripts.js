@@ -400,13 +400,22 @@ $(document).ready(function () {
         html += items.map(function (item) {
             var heading = item.date || headerText || '';
             var headingHtml = '';
+            var descriptionHtml = paragraphHtml(item.description || '');
+            var linkUrl = safeLinkUrl(item.url || '');
+            var linkLabel = item.link_label || '';
             if (includeHeader && heading && heading !== activeHeading) {
                 activeHeading = heading;
                 headingHtml = '<div><p class="schedule-column-heading"><strong>' + rsvpEscape(heading) + '</strong></p></div>';
             }
+            if (linkUrl && linkLabel) {
+                descriptionHtml = descriptionHtml.replace(
+                    rsvpEscape(linkLabel),
+                    '<a href="' + rsvpEscape(linkUrl) + '" target="_blank" rel="noopener">' + rsvpEscape(linkLabel) + '</a>'
+                );
+            }
             return headingHtml + '<div class="schedule-item">' +
                 '<h5>' + rsvpEscape(item.title || '') + ' <span class="time">' + rsvpEscape(item.time || '') + '</span></h5>' +
-                '<p>' + paragraphHtml(item.description || '') + '</p>' +
+                '<p>' + descriptionHtml + '</p>' +
                 '</div>';
         }).join('');
         return html;
