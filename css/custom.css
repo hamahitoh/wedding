@@ -247,8 +247,13 @@ header .member-actions a {
     text-transform: uppercase;
 }
 
-.registry-card-note-above {
-    margin: 8px 0 0;
+.registry-zelle-instruction {
+    margin: 8px auto 0;
+    max-width: 360px;
+    color: #82776d;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.45;
 }
 
 .registry-payment-target {
