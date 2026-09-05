@@ -247,8 +247,8 @@ header .member-actions a {
     text-transform: uppercase;
 }
 
-.registry-card-note-above {
-    margin: 8px 0 0;
+.registry-card-qr-only {
+    padding: 18px;
 }
 
 .registry-payment-target {
@@ -262,9 +262,9 @@ header .member-actions a {
 
 .registry-qr-code {
     display: block;
-    width: min(100%, 300px);
+    width: min(100%, 380px);
     height: auto;
-    margin: 10px auto 0;
+    margin: 0 auto;
     border: 1px solid rgba(185, 140, 59, 0.22);
     border-radius: 6px;
 }
@@ -273,11 +273,6 @@ header .member-actions a {
     min-width: 180px;
 }
 
-.registry-copy-status {
-    min-height: 24px;
-    color: #6b625a;
-    font-weight: 600;
-}
 
 header .member-actions li + li {
     margin-left: 10px;
