@@ -258,7 +258,7 @@ header .member-actions a {
 
 .registry-qr-code {
     display: block;
-    width: min(100%, 260px);
+    width: min(100%, 220px);
     height: auto;
     margin: 10px auto 0;
     border: 1px solid rgba(185, 140, 59, 0.22);
