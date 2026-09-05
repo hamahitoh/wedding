@@ -260,11 +260,6 @@ header .member-actions a {
     min-width: 180px;
 }
 
-.registry-disabled-link {
-    cursor: not-allowed;
-    opacity: 0.62;
-}
-
 .registry-copy-status {
     min-height: 24px;
     color: #6b625a;
