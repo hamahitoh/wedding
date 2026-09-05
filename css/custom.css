@@ -247,6 +247,10 @@ header .member-actions a {
     text-transform: uppercase;
 }
 
+.registry-card-note-above {
+    margin: 8px 0 0;
+}
+
 .registry-payment-target {
     min-height: 34px;
     margin: 0 0 24px;
@@ -258,7 +262,7 @@ header .member-actions a {
 
 .registry-qr-code {
     display: block;
-    width: min(100%, 220px);
+    width: min(100%, 300px);
     height: auto;
     margin: 10px auto 0;
     border: 1px solid rgba(185, 140, 59, 0.22);
