@@ -256,6 +256,15 @@ header .member-actions a {
     overflow-wrap: anywhere;
 }
 
+.registry-qr-code {
+    display: block;
+    width: min(100%, 260px);
+    height: auto;
+    margin: 10px auto 0;
+    border: 1px solid rgba(185, 140, 59, 0.22);
+    border-radius: 6px;
+}
+
 .registry-card .btn {
     min-width: 180px;
 }
