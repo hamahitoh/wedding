@@ -1,0 +1,130 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Registry Preview | Kate & Hamahito Wedding</title>
+    <meta name="description" content="Registry preview for Kate and Hamahito's wedding.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    <meta name="theme-color" content="#ffffff">
+    <base href="../">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="stylesheet" href="css/normalize.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.min.css">
+    <link rel="stylesheet" href="css/queries.css">
+    <link rel="stylesheet" href="css/custom.css?v=20260904-1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="registry-preview-page" id="top">
+<section class="registry-preview-hero">
+    <section class="navigation">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <a href="index.html" class="site-logo-text" aria-label="Kate and Hamahito home">
+                        <span class="site-logo-initial">K</span><span class="site-logo-amp">&amp;</span><span class="site-logo-initial site-logo-h">H</span>
+                    </a>
+                </div>
+                <div class="header-nav">
+                    <nav>
+                        <ul class="member-actions">
+                            <li><a href="index.html" class="btn-white btn-small">Back to Website</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+    </section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="registry-preview-copy text-center">
+                    <p class="registry-preview-label">Private Preview</p>
+                    <h1>Registry</h1>
+                    <p>If you would like to send a gift, we would be grateful for a contribution toward our life together.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="registry-options section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h3 class="header">Send a Gift</h3>
+                <p class="registry-intro">This page is not linked from the wedding website yet. Replace the preview recipient details before sharing it with guests.</p>
+            </div>
+        </div>
+        <div class="row registry-card-row">
+            <div class="col-sm-6">
+                <article class="registry-card">
+                    <div class="registry-card-icon"><i class="fa fa-bank" aria-hidden="true"></i></div>
+                    <h4>Zelle</h4>
+                    <p class="registry-card-note">Send to:</p>
+                    <p class="registry-payment-target">Add Zelle email or phone</p>
+                    <button class="btn btn-fill registry-copy-button" type="button" data-copy="Add Zelle email or phone">Copy Zelle Info</button>
+                </article>
+            </div>
+            <div class="col-sm-6">
+                <article class="registry-card">
+                    <div class="registry-card-icon"><i class="fa fa-heart" aria-hidden="true"></i></div>
+                    <h4>Venmo</h4>
+                    <p class="registry-card-note">Send to:</p>
+                    <p class="registry-payment-target">@add-venmo-handle</p>
+                    <a class="btn btn-fill registry-disabled-link" href="#" aria-disabled="true">Open Venmo</a>
+                </article>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <p class="registry-copy-status" id="registry-copy-status" role="status" aria-live="polite"></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 text-center content">
+                <p>Kate & Hamahito</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    (function () {
+        var status = document.getElementById('registry-copy-status');
+        var buttons = document.querySelectorAll('.registry-copy-button');
+        Array.prototype.forEach.call(buttons, function (button) {
+            button.addEventListener('click', function () {
+                var value = button.getAttribute('data-copy') || '';
+                if (!value || value.indexOf('Add ') === 0) {
+                    status.textContent = 'Preview placeholder: add real Zelle info before sharing.';
+                    return;
+                }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(value).then(function () {
+                        status.textContent = 'Copied.';
+                    }, function () {
+                        status.textContent = value;
+                    });
+                } else {
+                    status.textContent = value;
+                }
+            });
+        });
+    }());
+</script>
+</body>
+</html>

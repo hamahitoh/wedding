@@ -139,6 +139,138 @@ header .member-actions a {
     font-size: 19px;
 }
 
+.registry-preview-page {
+    background: #fffaf5;
+    color: #2f2b28;
+}
+
+.registry-preview-hero {
+    position: relative;
+    min-height: 64vh;
+    background:
+        linear-gradient(rgba(24, 27, 25, 0.72), rgba(24, 27, 25, 0.24)),
+        url("../photos/hero-desktop.jpg") center center / cover;
+}
+
+.registry-preview-hero .navigation {
+    background: transparent;
+}
+
+.registry-preview-copy {
+    padding: 190px 0 96px;
+    color: #fff8df;
+}
+
+.registry-preview-label {
+    margin: 0 0 12px;
+    color: #efd37a;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.registry-preview-copy h1 {
+    margin: 0 0 18px;
+    color: #fff8df;
+    font-family: "Wedding Versailles", "Cormorant Garamond", Georgia, serif;
+    font-size: 84px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.registry-preview-copy p:last-child {
+    max-width: 680px;
+    margin: 0 auto;
+    color: #fff3cf;
+    font-size: 24px;
+    line-height: 1.45;
+}
+
+.registry-options {
+    background: #fffaf5;
+}
+
+.registry-intro {
+    max-width: 680px;
+    margin: 0 auto 28px;
+    color: #5a524b;
+    font-size: 18px;
+    line-height: 1.65;
+}
+
+.registry-card-row {
+    margin-top: 18px;
+}
+
+.registry-card {
+    min-height: 300px;
+    margin-bottom: 22px;
+    padding: 34px 28px;
+    border: 1px solid rgba(185, 140, 59, 0.34);
+    border-radius: 6px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 20px 58px rgba(82, 65, 48, 0.12);
+}
+
+.registry-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(185, 140, 59, 0.38);
+    border-radius: 50%;
+    color: #b98c3b;
+    font-size: 22px;
+}
+
+.registry-card h4 {
+    margin: 0 0 18px;
+    color: #2f2b28;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.registry-card-note {
+    margin: 0 0 6px;
+    color: #82776d;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.registry-payment-target {
+    min-height: 34px;
+    margin: 0 0 24px;
+    color: #4b433c;
+    font-size: 22px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.registry-card .btn {
+    min-width: 180px;
+}
+
+.registry-disabled-link {
+    cursor: not-allowed;
+    opacity: 0.62;
+}
+
+.registry-copy-status {
+    min-height: 24px;
+    color: #6b625a;
+    font-weight: 600;
+}
+
 header .member-actions li + li {
     margin-left: 10px;
 }
