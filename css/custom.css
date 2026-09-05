@@ -174,13 +174,17 @@ header .member-actions a {
 .registry-preview-copy h1 {
     color: #fff;
     font-family: "Open Sans", sans-serif;
-    font-size: 19px;
+    font-size: clamp(76px, 8vw, 116px);
     font-weight: 300;
     letter-spacing: 0;
     line-height: 1.2;
     margin: 0;
     text-shadow: none;
     text-transform: uppercase;
+}
+
+.registry-preview-hero header .member-actions a.btn-white {
+    font-size: 19px;
 }
 
 .registry-preview-copy p:last-child {
