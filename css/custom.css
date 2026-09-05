@@ -144,18 +144,53 @@ header .member-actions a {
     color: #2f2b28;
 }
 
-.registry-preview-nav {
-    min-height: 92px;
-    background: #3a332f;
+.registry-preview-hero {
+    position: relative;
+    min-height: 64vh;
+    background:
+        linear-gradient(rgba(24, 27, 25, 0.72), rgba(24, 27, 25, 0.24)),
+        url("../photos/hero-desktop.jpg") center center / cover;
 }
 
-.registry-preview-nav .navigation {
+.registry-preview-hero .navigation {
     background: transparent;
+}
+
+.registry-preview-copy {
+    padding: 190px 0 96px;
+    color: #fff8df;
+}
+
+.registry-preview-label {
+    margin: 0 0 12px;
+    color: #efd37a;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.registry-preview-copy h1 {
+    margin: 0 0 18px;
+    color: #fff8df;
+    font-family: "Wedding Versailles", "Cormorant Garamond", Georgia, serif;
+    font-size: 84px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.registry-preview-copy p:last-child {
+    max-width: 680px;
+    margin: 0 auto;
+    color: #fff3cf;
+    font-size: 24px;
+    line-height: 1.45;
 }
 
 .registry-options {
     background: #fffaf5;
-    padding-top: 72px;
 }
 
 .registry-intro {
