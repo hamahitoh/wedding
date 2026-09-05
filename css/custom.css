@@ -174,7 +174,7 @@ header .member-actions a {
 .registry-preview-copy h1 {
     color: #fff;
     font-family: "Open Sans", sans-serif;
-    font-size: clamp(76px, 8vw, 116px);
+    font-size: clamp(32px, 4vw, 48px);
     font-weight: 300;
     letter-spacing: 0;
     line-height: 1.2;
