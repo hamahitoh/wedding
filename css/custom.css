@@ -136,7 +136,7 @@
 
 header .header-nav a,
 header .member-actions a {
-    font-size: clamp(32px, 4vw, 48px);
+    font-size: clamp(48px, 6vw, 72px);
 }
 
 .registry-preview-page {
