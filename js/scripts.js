@@ -641,7 +641,7 @@ $(document).ready(function () {
         $('#rsvp-ceremony-summary').html(ceremonyDetailMarkup()).show();
     }
 
-    function rehearsalDinnerDetailMarkup() {
+    function rehearsalDinnerDetailMarkup(includeTitle) {
         var content = rsvpState.publicContent || {};
         var event = content.event_details || {};
         var rehearsal = event.rehearsal_dinner || {};
@@ -655,7 +655,7 @@ $(document).ready(function () {
         var venueMarkup = url
             ? '<a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(venue || url) + '</a>'
             : rsvpEscape(venue);
-        return '<strong>Rehearsal Dinner - Business/Smart Casual</strong>' +
+        return (includeTitle === false ? '' : '<strong>Rehearsal Dinner - Business/Smart Casual</strong>') +
             (dateTime ? '<div>' + rsvpEscape(dateTime) + '</div>' : '') +
             (venueMarkup ? '<div>' + venueMarkup + '</div>' : '') +
             (address ? '<div>' + rsvpEscape(address) + '</div>' : '');
@@ -671,7 +671,7 @@ $(document).ready(function () {
         }
     }
 
-    function brunchDetailMarkup() {
+    function brunchDetailMarkup(includeTitle) {
         var content = rsvpState.publicContent || {};
         var event = content.event_details || {};
         var brunch = event.sunday_brunch || {};
@@ -684,7 +684,7 @@ $(document).ready(function () {
         var venueMarkup = url
             ? '<a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(venue || url) + '</a>'
             : rsvpEscape(venue);
-        return '<strong>Sunday Brunch - Casual</strong>' +
+        return (includeTitle === false ? '' : '<strong>Sunday Brunch - Casual</strong>') +
             '<div>' + rsvpEscape(date) + ' at ' + rsvpEscape(time) + '</div>' +
             (venueMarkup ? '<div>' + venueMarkup + '</div>' : '') +
             '<div>' + rsvpEscape(address) + '</div>' +
@@ -941,9 +941,19 @@ $(document).ready(function () {
         if (household.invited_rehearsal_dinner) {
             rehearsal = '<div class="rsvp-existing-section">' +
                 '<h4>Rehearsal Dinner - Business/Smart Casual</h4>' +
-                '<div class="rsvp-existing-event-detail">' + rehearsalDinnerDetailMarkup() + '</div>' +
+                '<div class="rsvp-existing-event-detail">' + rehearsalDinnerDetailMarkup(false) + '</div>' +
                 '<ul class="rsvp-existing-details">' +
                 existingListItem('Your response', eventGuestSummary(existing.rehearsal_dinner_guest_names, existing.rehearsal_attendance)) +
+                '</ul>' +
+                '</div>';
+        }
+        var brunch = '';
+        if ($.isArray(existing.sunday_brunch_guest_names) && existing.sunday_brunch_guest_names.length) {
+            brunch = '<div class="rsvp-existing-section">' +
+                '<h4>Sunday Brunch - Casual</h4>' +
+                '<div class="rsvp-existing-event-detail">' + brunchDetailMarkup(false) + '</div>' +
+                '<ul class="rsvp-existing-details">' +
+                existingListItem('Attending', existing.sunday_brunch_guest_names.join('; ')) +
                 '</ul>' +
                 '</div>';
         }
@@ -956,6 +966,7 @@ $(document).ready(function () {
             (people ? '<div class="rsvp-existing-section"><h4>Guest Responses</h4><ul class="rsvp-existing-people">' + people + '</ul></div>' : '') +
             existingShuttleAddressEditor(existing) +
             rehearsal +
+            brunch +
             (optional ? '<div class="rsvp-existing-section"><h4>Other Notes</h4><ul class="rsvp-existing-details">' + optional + '</ul></div>' : '') +
             '<div class="rsvp-existing-section rsvp-change-request-section">' +
             '<h4>Request a Change</h4>' +
