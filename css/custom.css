@@ -1048,9 +1048,10 @@ section#intro .welcome-title::after {
 }
 
 .rsvp-existing-response {
-    border-color: rgba(232, 202, 111, 0.46);
-    background: #fffaf0;
+    border: 0;
+    background: transparent;
     color: #5f5030;
+    padding: 0;
 }
 
 .rsvp-existing-response > strong {
@@ -1067,8 +1068,8 @@ section#intro .welcome-title::after {
 }
 
 .rsvp-existing-section {
-    margin-top: 12px;
-    padding-top: 12px;
+    margin-top: 20px;
+    padding-top: 18px;
     border-top: 1px solid rgba(232, 202, 111, 0.35);
 }
 
@@ -1087,6 +1088,10 @@ section#intro .welcome-title::after {
     gap: 7px;
     margin: 0;
     padding: 0;
+}
+
+.rsvp-existing-people {
+    gap: 0;
 }
 
 .rsvp-existing-details li,
@@ -1108,6 +1113,73 @@ section#intro .welcome-title::after {
 .rsvp-existing-people span {
     display: block;
     color: rgba(28, 54, 83, 0.58);
+}
+
+.rsvp-existing-people .rsvp-person-response {
+    display: block;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(28, 54, 83, 0.12);
+}
+
+.rsvp-existing-people .rsvp-person-response:last-child {
+    border-bottom: 0;
+}
+
+.rsvp-person-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.rsvp-person-heading strong {
+    font-size: 19px;
+}
+
+.rsvp-existing-people .rsvp-person-status {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 4px 9px;
+    border-radius: 4px;
+    background: #edf6ef;
+    color: #2f6d4f;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.rsvp-existing-people .rsvp-person-status.is-not-attending {
+    background: #f2f2f2;
+    color: #666;
+}
+
+.rsvp-person-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 22px;
+    margin: 0;
+}
+
+.rsvp-person-details > div {
+    display: grid;
+    grid-template-columns: minmax(112px, auto) minmax(0, 1fr);
+    gap: 8px;
+}
+
+.rsvp-person-details dt,
+.rsvp-person-details dd {
+    margin: 0;
+    line-height: 1.45;
+}
+
+.rsvp-person-details dt {
+    color: rgba(28, 54, 83, 0.58);
+    font-weight: 600;
+}
+
+.rsvp-person-details dd {
+    color: #3d4351;
+    font-weight: 700;
 }
 
 .rsvp-existing-event-detail {
@@ -1551,5 +1623,9 @@ section#intro .welcome-title::after {
     .rsvp-existing-people li {
         grid-template-columns: 1fr;
         gap: 2px;
+    }
+
+    .rsvp-person-details {
+        grid-template-columns: 1fr;
     }
 }

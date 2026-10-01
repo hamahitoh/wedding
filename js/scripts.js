@@ -827,45 +827,58 @@ $(document).ready(function () {
         }).filter(Boolean);
     }
 
-    function existingPersonRows(existing) {
+    function yesNoResponse(value) {
+        if (value === true || String(value || '').toLowerCase() === 'yes') {
+            return 'Yes';
+        }
+        if (value === false || String(value || '').toLowerCase() === 'no') {
+            return 'No';
+        }
+        return 'No response';
+    }
+
+    function personResponseRow(label, value) {
+        return '<div><dt>' + rsvpEscape(label) + '</dt><dd>' + rsvpEscape(value) + '</dd></div>';
+    }
+
+    function existingPersonRows(existing, household) {
         var invited = $.isArray(existing.invited_guest_responses) ? existing.invited_guest_responses : [];
         var additional = $.isArray(existing.additional_guest_responses) ? existing.additional_guest_responses : [];
         if (invited.length || additional.length) {
             return invited.concat(additional).map(function (person) {
-                var events = [];
-                var attendance = person.attendance || 'Yes, I will attend';
-                if (/^yes\b/i.test(attendance)) {
-                    attendance += ' - Wedding Ceremony - Cocktail Attire';
+                var attendance = String(person.attendance_bucket || person.attendance || '').toLowerCase();
+                var attending = attendance === 'attending' || /^yes\b/.test(attendance);
+                var responses = personResponseRow('Ceremony', attending ? 'Attending' : 'Not attending');
+                if (household.invited_rehearsal_dinner) {
+                    responses += personResponseRow('Rehearsal dinner', yesNoResponse(person.rehearsal_dinner));
                 }
-                if (person.rehearsal_dinner) {
-                    events.push('Rehearsal Dinner - Business/Smart Casual');
-                }
-                if (person.sunday_brunch) {
-                    events.push('Sunday Brunch - Casual');
-                }
-                if (person.shuttle_needed === 'yes') {
-                    events.push('Shuttle needed: Yes');
-                    if (person.shuttle_hotel_address) {
-                        events.push('Lodging: ' + person.shuttle_hotel_address);
-                    }
-                } else if (person.shuttle_needed === 'no') {
-                    events.push('Shuttle needed: No');
+                responses += personResponseRow('Sunday brunch', yesNoResponse(person.sunday_brunch));
+                responses += personResponseRow('Shuttle needed', yesNoResponse(person.shuttle_needed));
+                if (person.shuttle_hotel_address) {
+                    responses += personResponseRow('Lodging', person.shuttle_hotel_address);
                 }
                 if (person.age_three_or_under) {
-                    events.push('3 years or younger');
+                    responses += personResponseRow('Age', '3 years or younger');
                 }
-                return '<li><strong>' + rsvpEscape(person.name || 'Guest') + '</strong>: ' +
-                    rsvpEscape(attendance) +
-                    (events.length ? '<span>' + rsvpEscape(events.join('; ')) + '</span>' : '') +
+                return '<li class="rsvp-person-response">' +
+                    '<div class="rsvp-person-heading"><strong>' + rsvpEscape(person.name || 'Guest') + '</strong>' +
+                    '<span class="rsvp-person-status ' + (attending ? 'is-attending' : 'is-not-attending') + '">' +
+                    (attending ? 'Attending' : 'Not attending') + '</span></div>' +
+                    '<dl class="rsvp-person-details">' + responses + '</dl>' +
                     '</li>';
             }).join('');
         }
         return splitResponseNames(existing.guest_names).map(function (name) {
             var attendance = existing.attendance || 'Submitted';
-            if (/^yes\b/i.test(attendance)) {
-                attendance += ' - Wedding Ceremony - Cocktail Attire';
-            }
-            return '<li><strong>' + rsvpEscape(name) + '</strong>: ' + rsvpEscape(attendance) + '</li>';
+            var attending = /^yes\b/i.test(attendance);
+            return '<li class="rsvp-person-response">' +
+                '<div class="rsvp-person-heading"><strong>' + rsvpEscape(name) + '</strong>' +
+                '<span class="rsvp-person-status ' + (attending ? 'is-attending' : 'is-not-attending') + '">' +
+                (attending ? 'Attending' : 'Not attending') + '</span></div>' +
+                '<dl class="rsvp-person-details">' +
+                personResponseRow('Ceremony', attending ? 'Attending' : 'Not attending') +
+                personResponseRow('Shuttle needed', 'No response') +
+                '</dl></li>';
         }).join('');
     }
 
@@ -913,13 +926,11 @@ $(document).ready(function () {
         var existing = data.existing_response || {};
         var household = data.household || {};
         var submitted = responseDateLabel(existing.submitted_at);
-        var people = existingPersonRows(existing);
+        var people = existingPersonRows(existing, household);
         var details = [
             existingListItem('Submitted', submitted),
             existingListItem('Contact email', existing.contact || ''),
-            existingListItem('Overall response', existing.attendance || ''),
-            existingListItem('Party size', existing.party_size || existing.party_size === 0 ? String(existing.party_size) : ''),
-            existingListItem('Sunday Brunch - Casual', eventGuestSummary(existing.sunday_brunch_guest_names, existing.sunday_brunch_attendance))
+            existingListItem('Party size', existing.party_size || existing.party_size === 0 ? String(existing.party_size) : '')
         ].join('');
         var optional = [
             existingListItem('Dietary restrictions or allergies', existing.dietary_restrictions || ''),
