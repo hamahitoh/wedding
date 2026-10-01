@@ -655,7 +655,7 @@ $(document).ready(function () {
         var venueMarkup = url
             ? '<a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(venue || url) + '</a>'
             : rsvpEscape(venue);
-        return '<strong>Rehearsal Dinner - Cocktail Attire</strong>' +
+        return '<strong>Rehearsal Dinner - Business/Smart Casual</strong>' +
             (dateTime ? '<div>' + rsvpEscape(dateTime) + '</div>' : '') +
             (venueMarkup ? '<div>' + venueMarkup + '</div>' : '') +
             (address ? '<div>' + rsvpEscape(address) + '</div>' : '');
@@ -838,25 +838,25 @@ $(document).ready(function () {
                     attendance += ' - Wedding Ceremony - Cocktail Attire';
                 }
                 if (person.rehearsal_dinner) {
-                    events.push('Rehearsal Dinner - Cocktail Attire');
+                    events.push('Rehearsal Dinner - Business/Smart Casual');
                 }
                 if (person.sunday_brunch) {
                     events.push('Sunday Brunch - Casual');
                 }
                 if (person.shuttle_needed === 'yes') {
-                    events.push('Shuttle: yes');
+                    events.push('Shuttle needed: Yes');
                     if (person.shuttle_hotel_address) {
                         events.push('Lodging: ' + person.shuttle_hotel_address);
                     }
                 } else if (person.shuttle_needed === 'no') {
-                    events.push('Shuttle: no');
+                    events.push('Shuttle needed: No');
                 }
                 if (person.age_three_or_under) {
                     events.push('3 years or younger');
                 }
                 return '<li><strong>' + rsvpEscape(person.name || 'Guest') + '</strong>: ' +
                     rsvpEscape(attendance) +
-                    (events.length ? '<span>' + rsvpEscape(events.join(' · ')) + '</span>' : '') +
+                    (events.length ? '<span>' + rsvpEscape(events.join('; ')) + '</span>' : '') +
                     '</li>';
             }).join('');
         }
@@ -919,8 +919,7 @@ $(document).ready(function () {
             existingListItem('Contact email', existing.contact || ''),
             existingListItem('Overall response', existing.attendance || ''),
             existingListItem('Party size', existing.party_size || existing.party_size === 0 ? String(existing.party_size) : ''),
-            existingListItem('Sunday Brunch - Casual', eventGuestSummary(existing.sunday_brunch_guest_names, existing.sunday_brunch_attendance)),
-            existingListItem('Shuttle needed', existing.shuttle_needed || '')
+            existingListItem('Sunday Brunch - Casual', eventGuestSummary(existing.sunday_brunch_guest_names, existing.sunday_brunch_attendance))
         ].join('');
         var optional = [
             existingListItem('Dietary restrictions or allergies', existing.dietary_restrictions || ''),
@@ -930,7 +929,7 @@ $(document).ready(function () {
         var rehearsal = '';
         if (household.invited_rehearsal_dinner) {
             rehearsal = '<div class="rsvp-existing-section">' +
-                '<h4>Rehearsal Dinner - Cocktail Attire</h4>' +
+                '<h4>Rehearsal Dinner - Business/Smart Casual</h4>' +
                 '<div class="rsvp-existing-event-detail">' + rehearsalDinnerDetailMarkup() + '</div>' +
                 '<ul class="rsvp-existing-details">' +
                 existingListItem('Your response', eventGuestSummary(existing.rehearsal_dinner_guest_names, existing.rehearsal_attendance)) +
