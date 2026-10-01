@@ -23,6 +23,9 @@ $(document).ready(function () {
     };
     var guestAccessStorageKey = 'khGuestMatchToken';
 
+    $('.rsvp-modal-header h3').text('Your RSVP Response');
+    $('.rsvp-modal-header > p').text('Review your submitted wedding details below.');
+
     /***************** Waypoints ******************/
 
     $('.wp1').waypoint(function () {
