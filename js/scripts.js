@@ -21,6 +21,7 @@ $(document).ready(function () {
         household: null,
         publicContent: null
     };
+    var guestAccessStorageKey = 'khGuestMatchToken';
 
     /***************** Waypoints ******************/
 
@@ -225,6 +226,70 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify(payload || {})
         });
+    }
+
+    function guestAccessMessage(message) {
+        $('#guest-access-results').html('<div class="guest-access-message">' + rsvpEscape(message) + '</div>');
+    }
+
+    function unlockGuestSite(data, matchToken, showDetails) {
+        if (matchToken) {
+            try {
+                window.sessionStorage.setItem(guestAccessStorageKey, matchToken);
+            } catch (error) {
+                // The guest can still use the site when session storage is unavailable.
+            }
+        }
+        $('body').removeClass('guest-access-pending');
+        $('#guest-access-gate').addClass('is-unlocked').attr('aria-hidden', 'true');
+        renderHouseholdForm(data);
+        if (showDetails) {
+            $('#rsvp-form-modal').modal('show');
+            renderHouseholdForm(data);
+        }
+    }
+
+    function renderGuestAccessMatches(matches) {
+        if (!matches.length) {
+            guestAccessMessage('We could not find a clear match. Check the spelling of your full name or contact Kate or Hamahito.');
+            return;
+        }
+        var markup = matches.map(function (match) {
+            return '<div class="guest-access-match">' +
+                '<strong>' + rsvpEscape(match.display_name) + '</strong>' +
+                '<button class="btn-fill guest-access-confirm" type="button" data-token="' + rsvpEscape(match.match_token) + '">This is me</button>' +
+                '</div>';
+        }).join('');
+        $('#guest-access-results').html(markup);
+    }
+
+    function restoreGuestAccess() {
+        var matchToken = '';
+        try {
+            matchToken = window.sessionStorage.getItem(guestAccessStorageKey) || '';
+        } catch (error) {
+            matchToken = '';
+        }
+        if (!matchToken) {
+            window.setTimeout(function () {
+                $('#guest-access-name').focus();
+            }, 50);
+            return;
+        }
+        guestAccessMessage('Loading your wedding details...');
+        rsvpApi('/api/wedding/public/confirm', {match_token: matchToken})
+            .done(function (data) {
+                unlockGuestSite(data, matchToken, false);
+            })
+            .fail(function () {
+                try {
+                    window.sessionStorage.removeItem(guestAccessStorageKey);
+                } catch (error) {
+                    // Continue with a fresh guest lookup.
+                }
+                $('#guest-access-results').empty();
+                $('#guest-access-name').focus();
+            });
     }
 
     function photoUploadApi(formData) {
@@ -1154,6 +1219,44 @@ $(document).ready(function () {
 
     renderRsvpCeremonySummary();
     loadWebsiteContent();
+    restoreGuestAccess();
+
+    $('#guest-access-form').on('submit', function (event) {
+        event.preventDefault();
+        var name = $.trim($('#guest-access-name').val() || '');
+        if (!name) {
+            guestAccessMessage('Enter your full name to continue.');
+            $('#guest-access-name').focus();
+            return;
+        }
+        $('#guest-access-submit').prop('disabled', true).text('Searching...');
+        guestAccessMessage('Looking for your invitation...');
+        rsvpApi('/api/wedding/public/lookup', {name: name})
+            .done(function (data) {
+                renderGuestAccessMatches(data.matches || []);
+            })
+            .fail(function (xhr) {
+                var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Search failed. Please try again.';
+                guestAccessMessage(detail);
+            })
+            .always(function () {
+                $('#guest-access-submit').prop('disabled', false).text('Continue');
+            });
+    });
+
+    $('#guest-access-results').on('click', '.guest-access-confirm', function () {
+        var button = $(this);
+        var matchToken = button.data('token') || '';
+        button.prop('disabled', true).text('Opening...');
+        rsvpApi('/api/wedding/public/confirm', {match_token: matchToken})
+            .done(function (data) {
+                unlockGuestSite(data, matchToken, true);
+            })
+            .fail(function (xhr) {
+                var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'We could not open your details. Search for your name again.';
+                guestAccessMessage(detail);
+            });
+    });
 
     $('#rsvp-form-modal').on('show.bs.modal', function () {
         if (rsvpState.mode === 'api') {

@@ -57,16 +57,34 @@
     <link rel="stylesheet" href="css/flexslider.css">
     <link rel="stylesheet" href="css/styles.min.css">
     <link rel="stylesheet" href="css/queries.css">
-    <link rel="stylesheet" href="css/custom.css?v=20260905-1">
+    <link rel="stylesheet" href="css/custom.css?v=20261001-1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
 </head>
-<body id="top">
+<body id="top" class="guest-access-pending">
 <!--[if lt IE 8]>
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
     your browser</a> to improve your experience.</p>
 <![endif]-->
+<div id="guest-access-gate" class="guest-access-gate" role="dialog" aria-modal="true" aria-labelledby="guest-access-title">
+    <div class="guest-access-panel">
+        <div class="guest-access-monogram" aria-hidden="true">
+            <span>K</span><span>&amp;</span><span>H</span>
+        </div>
+        <p class="guest-access-date">October 17, 2026</p>
+        <h1 id="guest-access-title">Welcome</h1>
+        <p class="guest-access-copy">Enter your full name to view your wedding details.</p>
+        <form id="guest-access-form" class="guest-access-form">
+            <label for="guest-access-name">Guest name</label>
+            <div class="guest-access-row">
+                <input id="guest-access-name" type="text" autocomplete="name" placeholder="Enter your full name" required>
+                <button id="guest-access-submit" class="btn-fill" type="submit">Continue</button>
+            </div>
+        </form>
+        <div id="guest-access-results" class="guest-access-results" role="status" aria-live="polite"></div>
+    </div>
+</div>
 <section class="hero">
     <section class="navigation">
         <header>
@@ -452,6 +470,6 @@
 <script>
     window.KH_RSVP_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20260808-7"></script>
+<script src="js/scripts.js?v=20261001-1"></script>
 </body>
 </html>

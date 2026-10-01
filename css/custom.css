@@ -12,6 +12,152 @@
         local("Versailles");
 }
 
+body.guest-access-pending {
+    overflow: hidden;
+}
+
+.guest-access-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    background:
+        linear-gradient(90deg, rgba(24, 27, 25, 0.82), rgba(24, 27, 25, 0.54)),
+        url("../photos/hero-desktop.jpg") center center / cover;
+}
+
+.guest-access-gate.is-unlocked {
+    display: none;
+}
+
+.guest-access-panel {
+    width: min(100%, 560px);
+    color: #fff;
+    text-align: center;
+}
+
+.guest-access-monogram {
+    margin-bottom: 18px;
+    color: #fff5d6;
+    font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif;
+    font-size: 58px;
+    line-height: 1;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.38);
+}
+
+.guest-access-monogram span:nth-child(2) {
+    display: inline-block;
+    margin: 0 2px;
+    color: #e8ca6f;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 0.55em;
+    font-style: italic;
+    transform: translateY(-0.18em) rotate(-7deg);
+}
+
+.guest-access-date {
+    margin: 0 0 8px;
+    color: #efd37a;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.guest-access-panel h1 {
+    margin: 0 0 12px;
+    color: #fff;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 64px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1;
+    text-transform: none;
+}
+
+.guest-access-copy {
+    margin: 0 auto 26px;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.guest-access-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.guest-access-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+}
+
+.guest-access-row input {
+    min-width: 0;
+    height: 52px;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #303640;
+    font-size: 18px;
+}
+
+.guest-access-row input:focus {
+    border-color: #e8ca6f;
+    box-shadow: 0 0 0 3px rgba(232, 202, 111, 0.3);
+    outline: 0;
+}
+
+.guest-access-row button {
+    min-width: 132px;
+    height: 52px;
+    border: 0;
+}
+
+.guest-access-results {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.guest-access-message,
+.guest-access-match {
+    padding: 13px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 4px;
+    background: rgba(20, 23, 22, 0.78);
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.45;
+    text-align: left;
+}
+
+.guest-access-match {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+}
+
+.guest-access-match strong {
+    color: #fff;
+}
+
+.guest-access-match button {
+    white-space: nowrap;
+}
+
 .photo-share-panel {
     padding: 36px 18px 24px;
 }
@@ -1231,6 +1377,32 @@ section#intro .welcome-title::after {
 }
 
 @media screen and (max-width: 640px) {
+    .guest-access-gate {
+        align-items: flex-end;
+        padding: 28px 20px 42px;
+        background:
+            linear-gradient(rgba(24, 27, 25, 0.62), rgba(24, 27, 25, 0.88)),
+            url("../photos/hero-mobile.jpg") 53% center / cover;
+    }
+
+    .guest-access-panel h1 {
+        font-size: 52px;
+    }
+
+    .guest-access-copy {
+        font-size: 18px;
+    }
+
+    .guest-access-row,
+    .guest-access-match {
+        grid-template-columns: 1fr;
+    }
+
+    .guest-access-row button,
+    .guest-access-match button {
+        width: 100%;
+    }
+
     .hero {
         background:
             linear-gradient(rgba(24, 27, 25, 0.72), rgba(24, 27, 25, 0.2) 44%, rgba(24, 27, 25, 0.05)),
