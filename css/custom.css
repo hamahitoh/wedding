@@ -441,6 +441,73 @@ header .member-actions li + li {
     margin-left: 10px;
 }
 
+@media screen and (min-width: 992px) {
+    header .header-content,
+    header .header-nav nav,
+    header .member-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    header .header-content {
+        gap: 30px;
+    }
+
+    header .header-nav {
+        display: block;
+        flex: 1;
+        min-width: 0;
+    }
+
+    header .header-nav nav {
+        justify-content: flex-end;
+        gap: 24px;
+    }
+
+    header ul.primary-nav {
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    header ul.primary-nav li a {
+        padding-right: 18px;
+    }
+
+    header .member-actions {
+        position: static;
+        flex-shrink: 0;
+    }
+
+    header .member-actions a.btn-small {
+        padding: 8px 18px;
+        white-space: nowrap;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+    header .header-content {
+        gap: 20px;
+    }
+
+    header .header-nav nav {
+        gap: 14px;
+    }
+
+    header .header-nav a,
+    header .member-actions a {
+        font-size: 15px;
+    }
+
+    header ul.primary-nav li a {
+        padding-right: 12px;
+    }
+
+    header .member-actions a.btn-small {
+        padding-right: 13px;
+        padding-left: 13px;
+    }
+}
+
 .hero {
     background:
         linear-gradient(90deg, rgba(24, 27, 25, 0.76) 0%, rgba(24, 27, 25, 0.54) 34%, rgba(24, 27, 25, 0.18) 72%),
