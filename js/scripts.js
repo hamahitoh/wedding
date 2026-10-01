@@ -318,7 +318,7 @@ $(document).ready(function () {
         var marker = 'Sunday Brunch Attire:';
         var markerIndex = text.indexOf(marker);
         if (markerIndex === -1) {
-            return {ceremony: text, brunch: 'Casual clothing. Feel whatever feels comfortable!'};
+            return {ceremony: text, brunch: 'Wear whatever feels comfortable.'};
         }
         return {
             ceremony: $.trim(text.slice(0, markerIndex)),
