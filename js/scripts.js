@@ -310,19 +310,36 @@ $(document).ready(function () {
         return rsvpEscape(value).replace(/\n/g, '<br>');
     }
 
-    function dressCodeBodyHtml(value) {
+    function dressCodeParts(value) {
         var text = String(value || '');
         var marker = 'Sunday Brunch Attire:';
         var markerIndex = text.indexOf(marker);
         if (markerIndex === -1) {
-            return '<p>' + paragraphHtml(text) + '</p>';
+            return {ceremony: text, brunch: 'Casual clothing. Feel whatever feels comfortable!'};
         }
+        return {
+            ceremony: $.trim(text.slice(0, markerIndex)),
+            brunch: $.trim(text.slice(markerIndex + marker.length))
+        };
+    }
 
-        var before = $.trim(text.slice(0, markerIndex));
-        var after = $.trim(text.slice(markerIndex + marker.length));
-        return (before ? '<p>' + paragraphHtml(before) + '</p>' : '') +
+    function renderPersonalizedDressCode() {
+        var content = rsvpState.publicContent || {};
+        var event = content.event_details || {};
+        var parts = dressCodeParts(event.dress_code_body || 'Dress to celebrate! We suggest cocktail attire, something you would wear to a nice evening wedding or special event. Cocktail dresses, colorful dresses, dressy jumpsuits, suits, blazers, and dress shoes are all wonderful choices.');
+        var invitedToRehearsal = !!(rsvpState.household && rsvpState.household.invited_rehearsal_dinner);
+        var body = '';
+        if (invitedToRehearsal) {
+            $('#site-dress-title').text('Rehearsal Dinner Attire');
+            body += '<p>Business/Smart Casual. Whatever makes you look nice, but no need for formal dresswear here.</p>' +
+                '<h5>Ceremony Attire</h5>';
+        } else {
+            $('#site-dress-title').text('Ceremony Attire');
+        }
+        body += '<p>' + paragraphHtml(parts.ceremony) + '</p>' +
             '<h5>Sunday Brunch Attire</h5>' +
-            (after ? '<p>' + paragraphHtml(after) + '</p>' : '');
+            '<p>' + paragraphHtml(parts.brunch) + '</p>';
+        $('#site-dress-body').html(body);
     }
 
     function safeImageUrl(value) {
@@ -486,9 +503,7 @@ $(document).ready(function () {
         $('#site-event-summary').html('<span>' + rsvpEscape(date) + '</span><span>' + rsvpEscape(locationSummary) + '</span>');
         $('#site-invitation-summary').text('Please join us on ' + date + ', at ' + venueName + ' in ' + locationSummary + '.');
         $('#site-schedule-right').html(renderScheduleItems(event.schedule || [], 'all', true, date));
-        var dressTime = event.dress_code_time ? ' <span class="time">' + rsvpEscape(event.dress_code_time) + '</span>' : '';
-        $('#site-dress-title').html(rsvpEscape(event.dress_code_title || 'Wedding') + dressTime);
-        $('#site-dress-body').html(dressCodeBodyHtml(event.dress_code_body || 'Add dress code here. Include formality, shoe advice, outdoor/indoor notes, and expected weather.'));
+        renderPersonalizedDressCode();
         $('#site-hotels-intro').text(travel.hotels_intro || '');
         $('#site-hotels-grid').html(renderContentCards(travel.hotels || [], { hotelPreview: true }));
         $('#site-things-intro').text(travel.things_intro || '').toggle(!!travel.things_intro);
@@ -1119,6 +1134,7 @@ $(document).ready(function () {
         var household = data.household || {};
         rsvpState.rsvpToken = data.rsvp_token || '';
         rsvpState.household = household;
+        renderPersonalizedDressCode();
         $('#rsvp-token').val(rsvpState.rsvpToken);
         $('#rsvp-lookup-panel').hide();
         $('#rsvp-form').show();
@@ -1259,7 +1275,7 @@ $(document).ready(function () {
     });
 
     $('#rsvp-form-modal').on('show.bs.modal', function () {
-        if (rsvpState.mode === 'api') {
+        if (rsvpState.mode === 'api' && !rsvpState.household) {
             resetPersonalizedRsvp();
             $('#rsvp-lookup-panel').show();
             $('#rsvp-form').hide();
