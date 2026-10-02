@@ -315,7 +315,7 @@ $(document).ready(function () {
 
     function dressCodeParts(value) {
         var text = String(value || '');
-        var marker = 'Sunday Brunch Attire:';
+        var marker = 'Sunday Lunch Attire:';
         var markerIndex = text.indexOf(marker);
         if (markerIndex === -1) {
             return {ceremony: text, brunch: 'Wear whatever feels comfortable.'};
@@ -340,7 +340,7 @@ $(document).ready(function () {
             $('#site-dress-title').text('Ceremony Attire');
         }
         body += '<p>' + paragraphHtml(parts.ceremony) + '</p>' +
-            '<h5>Sunday Brunch Attire</h5>' +
+            '<h5>Sunday Lunch Attire</h5>' +
             '<p>' + paragraphHtml(parts.brunch) + '</p>';
         $('#site-dress-body').html(body);
     }
@@ -680,11 +680,11 @@ $(document).ready(function () {
         var venue = brunch.venue_name || 'Big Nose Winery';
         var address = brunch.venue_address || '42100 Main Street, Suite D, Temecula, CA 92590';
         var url = safeLinkUrl(brunch.url || 'https://bignosefamilywinery.com/');
-        var note = brunch.description || 'Casual brunch and lawn games in Old Town Temecula. Drop by anytime.';
+        var note = brunch.description || 'Casual lunch and lawn games in Old Town Temecula. Drop by anytime.';
         var venueMarkup = url
             ? '<a href="' + rsvpEscape(url) + '" target="_blank" rel="noopener">' + rsvpEscape(venue || url) + '</a>'
             : rsvpEscape(venue);
-        return (includeTitle === false ? '' : '<strong>Sunday Brunch - Casual</strong>') +
+        return (includeTitle === false ? '' : '<strong>Sunday Lunch - Casual</strong>') +
             '<div>' + rsvpEscape(date) + ' at ' + rsvpEscape(time) + '</div>' +
             (venueMarkup ? '<div>' + venueMarkup + '</div>' : '') +
             '<div>' + rsvpEscape(address) + '</div>' +
@@ -707,7 +707,7 @@ $(document).ready(function () {
             '<div class="rsvp-event-options-title">Other events this person will attend</div>' +
             '<div class="rsvp-guest-options">' +
             (showRehearsal ? '<label><input class="rsvp-event-rehearsal" type="checkbox"' + (values.rehearsal_dinner ? ' checked' : '') + '>Rehearsal Dinner</label>' : '') +
-            '<label><input class="rsvp-event-brunch" type="checkbox"' + (values.sunday_brunch ? ' checked' : '') + '>Sunday Brunch</label>' +
+            '<label><input class="rsvp-event-brunch" type="checkbox"' + (values.sunday_brunch ? ' checked' : '') + '>Sunday Lunch</label>' +
             '</div>' +
             '<div class="rsvp-shuttle-question">' +
             '<div class="rsvp-shuttle-title">Do you need a shuttle from the venue back to downtown Temecula at the end of the event?</div>' +
@@ -852,7 +852,7 @@ $(document).ready(function () {
                 if (household.invited_rehearsal_dinner) {
                     responses += personResponseRow('Rehearsal dinner', yesNoResponse(person.rehearsal_dinner));
                 }
-                responses += personResponseRow('Sunday brunch', yesNoResponse(person.sunday_brunch));
+                responses += personResponseRow('Sunday lunch', yesNoResponse(person.sunday_brunch));
                 responses += personResponseRow('Shuttle needed', yesNoResponse(person.shuttle_needed));
                 if (person.shuttle_hotel_address) {
                     responses += personResponseRow('Lodging', person.shuttle_hotel_address);
@@ -950,7 +950,7 @@ $(document).ready(function () {
         var brunch = '';
         if ($.isArray(existing.sunday_brunch_guest_names) && existing.sunday_brunch_guest_names.length) {
             brunch = '<div class="rsvp-existing-section">' +
-                '<h4>Sunday Brunch - Casual</h4>' +
+                '<h4>Sunday Lunch - Casual</h4>' +
                 '<div class="rsvp-existing-event-detail">' + brunchDetailMarkup(false) + '</div>' +
                 '<ul class="rsvp-existing-details">' +
                 existingListItem('Attending', existing.sunday_brunch_guest_names.join('; ')) +
