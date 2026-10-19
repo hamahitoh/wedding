@@ -120,11 +120,15 @@ $(document).ready(function () {
             var preview = item.media_kind === 'video'
                 ? '<video src="' + escapeHtml(mediaUrl) + '" controls preload="metadata" playsinline></video>'
                 : '<a href="' + escapeHtml(mediaUrl) + '" target="_blank" rel="noopener"><img src="' + escapeHtml(mediaUrl) + '" alt="Wedding memory" loading="lazy"></a>';
+            var hoverPreview = item.media_kind === 'video'
+                ? ''
+                : '<span class="gallery-hover-preview" aria-hidden="true"><img src="' + escapeHtml(mediaUrl) + '" alt=""></span>';
 
             return '<figure class="gallery-card">' +
                 preview +
                 '<a class="gallery-download" href="' + escapeHtml(downloadUrl) + '" download="' + escapeHtml(filename) + '" aria-label="Download ' + escapeHtml(filename) + '">' +
                 '<i class="fa fa-download" aria-hidden="true"></i></a>' +
+                hoverPreview +
                 '</figure>';
         }).join(''));
     }
