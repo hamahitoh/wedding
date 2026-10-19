@@ -246,6 +246,71 @@ body.guest-access-pending {
     font-weight: 600;
 }
 
+.upload-progress-list {
+    width: 100%;
+    max-width: 520px;
+    max-height: 46vh;
+    margin: 18px auto 0;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.upload-progress-list[hidden] {
+    display: none;
+}
+
+.upload-progress-overall {
+    margin-bottom: 10px;
+    color: #4c4947;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.upload-progress-item {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(67, 59, 51, 0.13);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.76);
+}
+
+.upload-progress-item-head {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 7px;
+}
+
+.upload-progress-name {
+    overflow: hidden;
+    color: #4c4947;
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.upload-progress-value {
+    flex: 0 0 auto;
+    color: #6e655d;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.upload-progress-item.is-complete .transfer-progress-fill {
+    background: #3d8b64;
+}
+
+.upload-progress-item.is-error .transfer-progress-fill {
+    background: #9f3a38;
+}
+
+.upload-progress-item.is-error .upload-progress-value {
+    color: #9f3a38;
+}
+
 @font-face {
     font-family: "Wedding Versailles";
     font-style: normal;

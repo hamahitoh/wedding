@@ -221,8 +221,9 @@ $(document).ready(function () {
         $('#photo-share-form')[0].reset();
         $('#photo-share-status').removeClass('is-success is-error').text('');
         $('#photo-share-submit').prop('disabled', false).text('Upload Memories');
-        $('#photo-upload-progress').attr('hidden', true).find('.transfer-progress-fill').css('width', '0%');
-        $('#photo-upload-progress .transfer-progress-label').text('0% uploaded');
+        $('#photo-upload-progress').attr('hidden', true);
+        $('#photo-upload-overall').text('Completed 0/0');
+        $('#photo-upload-items').empty();
         $('#photo-share-greeting').text('Hi ' + (currentGuestName || 'there') + '! Thanks for your contribution!');
     });
 
@@ -441,53 +442,102 @@ $(document).ready(function () {
             return;
         }
 
-        var formData = new FormData();
-        formData.append('uploader_name', currentGuestName || 'Unknown guest');
-        $.each(files, function (_index, file) {
-            formData.append('files', file);
-        });
-
         $('#photo-share-submit').prop('disabled', true).text('Uploading...');
-        status.removeClass('is-success is-error').text('Uploading memories...');
+        status.removeClass('is-success is-error').text('Uploading file 1 of ' + files.length + '...');
         var uploadProgress = $('#photo-upload-progress');
-        uploadProgress.removeAttr('hidden');
-        uploadProgress.find('.transfer-progress-fill').css('width', '0%');
-        uploadProgress.find('.transfer-progress-label').text('0% uploaded');
+        var uploadItems = $('#photo-upload-items');
+        var uploadOverall = $('#photo-upload-overall');
+        var selectedFiles = [];
+        var progressRows = [];
+        var completedCount = 0;
+        var successCount = 0;
+        var failureCount = 0;
+        var failureMessages = [];
+        var uploadBatchId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
 
-        $.ajax({
-            url: memoriesApiBaseUrl + '/api/wedding/public/photos',
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            xhr: function () {
-                var xhr = $.ajaxSettings.xhr();
-                if (xhr.upload) {
-                    xhr.upload.addEventListener('progress', function (progressEvent) {
-                        if (!progressEvent.lengthComputable || progressEvent.total <= 0) {
-                            return;
-                        }
-                        var percent = Math.min(100, Math.round((progressEvent.loaded / progressEvent.total) * 100));
-                        uploadProgress.find('.transfer-progress-fill').css('width', percent + '%');
-                        uploadProgress.find('.transfer-progress-label').text(
-                            percent === 100 ? '100% uploaded — processing...' : percent + '% uploaded'
-                        );
-                    });
-                }
-                return xhr;
-            }
-        }).done(function (data) {
-            var count = (data && data.count) || files.length;
-            uploadProgress.find('.transfer-progress-fill').css('width', '100%');
-            uploadProgress.find('.transfer-progress-label').text('Upload complete');
-            status.removeClass('is-error').addClass('is-success').text('Thank you! Uploaded ' + count + ' memor' + (count === 1 ? 'y' : 'ies') + ' for review.');
-            $('#photo-share-form')[0].reset();
-        }).fail(function (xhr) {
-            var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Memory upload failed. Please try again.';
-            status.removeClass('is-success').addClass('is-error').text(detail);
-        }).always(function () {
-            $('#photo-share-submit').prop('disabled', false).text('Upload Memories');
+        uploadProgress.removeAttr('hidden');
+
+        $.each(files, function (_index, file) {
+            selectedFiles.push(file);
+            var row = $('<div class="upload-progress-item"></div>');
+            var head = $('<div class="upload-progress-item-head"></div>');
+            head.append($('<span class="upload-progress-name"></span>').text(file.name || 'Wedding memory'));
+            head.append($('<span class="upload-progress-value">Waiting</span>'));
+            row.append(head);
+            row.append('<div class="transfer-progress-track"><span class="transfer-progress-fill"></span></div>');
+            uploadItems.append(row);
+            progressRows.push(row);
         });
+
+        uploadOverall.text('Completed 0/' + selectedFiles.length);
+
+        function finishUploads() {
+            $('#photo-share-submit').prop('disabled', false).text('Upload Memories');
+            $('#photo-share-form')[0].reset();
+            if (!failureCount) {
+                status.addClass('is-success').text('Thank you! Uploaded ' + successCount + ' memor' + (successCount === 1 ? 'y' : 'ies') + ' for review.');
+                return;
+            }
+            var detail = failureMessages[0] || 'Please try the failed files again.';
+            status.addClass('is-error').text('Uploaded ' + successCount + ' of ' + selectedFiles.length + '. ' + failureCount + ' failed. ' + detail);
+        }
+
+        function uploadFile(index) {
+            if (index >= selectedFiles.length) {
+                finishUploads();
+                return;
+            }
+
+            var file = selectedFiles[index];
+            var row = progressRows[index];
+            var value = row.find('.upload-progress-value');
+            var fill = row.find('.transfer-progress-fill');
+            var formData = new FormData();
+            formData.append('uploader_name', currentGuestName || 'Unknown guest');
+            formData.append('files', file);
+            value.text('0%');
+            status.text('Uploading file ' + (index + 1) + ' of ' + selectedFiles.length + '...');
+
+            $.ajax({
+                url: memoriesApiBaseUrl + '/api/wedding/public/photos',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {'X-Upload-Batch-ID': uploadBatchId},
+                xhr: function () {
+                    var xhr = $.ajaxSettings.xhr();
+                    if (xhr.upload) {
+                        xhr.upload.addEventListener('progress', function (progressEvent) {
+                            if (!progressEvent.lengthComputable || progressEvent.total <= 0) {
+                                return;
+                            }
+                            var percent = Math.min(100, Math.round((progressEvent.loaded / progressEvent.total) * 100));
+                            fill.css('width', percent + '%');
+                            value.text(percent === 100 ? '100% · Processing...' : percent + '%');
+                        });
+                    }
+                    return xhr;
+                }
+            }).done(function () {
+                successCount += 1;
+                completedCount += 1;
+                row.addClass('is-complete');
+                fill.css('width', '100%');
+                value.text('Complete · ' + completedCount + '/' + selectedFiles.length);
+            }).fail(function (xhr) {
+                failureCount += 1;
+                completedCount += 1;
+                row.addClass('is-error');
+                value.text('Failed · ' + completedCount + '/' + selectedFiles.length);
+                failureMessages.push((xhr.responseJSON && xhr.responseJSON.detail) || 'Memory upload failed.');
+            }).always(function () {
+                uploadOverall.text('Completed ' + completedCount + '/' + selectedFiles.length);
+                uploadFile(index + 1);
+            });
+        }
+
+        uploadFile(0);
     });
 
     loadGallery();

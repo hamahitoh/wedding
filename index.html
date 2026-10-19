@@ -57,7 +57,7 @@
     <link rel="stylesheet" href="css/flexslider.css">
     <link rel="stylesheet" href="css/styles.min.css">
     <link rel="stylesheet" href="css/queries.css">
-    <link rel="stylesheet" href="css/custom.css?v=20261019-13">
+    <link rel="stylesheet" href="css/custom.css?v=20261019-14">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
@@ -175,9 +175,9 @@
                         <input id="photo-share-files" name="files" type="file" accept="image/*,video/*" multiple required>
                         <button class="btn-fill photo-share-submit" id="photo-share-submit" type="submit">Upload Memories</button>
                     </form>
-                    <div id="photo-upload-progress" class="transfer-progress" hidden>
-                        <div class="transfer-progress-track"><span class="transfer-progress-fill"></span></div>
-                        <span class="transfer-progress-label">0% uploaded</span>
+                    <div id="photo-upload-progress" class="upload-progress-list" hidden>
+                        <div id="photo-upload-overall" class="upload-progress-overall">Completed 0/0</div>
+                        <div id="photo-upload-items"></div>
                     </div>
                     <div id="photo-share-status" class="photo-share-status" role="status" aria-live="polite"></div>
                 </div>
@@ -205,6 +205,6 @@
 <script>
     window.KH_MEMORIES_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20261019-13"></script>
+<script src="js/scripts.js?v=20261019-14"></script>
 </body>
 </html>
