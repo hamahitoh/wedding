@@ -719,6 +719,18 @@ section#intro .welcome-title::after {
     line-height: 1.5;
 }
 
+#intro .memories-cta {
+    margin: 32px 0 0;
+    text-align: center;
+}
+
+#intro .memories-cta .btn {
+    color: #fff;
+    font-family: "Wedding Versailles", "Versailles", "Versailles LT Std", Georgia, serif;
+    font-size: 15px;
+    font-style: normal;
+}
+
 .hotel-grid,
 .area-grid {
     margin-top: 18px;
