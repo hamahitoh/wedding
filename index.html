@@ -57,7 +57,7 @@
     <link rel="stylesheet" href="css/flexslider.css">
     <link rel="stylesheet" href="css/styles.min.css">
     <link rel="stylesheet" href="css/queries.css">
-    <link rel="stylesheet" href="css/custom.css?v=20261019-1">
+    <link rel="stylesheet" href="css/custom.css?v=20261019-2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
@@ -97,6 +97,7 @@
                 <div class="header-nav">
                     <nav>
                         <ul class="primary-nav">
+                            <li><a href="#gallery">Gallery</a></li>
                             <li><a href="registry/">Registry</a></li>
                         </ul>
                         <ul class="member-actions">
@@ -146,6 +147,19 @@
     </div>
 </section>
 
+<section id="gallery" class="memories-gallery section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h3 class="header welcome-title">Our Memories</h3>
+                <p class="gallery-intro">A collection of favorite moments shared by the people we love.</p>
+            </div>
+        </div>
+        <div id="gallery-status" class="gallery-status" role="status" aria-live="polite">Loading memories...</div>
+        <div id="gallery-grid" class="gallery-grid"></div>
+    </div>
+</section>
+
 <div id="photo-share-modal" class="modal fade photo-share-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -154,11 +168,12 @@
                 </button>
                 <div class="photo-share-panel text-center">
                     <h3>Share Memories</h3>
-                    <p>Share your favorite photos and memories from our celebration. We will compile the very best for everyone to enjoy. Thank you!</p>
+                    <p id="photo-share-greeting" class="photo-share-greeting"></p>
+                    <p>Share your favorite photos or videos from our celebration. After we review them, selected memories will appear in the gallery for everyone to enjoy.</p>
                     <form id="photo-share-form" class="photo-share-form">
-                        <label for="photo-share-files" class="sr-only">Choose photos</label>
-                        <input id="photo-share-files" name="files" type="file" accept="image/*" multiple required>
-                        <button class="btn-fill photo-share-submit" id="photo-share-submit" type="submit">Upload Photos</button>
+                        <label for="photo-share-files" class="sr-only">Choose photos or videos</label>
+                        <input id="photo-share-files" name="files" type="file" accept="image/*,video/*" multiple required>
+                        <button class="btn-fill photo-share-submit" id="photo-share-submit" type="submit">Upload Memories</button>
                     </form>
                     <div id="photo-share-status" class="photo-share-status" role="status" aria-live="polite"></div>
                 </div>
@@ -186,6 +201,6 @@
 <script>
     window.KH_MEMORIES_API_BASE_URL = 'https://api.kateandhamahito.com';
 </script>
-<script src="js/scripts.js?v=20261019-1"></script>
+<script src="js/scripts.js?v=20261019-2"></script>
 </body>
 </html>

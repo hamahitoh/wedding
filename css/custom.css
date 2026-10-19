@@ -174,6 +174,14 @@ body.guest-access-pending {
     line-height: 1.6;
 }
 
+.photo-share-panel .photo-share-greeting {
+    margin-bottom: 8px;
+    color: #b8892f;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+}
+
 .photo-share-form {
     display: grid;
     gap: 16px;
@@ -729,6 +737,97 @@ section#intro .welcome-title::after {
     font-family: "Wedding Versailles", "Versailles", "Versailles LT Std", Georgia, serif;
     font-size: 15px;
     font-style: normal;
+}
+
+.memories-gallery {
+    background: #fffaf5;
+}
+
+.memories-gallery .welcome-title {
+    color: #b8892f;
+    font-family: "Great Vibes", "Cormorant Garamond", Georgia, serif;
+    font-size: 58px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+    text-transform: none;
+}
+
+.gallery-intro {
+    max-width: 650px;
+    margin: 0 auto 28px;
+    color: rgba(67, 59, 51, 0.68);
+    font-family: "Wedding Versailles", "Versailles", Georgia, serif;
+    font-size: 20px;
+}
+
+.gallery-status {
+    min-height: 24px;
+    margin-bottom: 18px;
+    color: rgba(67, 59, 51, 0.68);
+    text-align: center;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.gallery-card {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    border-radius: 10px;
+    background: #241f1d;
+    box-shadow: 0 12px 32px rgba(49, 43, 41, 0.14);
+}
+
+.gallery-card img,
+.gallery-card video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.gallery-card video {
+    background: #241f1d;
+}
+
+.gallery-download {
+    position: absolute;
+    z-index: 2;
+    right: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    background: rgba(31, 27, 25, 0.78);
+    color: #fff;
+    font-size: 17px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+}
+
+.gallery-download:hover,
+.gallery-download:focus {
+    border-color: #e8ca6f;
+    background: #e8ca6f;
+    color: #fff;
+}
+
+.gallery-empty {
+    grid-column: 1 / -1;
+    padding: 42px 20px;
+    border: 1px solid rgba(184, 137, 47, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.72);
+    color: rgba(67, 59, 51, 0.68);
+    text-align: center;
 }
 
 .hotel-grid,

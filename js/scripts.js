@@ -1,8 +1,16 @@
 $(document).ready(function () {
     var memoriesApiBaseUrl = (window.KH_MEMORIES_API_BASE_URL || '').replace(/\/$/, '');
     var guestAccessStorageKey = 'khMemoriesGuestName';
+    var currentGuestName = '';
+
+    function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, function (character) {
+            return ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'})[character];
+        });
+    }
 
     function unlockSite(name) {
+        currentGuestName = $.trim(name || '');
         if (name) {
             try {
                 window.sessionStorage.setItem(guestAccessStorageKey, name);
@@ -90,8 +98,53 @@ $(document).ready(function () {
     $('#photo-share-modal').on('show.bs.modal', function () {
         $('#photo-share-form')[0].reset();
         $('#photo-share-status').removeClass('is-success is-error').text('');
-        $('#photo-share-submit').prop('disabled', false).text('Upload Photos');
+        $('#photo-share-submit').prop('disabled', false).text('Upload Memories');
+        $('#photo-share-greeting').text('Hi ' + (currentGuestName || 'there') + '! Thanks for your contribution!');
     });
+
+    function renderGallery(media) {
+        var gallery = $('#gallery-grid');
+        var status = $('#gallery-status');
+
+        if (!media.length) {
+            status.text('');
+            gallery.html('<div class="gallery-empty">Our gallery is being curated. Check back soon for shared memories.</div>');
+            return;
+        }
+
+        status.text(media.length + ' memor' + (media.length === 1 ? 'y' : 'ies') + ' in the gallery');
+        gallery.html(media.map(function (item) {
+            var mediaUrl = memoriesApiBaseUrl + (item.url || '');
+            var downloadUrl = memoriesApiBaseUrl + (item.download_url || '');
+            var filename = item.original_filename || item.filename || 'wedding-memory';
+            var preview = item.media_kind === 'video'
+                ? '<video src="' + escapeHtml(mediaUrl) + '" controls preload="metadata" playsinline></video>'
+                : '<a href="' + escapeHtml(mediaUrl) + '" target="_blank" rel="noopener"><img src="' + escapeHtml(mediaUrl) + '" alt="Wedding memory" loading="lazy"></a>';
+
+            return '<figure class="gallery-card">' +
+                preview +
+                '<a class="gallery-download" href="' + escapeHtml(downloadUrl) + '" download="' + escapeHtml(filename) + '" aria-label="Download ' + escapeHtml(filename) + '">' +
+                '<i class="fa fa-download" aria-hidden="true"></i></a>' +
+                '</figure>';
+        }).join(''));
+    }
+
+    function loadGallery() {
+        if (!memoriesApiBaseUrl) {
+            $('#gallery-status').text('The gallery is unavailable right now.');
+            return;
+        }
+
+        $.ajax({
+            url: memoriesApiBaseUrl + '/api/wedding/public/gallery',
+            method: 'GET',
+            cache: false
+        }).done(function (data) {
+            renderGallery((data && data.media) || []);
+        }).fail(function () {
+            $('#gallery-status').text('We could not load the gallery right now. Please try again later.');
+        });
+    }
 
     $('#photo-share-form').on('submit', function (event) {
         event.preventDefault();
@@ -113,6 +166,7 @@ $(document).ready(function () {
         }
 
         var formData = new FormData();
+        formData.append('uploader_name', currentGuestName || 'Unknown guest');
         $.each(files, function (_index, file) {
             formData.append('files', file);
         });
@@ -128,15 +182,16 @@ $(document).ready(function () {
             contentType: false
         }).done(function (data) {
             var count = (data && data.count) || files.length;
-            status.removeClass('is-error').addClass('is-success').text('Thank you! Uploaded ' + count + ' photo' + (count === 1 ? '' : 's') + '.');
+            status.removeClass('is-error').addClass('is-success').text('Thank you! Uploaded ' + count + ' memor' + (count === 1 ? 'y' : 'ies') + ' for review.');
             $('#photo-share-form')[0].reset();
         }).fail(function (xhr) {
             var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Memory upload failed. Please try again.';
             status.removeClass('is-success').addClass('is-error').text(detail);
         }).always(function () {
-            $('#photo-share-submit').prop('disabled', false).text('Upload Photos');
+            $('#photo-share-submit').prop('disabled', false).text('Upload Memories');
         });
     });
 
+    loadGallery();
     restoreGuestAccess();
 });
