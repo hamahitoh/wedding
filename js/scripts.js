@@ -1,6 +1,7 @@
 $(document).ready(function () {
     var memoriesApiBaseUrl = (window.KH_MEMORIES_API_BASE_URL || '').replace(/\/$/, '');
     var guestAccessStorageKey = 'khMemoriesGuestName';
+    var guestAccessDurationMs = 30 * 60 * 1000;
     var currentGuestName = '';
     var mobileShareFiles = {};
     var mobileSharePromises = {};
@@ -54,14 +55,71 @@ $(document).ready(function () {
         return mobileSharePromises[mediaUrl];
     }
 
-    function unlockSite(name) {
-        currentGuestName = $.trim(name || '');
-        if (name) {
+    function saveGuestAccess(name) {
+        var access = JSON.stringify({
+            name: name,
+            expiresAt: Date.now() + guestAccessDurationMs
+        });
+        try {
+            window.localStorage.setItem(guestAccessStorageKey, access);
+        } catch (error) {
+            // Session storage still provides a fallback when local storage is unavailable.
+        }
+        try {
+            window.sessionStorage.setItem(guestAccessStorageKey, access);
+        } catch (error) {
+            // The guest can still use the current page when browser storage is unavailable.
+        }
+    }
+
+    function clearGuestAccess() {
+        try {
+            window.localStorage.removeItem(guestAccessStorageKey);
+        } catch (error) {
+            // Ignore unavailable local storage.
+        }
+        try {
+            window.sessionStorage.removeItem(guestAccessStorageKey);
+        } catch (error) {
+            // Ignore unavailable session storage.
+        }
+    }
+
+    function storedGuestAccess() {
+        var stored = '';
+        try {
+            stored = window.localStorage.getItem(guestAccessStorageKey) || '';
+        } catch (error) {
+            stored = '';
+        }
+        if (!stored) {
             try {
-                window.sessionStorage.setItem(guestAccessStorageKey, name);
+                stored = window.sessionStorage.getItem(guestAccessStorageKey) || '';
             } catch (error) {
-                // The guest can still use the site when session storage is unavailable.
+                stored = '';
             }
+        }
+        if (!stored) {
+            return null;
+        }
+
+        try {
+            var access = JSON.parse(stored);
+            if (!access.name || Number(access.expiresAt || 0) <= Date.now()) {
+                clearGuestAccess();
+                return null;
+            }
+            return access;
+        } catch (error) {
+            // Migrate the previous session-only name format into a 30-minute access record.
+            return {name: stored, expiresAt: Date.now() + guestAccessDurationMs};
+        }
+    }
+
+    function unlockSite(name, rememberAccess) {
+        currentGuestName = $.trim(name || '');
+        if (currentGuestName && rememberAccess !== false) {
+            saveGuestAccess(currentGuestName);
         }
 
         $('body').removeClass('guest-access-pending');
@@ -69,16 +127,10 @@ $(document).ready(function () {
     }
 
     function restoreGuestAccess() {
-        var guestName = '';
-
-        try {
-            guestName = window.sessionStorage.getItem(guestAccessStorageKey) || '';
-        } catch (error) {
-            guestName = '';
-        }
-
-        if (guestName) {
-            unlockSite(guestName);
+        var access = storedGuestAccess();
+        if (access && access.name) {
+            saveGuestAccess(access.name);
+            unlockSite(access.name, false);
             return;
         }
 
