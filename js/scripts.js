@@ -40,8 +40,7 @@ $(document).ready(function () {
             })
             .then(function (blob) {
                 var file = new File([blob], filename, {type: blob.type || contentType});
-                var shareData = {files: [file], title: 'Wedding memory'};
-                if (navigator.canShare && !navigator.canShare(shareData)) {
+                if (navigator.canShare && !navigator.canShare({files: [file]})) {
                     throw new Error('File sharing is unavailable');
                 }
                 mobileShareFiles[mediaUrl] = file;
@@ -237,7 +236,7 @@ $(document).ready(function () {
             return false;
         }
 
-        var shareData = {files: [preparedFile], title: 'Wedding memory'};
+        var shareData = {files: [preparedFile]};
         var sharePromise;
         try {
             sharePromise = navigator.share(shareData);
