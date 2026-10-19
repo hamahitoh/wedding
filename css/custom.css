@@ -212,6 +212,40 @@ body.guest-access-pending {
     color: #9f3a38;
 }
 
+.transfer-progress {
+    width: 100%;
+    max-width: 520px;
+    margin: 16px auto 0;
+}
+
+.transfer-progress[hidden] {
+    display: none;
+}
+
+.transfer-progress-track {
+    overflow: hidden;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(67, 59, 51, 0.14);
+}
+
+.transfer-progress-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #b8892f;
+    transition: width 160ms ease-out;
+}
+
+.transfer-progress-label {
+    display: block;
+    margin-top: 7px;
+    color: #5f584f;
+    font-size: 14px;
+    font-weight: 600;
+}
+
 @font-face {
     font-family: "Wedding Versailles";
     font-style: normal;
@@ -857,6 +891,39 @@ section#intro .welcome-title::after {
 .gallery-download.is-preparing {
     pointer-events: none;
     opacity: 0.82;
+}
+
+.gallery-transfer-progress {
+    position: absolute;
+    z-index: 3;
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    padding: 9px 11px;
+    border-radius: 8px;
+    background: rgba(31, 27, 25, 0.86);
+    color: #fff;
+    backdrop-filter: blur(5px);
+}
+
+.gallery-transfer-progress[hidden] {
+    display: none;
+}
+
+.gallery-transfer-progress .transfer-progress-track {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.gallery-transfer-progress .transfer-progress-fill {
+    background: #e8ca6f;
+}
+
+.gallery-transfer-progress .transfer-progress-label {
+    margin-top: 5px;
+    color: #fff;
+    font-size: 12px;
+    text-align: center;
 }
 
 .gallery-empty {

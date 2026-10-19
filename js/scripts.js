@@ -27,33 +27,55 @@ $(document).ready(function () {
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     }
 
-    function prepareMobileShareFile(mediaUrl, filename, contentType) {
+    function prepareMobileShareFile(mediaUrl, filename, contentType, onProgress) {
         if (mobileShareFiles[mediaUrl]) {
+            if (onProgress) {
+                onProgress(100);
+            }
             return Promise.resolve(mobileShareFiles[mediaUrl]);
         }
         if (mobileSharePromises[mediaUrl]) {
             return mobileSharePromises[mediaUrl];
         }
 
-        mobileSharePromises[mediaUrl] = fetch(mediaUrl, {mode: 'cors'})
-            .then(function (response) {
-                if (!response.ok) {
-                    throw new Error('Download failed');
+        mobileSharePromises[mediaUrl] = new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', mediaUrl, true);
+            xhr.responseType = 'blob';
+            xhr.onprogress = function (progressEvent) {
+                if (onProgress && progressEvent.lengthComputable && progressEvent.total > 0) {
+                    onProgress(Math.min(100, Math.round((progressEvent.loaded / progressEvent.total) * 100)));
                 }
-                return response.blob();
-            })
-            .then(function (blob) {
+            };
+            xhr.onload = function () {
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    reject(new Error('Download failed'));
+                    return;
+                }
+                var blob = xhr.response;
                 if (!blob || !blob.size) {
-                    throw new Error('The media file was empty');
+                    reject(new Error('The media file was empty'));
+                    return;
                 }
                 var file = new File([blob], filename, {type: blob.type || contentType});
                 mobileShareFiles[mediaUrl] = file;
-                return file;
-            })
-            .catch(function (error) {
+                if (onProgress) {
+                    onProgress(100);
+                }
                 delete mobileSharePromises[mediaUrl];
-                throw error;
-            });
+                resolve(file);
+            };
+            xhr.onerror = function () {
+                reject(new Error('Download failed'));
+            };
+            xhr.onabort = function () {
+                reject(new Error('Download canceled'));
+            };
+            xhr.send();
+        }).catch(function (error) {
+            delete mobileSharePromises[mediaUrl];
+            throw error;
+        });
 
         return mobileSharePromises[mediaUrl];
     }
@@ -199,6 +221,8 @@ $(document).ready(function () {
         $('#photo-share-form')[0].reset();
         $('#photo-share-status').removeClass('is-success is-error').text('');
         $('#photo-share-submit').prop('disabled', false).text('Upload Memories');
+        $('#photo-upload-progress').attr('hidden', true).find('.transfer-progress-fill').css('width', '0%');
+        $('#photo-upload-progress .transfer-progress-label').text('0% uploaded');
         $('#photo-share-greeting').text('Hi ' + (currentGuestName || 'there') + '! Thanks for your contribution!');
     });
 
@@ -218,8 +242,9 @@ $(document).ready(function () {
             var downloadUrl = memoriesApiBaseUrl + (item.download_url || '');
             var filename = item.original_filename || item.filename || 'wedding-memory';
             var contentType = item.content_type || (item.media_kind === 'video' ? 'video/mp4' : 'image/jpeg');
+            var posterUrl = item.poster_url ? memoriesApiBaseUrl + item.poster_url : '';
             var preview = item.media_kind === 'video'
-                ? '<video src="' + escapeHtml(mediaUrl) + '" controls preload="metadata" playsinline></video>'
+                ? '<video src="' + escapeHtml(mediaUrl) + '" poster="' + escapeHtml(posterUrl) + '" controls preload="metadata" playsinline webkit-playsinline></video>'
                 : '<a href="' + escapeHtml(mediaUrl) + '" target="_blank" rel="noopener"><img src="' + escapeHtml(mediaUrl) + '" alt="Wedding memory" loading="lazy"></a>';
             var hoverPreview = item.media_kind === 'video'
                 ? ''
@@ -231,27 +256,12 @@ $(document).ready(function () {
                 'data-media-url="' + escapeHtml(mediaUrl) + '" data-filename="' + escapeHtml(filename) + '" data-content-type="' + escapeHtml(contentType) + '" ' +
                 'aria-label="Save ' + escapeHtml(filename) + '" title="Save to your device">' +
                 '<i class="fa fa-download" aria-hidden="true"></i></a>' +
+                '<div class="gallery-transfer-progress" hidden>' +
+                '<div class="transfer-progress-track"><span class="transfer-progress-fill"></span></div>' +
+                '<span class="transfer-progress-label">0% downloaded</span></div>' +
                 hoverPreview +
                 '</figure>';
         }).join(''));
-
-        if (isMobileShareDevice() && navigator.share && typeof File !== 'undefined') {
-            var prefetchBudget = 40 * 1024 * 1024;
-            media.forEach(function (item) {
-                var itemSize = Number(item.size || 0);
-                if (itemSize <= 0 || itemSize > prefetchBudget || (item.media_kind === 'video' && itemSize > 15 * 1024 * 1024)) {
-                    return;
-                }
-                prefetchBudget -= itemSize;
-                prepareMobileShareFile(
-                    memoriesApiBaseUrl + (item.url || ''),
-                    item.original_filename || item.filename || 'wedding-memory',
-                    item.content_type || (item.media_kind === 'video' ? 'video/mp4' : 'image/jpeg')
-                ).catch(function () {
-                    // The save button will offer the appropriate fallback if preparation fails.
-                });
-            });
-        }
     }
 
     function galleryMediaFingerprint(media) {
@@ -261,35 +271,69 @@ $(document).ready(function () {
                 item.url || '',
                 item.download_url || '',
                 item.media_kind || '',
+                item.poster_url || '',
                 Number(item.size || 0)
             ];
         }));
     }
 
     $(document).on('click', '.gallery-download', function (event) {
-        if (!isMobileShareDevice() || !navigator.share || typeof File === 'undefined') {
+        if (typeof File === 'undefined' || typeof XMLHttpRequest === 'undefined') {
             return true;
         }
 
         event.preventDefault();
         var button = $(this);
+        var nativeFileShare = isMobileShareDevice() && navigator.share;
         var icon = button.find('i');
+        var progress = button.siblings('.gallery-transfer-progress');
         var mediaUrl = button.attr('data-media-url') || '';
         var filename = button.attr('data-filename') || 'wedding-memory';
         var contentType = button.attr('data-content-type') || 'application/octet-stream';
         var previousStatus = $('#gallery-status').text();
         var preparedFile = mobileShareFiles[mediaUrl];
 
-        if (!preparedFile) {
+        function updateDownloadProgress(percent, label) {
+            var safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+            progress.removeAttr('hidden');
+            progress.find('.transfer-progress-fill').css('width', safePercent + '%');
+            progress.find('.transfer-progress-label').text(label || (safePercent + '% downloaded'));
+        }
+
+        function savePreparedFile(file) {
+            var objectUrl = window.URL.createObjectURL(file);
+            var downloadLink = document.createElement('a');
+            downloadLink.href = objectUrl;
+            downloadLink.download = file.name || filename;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            window.setTimeout(function () {
+                window.URL.revokeObjectURL(objectUrl);
+            }, 1000);
+        }
+
+        if (!preparedFile || !nativeFileShare) {
             button.addClass('is-preparing').attr('aria-busy', 'true');
             icon.attr('class', 'fa fa-spinner fa-spin');
-            $('#gallery-status').text('Preparing this memory for the native save sheet...');
-            prepareMobileShareFile(mediaUrl, filename, contentType)
-                .then(function () {
-                    $('#gallery-status').text('Ready—tap the download icon again, then choose Save Image or Save Video.');
+            updateDownloadProgress(0, 'Starting download...');
+            $('#gallery-status').text(nativeFileShare ? 'Preparing this memory for the native save sheet...' : 'Downloading this memory...');
+            prepareMobileShareFile(mediaUrl, filename, contentType, function (percent) {
+                updateDownloadProgress(percent, percent + '% downloaded');
+            }).then(function (file) {
+                    if (nativeFileShare) {
+                        updateDownloadProgress(100, 'Ready to save');
+                        $('#gallery-status').text('Ready—tap the download icon again, then choose Save Image or Save Video.');
+                    } else {
+                        savePreparedFile(file);
+                        delete mobileShareFiles[mediaUrl];
+                        updateDownloadProgress(100, 'Download complete');
+                        $('#gallery-status').text(previousStatus);
+                    }
                 })
                 .catch(function () {
-                    if (isAppleMobileDevice()) {
+                    progress.attr('hidden', true);
+                    if (nativeFileShare && isAppleMobileDevice()) {
                         $('#gallery-status').text('The file could not be loaded. Please check your connection and try again.');
                     } else {
                         $('#gallery-status').text('Starting a direct download to your device...');
@@ -303,6 +347,7 @@ $(document).ready(function () {
             return false;
         }
 
+        progress.attr('hidden', true);
         var shareData = {files: [preparedFile]};
         var sharePromise;
         try {
@@ -313,6 +358,7 @@ $(document).ready(function () {
         }
 
         sharePromise.then(function () {
+            delete mobileShareFiles[mediaUrl];
             $('#gallery-status').text(previousStatus);
         }).catch(function (error) {
             if (error && error.name === 'AbortError') {
@@ -403,15 +449,37 @@ $(document).ready(function () {
 
         $('#photo-share-submit').prop('disabled', true).text('Uploading...');
         status.removeClass('is-success is-error').text('Uploading memories...');
+        var uploadProgress = $('#photo-upload-progress');
+        uploadProgress.removeAttr('hidden');
+        uploadProgress.find('.transfer-progress-fill').css('width', '0%');
+        uploadProgress.find('.transfer-progress-label').text('0% uploaded');
 
         $.ajax({
             url: memoriesApiBaseUrl + '/api/wedding/public/photos',
             method: 'POST',
             data: formData,
             processData: false,
-            contentType: false
+            contentType: false,
+            xhr: function () {
+                var xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener('progress', function (progressEvent) {
+                        if (!progressEvent.lengthComputable || progressEvent.total <= 0) {
+                            return;
+                        }
+                        var percent = Math.min(100, Math.round((progressEvent.loaded / progressEvent.total) * 100));
+                        uploadProgress.find('.transfer-progress-fill').css('width', percent + '%');
+                        uploadProgress.find('.transfer-progress-label').text(
+                            percent === 100 ? '100% uploaded — processing...' : percent + '% uploaded'
+                        );
+                    });
+                }
+                return xhr;
+            }
         }).done(function (data) {
             var count = (data && data.count) || files.length;
+            uploadProgress.find('.transfer-progress-fill').css('width', '100%');
+            uploadProgress.find('.transfer-progress-label').text('Upload complete');
             status.removeClass('is-error').addClass('is-success').text('Thank you! Uploaded ' + count + ' memor' + (count === 1 ? 'y' : 'ies') + ' for review.');
             $('#photo-share-form')[0].reset();
         }).fail(function (xhr) {
