@@ -9,6 +9,11 @@ $(document).ready(function () {
         });
     }
 
+    function isAppleMobileDevice() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
     function unlockSite(name) {
         currentGuestName = $.trim(name || '');
         if (name) {
@@ -117,6 +122,7 @@ $(document).ready(function () {
             var mediaUrl = memoriesApiBaseUrl + (item.url || '');
             var downloadUrl = memoriesApiBaseUrl + (item.download_url || '');
             var filename = item.original_filename || item.filename || 'wedding-memory';
+            var contentType = item.content_type || (item.media_kind === 'video' ? 'video/mp4' : 'image/jpeg');
             var preview = item.media_kind === 'video'
                 ? '<video src="' + escapeHtml(mediaUrl) + '" controls preload="metadata" playsinline></video>'
                 : '<a href="' + escapeHtml(mediaUrl) + '" target="_blank" rel="noopener"><img src="' + escapeHtml(mediaUrl) + '" alt="Wedding memory" loading="lazy"></a>';
@@ -126,12 +132,61 @@ $(document).ready(function () {
 
             return '<figure class="gallery-card">' +
                 preview +
-                '<a class="gallery-download" href="' + escapeHtml(downloadUrl) + '" download="' + escapeHtml(filename) + '" aria-label="Download ' + escapeHtml(filename) + '">' +
+                '<a class="gallery-download" href="' + escapeHtml(downloadUrl) + '" download="' + escapeHtml(filename) + '" ' +
+                'data-media-url="' + escapeHtml(mediaUrl) + '" data-filename="' + escapeHtml(filename) + '" data-content-type="' + escapeHtml(contentType) + '" ' +
+                'aria-label="Save ' + escapeHtml(filename) + '" title="Save to your device">' +
                 '<i class="fa fa-download" aria-hidden="true"></i></a>' +
                 hoverPreview +
                 '</figure>';
         }).join(''));
     }
+
+    $(document).on('click', '.gallery-download', async function (event) {
+        if (!isAppleMobileDevice() || !navigator.share || typeof File === 'undefined') {
+            return true;
+        }
+
+        event.preventDefault();
+        var button = $(this);
+        var icon = button.find('i');
+        var mediaUrl = button.attr('data-media-url') || '';
+        var filename = button.attr('data-filename') || 'wedding-memory';
+        var contentType = button.attr('data-content-type') || 'application/octet-stream';
+        var previousStatus = $('#gallery-status').text();
+
+        button.addClass('is-preparing').attr('aria-busy', 'true');
+        icon.attr('class', 'fa fa-spinner fa-spin');
+        $('#gallery-status').text('Preparing this memory for your Photos library...');
+
+        try {
+            var response = await fetch(mediaUrl, {mode: 'cors'});
+            if (!response.ok) {
+                throw new Error('Download failed');
+            }
+            var blob = await response.blob();
+            var file = new File([blob], filename, {type: blob.type || contentType});
+            var shareData = {files: [file], title: 'Wedding memory'};
+
+            if (navigator.canShare && !navigator.canShare(shareData)) {
+                throw new Error('File sharing is unavailable');
+            }
+
+            await navigator.share(shareData);
+            $('#gallery-status').text(previousStatus);
+        } catch (error) {
+            if (error && error.name === 'AbortError') {
+                $('#gallery-status').text(previousStatus);
+            } else {
+                $('#gallery-status').text('Opening the memory. Tap Share, then Save Image or Save Video.');
+                window.location.href = mediaUrl;
+            }
+        } finally {
+            button.removeClass('is-preparing').removeAttr('aria-busy');
+            icon.attr('class', 'fa fa-download');
+        }
+
+        return false;
+    });
 
     function loadGallery() {
         if (!memoriesApiBaseUrl) {

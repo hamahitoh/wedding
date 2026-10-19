@@ -854,6 +854,11 @@ section#intro .welcome-title::after {
     color: #fff;
 }
 
+.gallery-download.is-preparing {
+    pointer-events: none;
+    opacity: 0.82;
+}
+
 .gallery-empty {
     grid-column: 1 / -1;
     padding: 42px 20px;
