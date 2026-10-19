@@ -987,8 +987,23 @@ section#intro .welcome-title::after {
 .gallery-transfer-progress .transfer-progress-label {
     margin-top: 5px;
     color: #fff;
-    font-size: 12px;
+    font-size: clamp(9px, 3vw, 12px);
+    line-height: 1.2;
     text-align: center;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 390px) {
+    .gallery-transfer-progress {
+        right: 7px;
+        left: 7px;
+        padding: 7px 6px;
+    }
+
+    .gallery-transfer-progress .transfer-progress-label {
+        font-size: 9px;
+        letter-spacing: -0.1px;
+    }
 }
 
 .gallery-empty {
