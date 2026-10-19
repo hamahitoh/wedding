@@ -9,9 +9,11 @@ $(document).ready(function () {
         });
     }
 
-    function isAppleMobileDevice() {
-        return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    function isMobileShareDevice() {
+        var mobileUserAgent = /Android|iPad|iPhone|iPod|Mobile|Tablet/i.test(navigator.userAgent);
+        var touchTablet = navigator.maxTouchPoints > 1 &&
+            window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        return mobileUserAgent || touchTablet;
     }
 
     function unlockSite(name) {
@@ -142,7 +144,7 @@ $(document).ready(function () {
     }
 
     $(document).on('click', '.gallery-download', async function (event) {
-        if (!isAppleMobileDevice() || !navigator.share || typeof File === 'undefined') {
+        if (!isMobileShareDevice() || !navigator.share || typeof File === 'undefined') {
             return true;
         }
 
@@ -156,7 +158,7 @@ $(document).ready(function () {
 
         button.addClass('is-preparing').attr('aria-busy', 'true');
         icon.attr('class', 'fa fa-spinner fa-spin');
-        $('#gallery-status').text('Preparing this memory for your Photos library...');
+        $('#gallery-status').text('Preparing this memory to save or share...');
 
         try {
             var response = await fetch(mediaUrl, {mode: 'cors'});
@@ -177,8 +179,8 @@ $(document).ready(function () {
             if (error && error.name === 'AbortError') {
                 $('#gallery-status').text(previousStatus);
             } else {
-                $('#gallery-status').text('Opening the memory. Tap Share, then Save Image or Save Video.');
-                window.location.href = mediaUrl;
+                $('#gallery-status').text('Starting a direct download to your device...');
+                window.location.href = button.attr('href');
             }
         } finally {
             button.removeClass('is-preparing').removeAttr('aria-busy');
