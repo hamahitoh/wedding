@@ -313,6 +313,29 @@ $(document).ready(function () {
             }, 1000);
         }
 
+        function openNativeFileShare(file) {
+            var sharePromise;
+            updateDownloadProgress(100, 'Opening save options...');
+            $('#gallery-status').text('Opening your device’s save options...');
+            try {
+                sharePromise = navigator.share({files: [file]});
+            } catch (error) {
+                sharePromise = Promise.reject(error);
+            }
+            return sharePromise.then(function () {
+                delete mobileShareFiles[mediaUrl];
+                progress.attr('hidden', true);
+                $('#gallery-status').text(previousStatus);
+            }).catch(function (error) {
+                updateDownloadProgress(100, 'Tap the icon to save');
+                if (error && error.name === 'AbortError') {
+                    $('#gallery-status').text(previousStatus);
+                } else {
+                    $('#gallery-status').text('Your browser requires one more tap on the download icon to open the save sheet.');
+                }
+            });
+        }
+
         if (!preparedFile || !nativeFileShare) {
             button.addClass('is-preparing').attr('aria-busy', 'true');
             icon.attr('class', 'fa fa-spinner fa-spin');
@@ -322,8 +345,7 @@ $(document).ready(function () {
                 updateDownloadProgress(percent, percent + '% downloaded');
             }).then(function (file) {
                     if (nativeFileShare) {
-                        updateDownloadProgress(100, 'Ready to save');
-                        $('#gallery-status').text('Ready—tap the download icon again, then choose Save Image or Save Video.');
+                        return openNativeFileShare(file);
                     } else {
                         savePreparedFile(file);
                         delete mobileShareFiles[mediaUrl];
@@ -347,29 +369,7 @@ $(document).ready(function () {
             return false;
         }
 
-        progress.attr('hidden', true);
-        var shareData = {files: [preparedFile]};
-        var sharePromise;
-        try {
-            sharePromise = navigator.share(shareData);
-        } catch (error) {
-            $('#gallery-status').text('Could not open the native save sheet. Please try again.');
-            return false;
-        }
-
-        sharePromise.then(function () {
-            delete mobileShareFiles[mediaUrl];
-            $('#gallery-status').text(previousStatus);
-        }).catch(function (error) {
-            if (error && error.name === 'AbortError') {
-                $('#gallery-status').text(previousStatus);
-            } else if (isAppleMobileDevice()) {
-                $('#gallery-status').text('Could not open the Apple save sheet. Please tap the icon again.');
-            } else {
-                $('#gallery-status').text('Starting a direct download to your device...');
-                window.location.href = button.attr('href');
-            }
-        });
+        openNativeFileShare(preparedFile);
 
         return false;
     });
