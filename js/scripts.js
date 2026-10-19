@@ -40,10 +40,10 @@ $(document).ready(function () {
                 return response.blob();
             })
             .then(function (blob) {
-                var file = new File([blob], filename, {type: blob.type || contentType});
-                if (navigator.canShare && !navigator.canShare({files: [file]})) {
-                    throw new Error('File sharing is unavailable');
+                if (!blob || !blob.size) {
+                    throw new Error('The media file was empty');
                 }
+                var file = new File([blob], filename, {type: blob.type || contentType});
                 mobileShareFiles[mediaUrl] = file;
                 return file;
             })
@@ -275,7 +275,7 @@ $(document).ready(function () {
                 })
                 .catch(function () {
                     if (isAppleMobileDevice()) {
-                        $('#gallery-status').text('This file could not be prepared for Apple Photos. Please try again.');
+                        $('#gallery-status').text('The file could not be loaded. Please check your connection and try again.');
                     } else {
                         $('#gallery-status').text('Starting a direct download to your device...');
                         window.location.href = button.attr('href');
