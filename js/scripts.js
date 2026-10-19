@@ -2,6 +2,8 @@ $(document).ready(function () {
     var memoriesApiBaseUrl = (window.KH_MEMORIES_API_BASE_URL || '').replace(/\/$/, '');
     var guestAccessStorageKey = 'khMemoriesGuestName';
     var currentGuestName = '';
+    var mobileShareFiles = {};
+    var mobileSharePromises = {};
 
     function escapeHtml(value) {
         return String(value || '').replace(/[&<>"']/g, function (character) {
@@ -14,6 +16,43 @@ $(document).ready(function () {
         var touchTablet = navigator.maxTouchPoints > 1 &&
             window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
         return mobileUserAgent || touchTablet;
+    }
+
+    function isAppleMobileDevice() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
+    function prepareMobileShareFile(mediaUrl, filename, contentType) {
+        if (mobileShareFiles[mediaUrl]) {
+            return Promise.resolve(mobileShareFiles[mediaUrl]);
+        }
+        if (mobileSharePromises[mediaUrl]) {
+            return mobileSharePromises[mediaUrl];
+        }
+
+        mobileSharePromises[mediaUrl] = fetch(mediaUrl, {mode: 'cors'})
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                return response.blob();
+            })
+            .then(function (blob) {
+                var file = new File([blob], filename, {type: blob.type || contentType});
+                var shareData = {files: [file], title: 'Wedding memory'};
+                if (navigator.canShare && !navigator.canShare(shareData)) {
+                    throw new Error('File sharing is unavailable');
+                }
+                mobileShareFiles[mediaUrl] = file;
+                return file;
+            })
+            .catch(function (error) {
+                delete mobileSharePromises[mediaUrl];
+                throw error;
+            });
+
+        return mobileSharePromises[mediaUrl];
     }
 
     function unlockSite(name) {
@@ -141,9 +180,27 @@ $(document).ready(function () {
                 hoverPreview +
                 '</figure>';
         }).join(''));
+
+        if (isMobileShareDevice() && navigator.share && typeof File !== 'undefined') {
+            var prefetchBudget = 40 * 1024 * 1024;
+            media.forEach(function (item) {
+                var itemSize = Number(item.size || 0);
+                if (itemSize <= 0 || itemSize > prefetchBudget || (item.media_kind === 'video' && itemSize > 15 * 1024 * 1024)) {
+                    return;
+                }
+                prefetchBudget -= itemSize;
+                prepareMobileShareFile(
+                    memoriesApiBaseUrl + (item.url || ''),
+                    item.original_filename || item.filename || 'wedding-memory',
+                    item.content_type || (item.media_kind === 'video' ? 'video/mp4' : 'image/jpeg')
+                ).catch(function () {
+                    // The save button will offer the appropriate fallback if preparation fails.
+                });
+            });
+        }
     }
 
-    $(document).on('click', '.gallery-download', async function (event) {
+    $(document).on('click', '.gallery-download', function (event) {
         if (!isMobileShareDevice() || !navigator.share || typeof File === 'undefined') {
             return true;
         }
@@ -155,37 +212,52 @@ $(document).ready(function () {
         var filename = button.attr('data-filename') || 'wedding-memory';
         var contentType = button.attr('data-content-type') || 'application/octet-stream';
         var previousStatus = $('#gallery-status').text();
+        var preparedFile = mobileShareFiles[mediaUrl];
 
-        button.addClass('is-preparing').attr('aria-busy', 'true');
-        icon.attr('class', 'fa fa-spinner fa-spin');
-        $('#gallery-status').text('Preparing this memory to save or share...');
+        if (!preparedFile) {
+            button.addClass('is-preparing').attr('aria-busy', 'true');
+            icon.attr('class', 'fa fa-spinner fa-spin');
+            $('#gallery-status').text('Preparing this memory for the native save sheet...');
+            prepareMobileShareFile(mediaUrl, filename, contentType)
+                .then(function () {
+                    $('#gallery-status').text('Ready—tap the download icon again, then choose Save Image or Save Video.');
+                })
+                .catch(function () {
+                    if (isAppleMobileDevice()) {
+                        $('#gallery-status').text('This file could not be prepared for Apple Photos. Please try again.');
+                    } else {
+                        $('#gallery-status').text('Starting a direct download to your device...');
+                        window.location.href = button.attr('href');
+                    }
+                })
+                .then(function () {
+                    button.removeClass('is-preparing').removeAttr('aria-busy');
+                    icon.attr('class', 'fa fa-download');
+                });
+            return false;
+        }
 
+        var shareData = {files: [preparedFile], title: 'Wedding memory'};
+        var sharePromise;
         try {
-            var response = await fetch(mediaUrl, {mode: 'cors'});
-            if (!response.ok) {
-                throw new Error('Download failed');
-            }
-            var blob = await response.blob();
-            var file = new File([blob], filename, {type: blob.type || contentType});
-            var shareData = {files: [file], title: 'Wedding memory'};
-
-            if (navigator.canShare && !navigator.canShare(shareData)) {
-                throw new Error('File sharing is unavailable');
-            }
-
-            await navigator.share(shareData);
-            $('#gallery-status').text(previousStatus);
+            sharePromise = navigator.share(shareData);
         } catch (error) {
+            $('#gallery-status').text('Could not open the native save sheet. Please try again.');
+            return false;
+        }
+
+        sharePromise.then(function () {
+            $('#gallery-status').text(previousStatus);
+        }).catch(function (error) {
             if (error && error.name === 'AbortError') {
                 $('#gallery-status').text(previousStatus);
+            } else if (isAppleMobileDevice()) {
+                $('#gallery-status').text('Could not open the Apple save sheet. Please tap the icon again.');
             } else {
                 $('#gallery-status').text('Starting a direct download to your device...');
                 window.location.href = button.attr('href');
             }
-        } finally {
-            button.removeClass('is-preparing').removeAttr('aria-busy');
-            icon.attr('class', 'fa fa-download');
-        }
+        });
 
         return false;
     });
