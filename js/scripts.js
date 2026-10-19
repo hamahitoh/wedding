@@ -5,6 +5,7 @@ $(document).ready(function () {
     var currentGuestName = '';
     var mobileShareFiles = {};
     var mobileSharePromises = {};
+    var mobileShareProgress = {};
     var galleryRefreshTimer = null;
     var galleryFingerprint = null;
     var galleryRequestInFlight = false;
@@ -35,7 +36,27 @@ $(document).ready(function () {
             return Promise.resolve(mobileShareFiles[mediaUrl]);
         }
         if (mobileSharePromises[mediaUrl]) {
+            if (onProgress) {
+                mobileShareProgress[mediaUrl].listeners.push(onProgress);
+                onProgress(mobileShareProgress[mediaUrl].percent);
+            }
             return mobileSharePromises[mediaUrl];
+        }
+
+        mobileShareProgress[mediaUrl] = {percent: 0, listeners: []};
+        if (onProgress) {
+            mobileShareProgress[mediaUrl].listeners.push(onProgress);
+        }
+
+        function reportProgress(percent) {
+            var progressState = mobileShareProgress[mediaUrl];
+            if (!progressState) {
+                return;
+            }
+            progressState.percent = percent;
+            progressState.listeners.forEach(function (listener) {
+                listener(percent);
+            });
         }
 
         mobileSharePromises[mediaUrl] = new Promise(function (resolve, reject) {
@@ -44,7 +65,9 @@ $(document).ready(function () {
             xhr.responseType = 'blob';
             xhr.onprogress = function (progressEvent) {
                 if (onProgress && progressEvent.lengthComputable && progressEvent.total > 0) {
-                    onProgress(Math.min(100, Math.round((progressEvent.loaded / progressEvent.total) * 100)));
+                    reportProgress(Math.min(100, Math.round((progressEvent.loaded / progressEvent.total) * 100)));
+                } else if (progressEvent.lengthComputable && progressEvent.total > 0) {
+                    reportProgress(Math.min(100, Math.round((progressEvent.loaded / progressEvent.total) * 100)));
                 }
             };
             xhr.onload = function () {
@@ -59,10 +82,9 @@ $(document).ready(function () {
                 }
                 var file = new File([blob], filename, {type: blob.type || contentType});
                 mobileShareFiles[mediaUrl] = file;
-                if (onProgress) {
-                    onProgress(100);
-                }
+                reportProgress(100);
                 delete mobileSharePromises[mediaUrl];
+                delete mobileShareProgress[mediaUrl];
                 resolve(file);
             };
             xhr.onerror = function () {
@@ -74,6 +96,7 @@ $(document).ready(function () {
             xhr.send();
         }).catch(function (error) {
             delete mobileSharePromises[mediaUrl];
+            delete mobileShareProgress[mediaUrl];
             throw error;
         });
 
@@ -263,6 +286,24 @@ $(document).ready(function () {
                 hoverPreview +
                 '</figure>';
         }).join(''));
+
+        if (isMobileShareDevice() && navigator.share && typeof File !== 'undefined') {
+            var imagePreloadBudget = 40 * 1024 * 1024;
+            media.forEach(function (item) {
+                var itemSize = Number(item.size || 0);
+                if (item.media_kind !== 'image' || itemSize <= 0 || itemSize > imagePreloadBudget) {
+                    return;
+                }
+                imagePreloadBudget -= itemSize;
+                prepareMobileShareFile(
+                    memoriesApiBaseUrl + (item.url || ''),
+                    item.original_filename || item.filename || 'wedding-memory',
+                    item.content_type || 'image/jpeg'
+                ).catch(function () {
+                    // A normal tap-to-download attempt remains available if preloading fails.
+                });
+            });
+        }
     }
 
     function galleryMediaFingerprint(media) {
@@ -314,9 +355,13 @@ $(document).ready(function () {
             }, 1000);
         }
 
-        function openNativeFileShare(file) {
+        function openNativeFileShare(file, showProgress) {
             var sharePromise;
-            updateDownloadProgress(100, 'Opening save options...');
+            if (showProgress) {
+                updateDownloadProgress(100, 'Opening save options...');
+            } else {
+                progress.attr('hidden', true);
+            }
             $('#gallery-status').text('Opening your device’s save options...');
             try {
                 sharePromise = navigator.share({files: [file]});
@@ -324,7 +369,9 @@ $(document).ready(function () {
                 sharePromise = Promise.reject(error);
             }
             return sharePromise.then(function () {
-                delete mobileShareFiles[mediaUrl];
+                if (contentType.indexOf('image/') !== 0) {
+                    delete mobileShareFiles[mediaUrl];
+                }
                 progress.attr('hidden', true);
                 $('#gallery-status').text(previousStatus);
             }).catch(function (error) {
@@ -346,7 +393,7 @@ $(document).ready(function () {
                 updateDownloadProgress(percent, percent + '% downloaded');
             }).then(function (file) {
                     if (nativeFileShare) {
-                        return openNativeFileShare(file);
+                        return openNativeFileShare(file, true);
                     } else {
                         savePreparedFile(file);
                         delete mobileShareFiles[mediaUrl];
@@ -370,7 +417,7 @@ $(document).ready(function () {
             return false;
         }
 
-        openNativeFileShare(preparedFile);
+        openNativeFileShare(preparedFile, false);
 
         return false;
     });
