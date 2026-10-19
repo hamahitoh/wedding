@@ -161,7 +161,15 @@ $(document).ready(function () {
             return;
         }
         if (files.length > 10) {
-            status.removeClass('is-success').addClass('is-error').text('Please upload 10 photos or fewer at a time.');
+            status.removeClass('is-success').addClass('is-error').text('Please upload 10 memories or fewer at a time.');
+            return;
+        }
+        var totalBytes = 0;
+        $.each(files, function (_index, file) {
+            totalBytes += file.size || 0;
+        });
+        if (totalBytes > 90 * 1024 * 1024) {
+            status.removeClass('is-success').addClass('is-error').text('Please keep each upload batch under 90 MB.');
             return;
         }
 
@@ -193,5 +201,11 @@ $(document).ready(function () {
     });
 
     loadGallery();
+    window.setInterval(loadGallery, 30000);
+    $(document).on('visibilitychange', function () {
+        if (!document.hidden) {
+            loadGallery();
+        }
+    });
     restoreGuestAccess();
 });

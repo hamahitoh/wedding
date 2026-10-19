@@ -799,7 +799,7 @@ section#intro .welcome-title::after {
     position: absolute;
     z-index: 2;
     right: 12px;
-    bottom: 12px;
+    top: 12px;
     display: inline-flex;
     width: 42px;
     height: 42px;
