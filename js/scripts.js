@@ -5,6 +5,9 @@ $(document).ready(function () {
     var currentGuestName = '';
     var mobileShareFiles = {};
     var mobileSharePromises = {};
+    var galleryRefreshTimer = null;
+    var galleryFingerprint = null;
+    var galleryRequestInFlight = false;
 
     function escapeHtml(value) {
         return String(value || '').replace(/[&<>"']/g, function (character) {
@@ -251,6 +254,18 @@ $(document).ready(function () {
         }
     }
 
+    function galleryMediaFingerprint(media) {
+        return JSON.stringify(media.map(function (item) {
+            return [
+                item.filename || '',
+                item.url || '',
+                item.download_url || '',
+                item.media_kind || '',
+                Number(item.size || 0)
+            ];
+        }));
+    }
+
     $(document).on('click', '.gallery-download', function (event) {
         if (!isMobileShareDevice() || !navigator.share || typeof File === 'undefined') {
             return true;
@@ -319,15 +334,38 @@ $(document).ready(function () {
             return;
         }
 
+        if (galleryRequestInFlight) {
+            return;
+        }
+        galleryRequestInFlight = true;
+
         $.ajax({
             url: memoriesApiBaseUrl + '/api/wedding/public/gallery',
             method: 'GET',
             cache: false
         }).done(function (data) {
-            renderGallery((data && data.media) || []);
+            var media = (data && data.media) || [];
+            var nextFingerprint = galleryMediaFingerprint(media);
+            if (nextFingerprint !== galleryFingerprint) {
+                galleryFingerprint = nextFingerprint;
+                renderGallery(media);
+            }
         }).fail(function () {
             $('#gallery-status').text('We could not load the gallery right now. Please try again later.');
+        }).always(function () {
+            galleryRequestInFlight = false;
+            scheduleGalleryRefresh();
         });
+    }
+
+    function scheduleGalleryRefresh() {
+        if (galleryRefreshTimer !== null) {
+            window.clearTimeout(galleryRefreshTimer);
+        }
+        galleryRefreshTimer = window.setTimeout(function () {
+            galleryRefreshTimer = null;
+            loadGallery();
+        }, 30000);
     }
 
     $('#photo-share-form').on('submit', function (event) {
@@ -385,10 +423,9 @@ $(document).ready(function () {
     });
 
     loadGallery();
-    window.setInterval(loadGallery, 30000);
     $(document).on('visibilitychange', function () {
         if (!document.hidden) {
-            loadGallery();
+            scheduleGalleryRefresh();
         }
     });
     restoreGuestAccess();
