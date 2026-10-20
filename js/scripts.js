@@ -3,6 +3,8 @@ $(document).ready(function () {
     var guestAccessStorageKey = 'khMemoriesGuestName';
     var guestAccessDurationMs = 30 * 60 * 1000;
     var currentGuestName = '';
+    var currentMemoriesToken = '';
+    var pendingGuestName = '';
     var mobileShareFiles = {};
     var mobileSharePromises = {};
     var mobileShareProgress = {};
@@ -103,9 +105,24 @@ $(document).ready(function () {
         return mobileSharePromises[mediaUrl];
     }
 
-    function saveGuestAccess(name) {
+    function memoriesApi(path, payload) {
+        return $.ajax({
+            url: memoriesApiBaseUrl + path,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload || {})
+        });
+    }
+
+    function guestAccessMessage(message) {
+        $('#guest-access-results').html('<div class="guest-access-message">' + escapeHtml(message) + '</div>');
+    }
+
+    function saveGuestAccess(name, accessToken) {
         var access = JSON.stringify({
             name: name,
+            accessToken: accessToken,
+            validated: true,
             expiresAt: Date.now() + guestAccessDurationMs
         });
         try {
@@ -153,32 +170,93 @@ $(document).ready(function () {
 
         try {
             var access = JSON.parse(stored);
-            if (!access.name || Number(access.expiresAt || 0) <= Date.now()) {
+            if (!access.validated || !access.name || !access.accessToken || Number(access.expiresAt || 0) <= Date.now()) {
                 clearGuestAccess();
                 return null;
             }
             return access;
         } catch (error) {
-            // Migrate the previous session-only name format into a 30-minute access record.
-            return {name: stored, expiresAt: Date.now() + guestAccessDurationMs};
+            clearGuestAccess();
+            return null;
         }
     }
 
-    function unlockSite(name, rememberAccess) {
+    function unlockSite(name, accessToken, rememberAccess) {
         currentGuestName = $.trim(name || '');
-        if (currentGuestName && rememberAccess !== false) {
-            saveGuestAccess(currentGuestName);
+        currentMemoriesToken = accessToken || '';
+        if (currentGuestName && currentMemoriesToken && rememberAccess !== false) {
+            saveGuestAccess(currentGuestName, currentMemoriesToken);
         }
 
         $('body').removeClass('guest-access-pending');
         $('#guest-access-gate').addClass('is-unlocked').attr('aria-hidden', 'true');
+        loadGallery();
+    }
+
+    function lockSite(message) {
+        clearGuestAccess();
+        currentGuestName = '';
+        currentMemoriesToken = '';
+        $('body').addClass('guest-access-pending');
+        $('#guest-access-gate').removeClass('is-unlocked').attr('aria-hidden', 'false');
+        $('#gallery-grid').empty();
+        $('#gallery-status').text('');
+        guestAccessMessage(message || 'Enter your full name to continue.');
+        window.setTimeout(function () {
+            $('#guest-access-name').focus();
+        }, 50);
+    }
+
+    function confirmGuestAccess(matchToken, guestName) {
+        $('#guest-access-submit').prop('disabled', true).text('Opening...');
+        guestAccessMessage('Confirming your guest access...');
+        memoriesApi('/api/wedding/public/confirm', {match_token: matchToken})
+            .done(function (data) {
+                if (!data || !data.memories_token) {
+                    guestAccessMessage('We could not create guest access. Please try again.');
+                    return;
+                }
+                unlockSite(guestName, data.memories_token, true);
+            })
+            .fail(function (xhr) {
+                var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'We could not confirm that guest. Please search again.';
+                guestAccessMessage(detail);
+            })
+            .always(function () {
+                $('#guest-access-submit').prop('disabled', false).text('Continue');
+            });
+    }
+
+    function renderGuestAccessMatches(matches) {
+        if (!matches.length) {
+            guestAccessMessage('We could not find a clear guest-list match. Check the spelling of your full name or contact Kate or Hamahito.');
+            return;
+        }
+        if (matches.length === 1) {
+            confirmGuestAccess(matches[0].match_token, pendingGuestName);
+            return;
+        }
+        var markup = matches.map(function (match) {
+            return '<div class="guest-access-match">' +
+                '<strong>' + escapeHtml(match.display_name) + '</strong>' +
+                '<button class="btn-fill guest-access-confirm" type="button" data-token="' + escapeHtml(match.match_token) + '">This is me</button>' +
+                '</div>';
+        }).join('');
+        $('#guest-access-results').html(markup);
     }
 
     function restoreGuestAccess() {
         var access = storedGuestAccess();
-        if (access && access.name) {
-            saveGuestAccess(access.name);
-            unlockSite(access.name, false);
+        if (access && access.name && access.accessToken) {
+            guestAccessMessage('Checking your guest access...');
+            memoriesApi('/api/wedding/public/memories-access', {access_token: access.accessToken})
+                .done(function () {
+                    saveGuestAccess(access.name, access.accessToken);
+                    unlockSite(access.name, access.accessToken, false);
+                })
+                .fail(function () {
+                    lockSite('Your saved guest access expired. Enter your full name again.');
+                });
             return;
         }
 
@@ -190,14 +268,30 @@ $(document).ready(function () {
     $('#guest-access-form').on('submit', function (event) {
         event.preventDefault();
 
-        var guestName = $.trim($('#guest-access-name').val() || '');
-        if (!guestName) {
-            $('#guest-access-results').html('<div class="guest-access-message">Enter your full name to continue.</div>');
+        pendingGuestName = $.trim($('#guest-access-name').val() || '');
+        if (!pendingGuestName) {
+            guestAccessMessage('Enter your full name to continue.');
             $('#guest-access-name').focus();
             return;
         }
 
-        unlockSite(guestName);
+        $('#guest-access-submit').prop('disabled', true).text('Searching...');
+        guestAccessMessage('Checking the guest list...');
+        memoriesApi('/api/wedding/public/lookup', {name: pendingGuestName})
+            .done(function (data) {
+                renderGuestAccessMatches((data && data.matches) || []);
+            })
+            .fail(function (xhr) {
+                var detail = (xhr.responseJSON && xhr.responseJSON.detail) || 'Guest-list search failed. Please try again.';
+                guestAccessMessage(detail);
+            })
+            .always(function () {
+                $('#guest-access-submit').prop('disabled', false).text('Continue');
+            });
+    });
+
+    $('#guest-access-results').on('click', '.guest-access-confirm', function () {
+        confirmGuestAccess($(this).attr('data-token') || '', pendingGuestName);
     });
 
     $('.nav-toggle').on('click', function (event) {
@@ -250,6 +344,12 @@ $(document).ready(function () {
         $('#photo-share-greeting').text('Hi ' + (currentGuestName || 'there') + '! Thanks for your contribution!');
     });
 
+    function authenticatedMediaUrl(path) {
+        var url = memoriesApiBaseUrl + (path || '');
+        var separator = url.indexOf('?') === -1 ? '?' : '&';
+        return url + separator + 'access_token=' + encodeURIComponent(currentMemoriesToken);
+    }
+
     function renderGallery(media) {
         var gallery = $('#gallery-grid');
         var status = $('#gallery-status');
@@ -262,12 +362,12 @@ $(document).ready(function () {
 
         status.text(media.length + ' memor' + (media.length === 1 ? 'y' : 'ies') + ' in the gallery');
         gallery.html(media.map(function (item) {
-            var mediaUrl = memoriesApiBaseUrl + (item.url || '');
-            var downloadUrl = memoriesApiBaseUrl + (item.download_url || '');
+            var mediaUrl = authenticatedMediaUrl(item.url || '');
+            var downloadUrl = authenticatedMediaUrl(item.download_url || '');
             var filename = item.original_filename || item.filename || 'wedding-memory';
             var contentType = item.content_type || (item.media_kind === 'video' ? 'video/mp4' : 'image/jpeg');
-            var posterUrl = item.poster_url ? memoriesApiBaseUrl + item.poster_url : '';
-            var thumbnailUrl = item.thumbnail_url ? memoriesApiBaseUrl + item.thumbnail_url : mediaUrl;
+            var posterUrl = item.poster_url ? authenticatedMediaUrl(item.poster_url) : '';
+            var thumbnailUrl = item.thumbnail_url ? authenticatedMediaUrl(item.thumbnail_url) : mediaUrl;
             var preview = item.media_kind === 'video'
                 ? '<video src="' + escapeHtml(mediaUrl) + '" poster="' + escapeHtml(posterUrl) + '" controls preload="metadata" playsinline webkit-playsinline></video>'
                 : '<a href="' + escapeHtml(mediaUrl) + '" target="_blank" rel="noopener"><img class="gallery-thumbnail" src="' + escapeHtml(thumbnailUrl) + '" data-fallback-src="' + escapeHtml(mediaUrl) + '" alt="Wedding memory" loading="lazy" decoding="async"></a>';
@@ -426,6 +526,9 @@ $(document).ready(function () {
             $('#gallery-status').text('The gallery is unavailable right now.');
             return;
         }
+        if (!currentMemoriesToken) {
+            return;
+        }
 
         if (galleryRequestInFlight) {
             return;
@@ -435,6 +538,7 @@ $(document).ready(function () {
         $.ajax({
             url: memoriesApiBaseUrl + '/api/wedding/public/gallery',
             method: 'GET',
+            data: {access_token: currentMemoriesToken},
             cache: false
         }).done(function (data) {
             var media = (data && data.media) || [];
@@ -443,7 +547,11 @@ $(document).ready(function () {
                 galleryFingerprint = nextFingerprint;
                 renderGallery(media);
             }
-        }).fail(function () {
+        }).fail(function (xhr) {
+            if (xhr.status === 401) {
+                lockSite('Your guest access expired. Enter your full name again.');
+                return;
+            }
             $('#gallery-status').text('We could not load the gallery right now. Please try again later.');
         }).always(function () {
             galleryRequestInFlight = false;
@@ -452,6 +560,9 @@ $(document).ready(function () {
     }
 
     function scheduleGalleryRefresh() {
+        if (!currentMemoriesToken) {
+            return;
+        }
         if (galleryRefreshTimer !== null) {
             window.clearTimeout(galleryRefreshTimer);
         }
@@ -469,6 +580,11 @@ $(document).ready(function () {
 
         if (!memoriesApiBaseUrl) {
             status.removeClass('is-success').addClass('is-error').text('Memory uploads are not available right now.');
+            return;
+        }
+        if (!currentMemoriesToken) {
+            $('#photo-share-modal').modal('hide');
+            lockSite('Your guest access expired. Enter your full name again.');
             return;
         }
         if (!files || !files.length) {
@@ -539,6 +655,7 @@ $(document).ready(function () {
             var value = row.find('.upload-progress-value');
             var fill = row.find('.transfer-progress-fill');
             var formData = new FormData();
+            formData.append('access_token', currentMemoriesToken);
             formData.append('uploader_name', currentGuestName || 'Unknown guest');
             formData.append('files', file);
             value.text('0%');
@@ -577,18 +694,23 @@ $(document).ready(function () {
                 row.addClass('is-error');
                 value.text('Failed · ' + completedCount + '/' + selectedFiles.length);
                 failureMessages.push((xhr.responseJSON && xhr.responseJSON.detail) || 'Memory upload failed.');
+                if (xhr.status === 401) {
+                    $('#photo-share-modal').modal('hide');
+                    lockSite('Your guest access expired. Enter your full name again.');
+                }
             }).always(function () {
                 uploadOverall.text('Completed ' + completedCount + '/' + selectedFiles.length);
-                uploadFile(index + 1);
+                if (currentMemoriesToken) {
+                    uploadFile(index + 1);
+                }
             });
         }
 
         uploadFile(0);
     });
 
-    loadGallery();
     $(document).on('visibilitychange', function () {
-        if (!document.hidden) {
+        if (!document.hidden && currentMemoriesToken) {
             scheduleGalleryRefresh();
         }
     });
