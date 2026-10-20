@@ -267,12 +267,13 @@ $(document).ready(function () {
             var filename = item.original_filename || item.filename || 'wedding-memory';
             var contentType = item.content_type || (item.media_kind === 'video' ? 'video/mp4' : 'image/jpeg');
             var posterUrl = item.poster_url ? memoriesApiBaseUrl + item.poster_url : '';
+            var thumbnailUrl = item.thumbnail_url ? memoriesApiBaseUrl + item.thumbnail_url : mediaUrl;
             var preview = item.media_kind === 'video'
                 ? '<video src="' + escapeHtml(mediaUrl) + '" poster="' + escapeHtml(posterUrl) + '" controls preload="metadata" playsinline webkit-playsinline></video>'
-                : '<a href="' + escapeHtml(mediaUrl) + '" target="_blank" rel="noopener"><img src="' + escapeHtml(mediaUrl) + '" alt="Wedding memory" loading="lazy"></a>';
+                : '<a href="' + escapeHtml(mediaUrl) + '" target="_blank" rel="noopener"><img class="gallery-thumbnail" src="' + escapeHtml(thumbnailUrl) + '" data-fallback-src="' + escapeHtml(mediaUrl) + '" alt="Wedding memory" loading="lazy" decoding="async"></a>';
             var hoverPreview = item.media_kind === 'video'
                 ? ''
-                : '<span class="gallery-hover-preview" aria-hidden="true"><img src="' + escapeHtml(mediaUrl) + '" alt=""></span>';
+                : '<span class="gallery-hover-preview" aria-hidden="true"><img data-full-src="' + escapeHtml(mediaUrl) + '" alt=""></span>';
 
             return '<figure class="gallery-card">' +
                 preview +
@@ -287,24 +288,21 @@ $(document).ready(function () {
                 '</figure>';
         }).join(''));
 
-        if (isMobileShareDevice() && navigator.share && typeof File !== 'undefined') {
-            var imagePreloadBudget = 40 * 1024 * 1024;
-            media.forEach(function (item) {
-                var itemSize = Number(item.size || 0);
-                if (item.media_kind !== 'image' || itemSize <= 0 || itemSize > imagePreloadBudget) {
-                    return;
-                }
-                imagePreloadBudget -= itemSize;
-                prepareMobileShareFile(
-                    memoriesApiBaseUrl + (item.url || ''),
-                    item.original_filename || item.filename || 'wedding-memory',
-                    item.content_type || 'image/jpeg'
-                ).catch(function () {
-                    // A normal tap-to-download attempt remains available if preloading fails.
-                });
-            });
-        }
+        gallery.find('.gallery-thumbnail').on('error', function () {
+            var image = $(this);
+            var fallbackSrc = image.attr('data-fallback-src');
+            if (fallbackSrc && image.attr('src') !== fallbackSrc) {
+                image.attr('src', fallbackSrc);
+            }
+        });
     }
+
+    $(document).on('mouseenter focusin', '.gallery-card', function () {
+        var fullImage = $(this).find('.gallery-hover-preview img[data-full-src]');
+        if (fullImage.length && !fullImage.attr('src')) {
+            fullImage.attr('src', fullImage.attr('data-full-src'));
+        }
+    });
 
     function galleryMediaFingerprint(media) {
         return JSON.stringify(media.map(function (item) {
@@ -314,6 +312,7 @@ $(document).ready(function () {
                 item.download_url || '',
                 item.media_kind || '',
                 item.poster_url || '',
+                item.thumbnail_url || '',
                 Number(item.size || 0)
             ];
         }));
